@@ -1,0 +1,189 @@
+=Using the BF display for an experiment=
+This page contains a coarse outline of how to write an experiment that uses the BF rendering engine.
+==Equipment caution==
+'''The lenses will be damaged if they get a DC voltage'''
+
+'''''If you are unfamiliar with the equipment talk to someone who knows it!'''''
+
+The lenses can get a DC voltage if any of the video cables become unplugged, or if a bright screen remains over the photodiodes.  
+* There is an interlock system that Larry built, but it doesn't work perfectly yet.  Now, it just makes a ton of noise as the relay switch chatters.
+* The program has reminder messages so you don't forget, so please pay attention to the messages.
+* The most dangerous time is when you are exiting the program.  If there is a window in the background, it can block a photodiode.
+* To prevent a subject from accidentally hitting a button to quit the program, after pressing escape, the program window will only close if you press the 'q' button.
+
+==General guidelines==
+* Making things fast
+** This system uses double buffer for drawing, which doesn't help us at all for the volume
+** Every frame must be drawn before the flip command at the end.  If you miss the flip deadline, then the image on the screen stays the same as the lens changes.  This will lead to dropped frames which look like ghost images and flicker.
+** To get everything to hit the deadlines, its best to precompile all the GL commands in loadtime, and then just call lists during runtime.
+** The code allocates indices for lists and then fills them with the important commands.  If you follow the basic code framework, it gets list optimized with minimal work for you.  If you want to do something fancy, then you many need to understand how the lists work.
+** For moving things, lists are not practical and the best way to deal with this problem is to have as much stored as a list as possible and to call the minimal number of gl commands as possible.  There are some demos that show how to use it, like the cylindrical structure from motion experiment.  
+** Try to avoid other things running on the computer.  Ideally, matlab alone is running... and not with all the matlab bells and whistles.  Close the folder viewer, the workspace editor
+* Making things good
+** The calibration steps are all really important.  If you skimp on the calibration, then there will be artifacts.
+** The graphics card does not support fast vertex antialiasing.  That means that vertices are rounded to the nearest pixel, which will be bad.  
+** If at all possible, use textures with a dark frame.  The frame of the texture will snap to the nearest pixel, the internal pixel will be properly antialiased.  (A cool experiment is to make a texture of a white box with a smiley face move.  The box jumps from pixel to pixel, but the smilely face moves smoothly)
+
+==Development environment==
+* To run the code, you will need matlab with the most up to date version of psychtoolbox.
+* You will also need a computer with a modern graphics card, preferably on a Mac.  It is untested on PCs and while most of it is portable, there will probably be some differences.
+** Also note that the Macbook laptop with the Intel 950? graphics chip totally sucks.  They somehow shipped it without support for glActiveTexture.  This is a fatal omission for our purposes.
+** The folder containing BF_display_Start must be set to the active directory, and you should add paths to the subfolders.
+
+==The layout of a program==
+* All programs begin from BF_Display_Start.  This main program will set up many of the appropriate states in graphics hardware for the optimized routines that you will need to do during the experiment.  
+** There are two main paths for the programing.  There is a demo mode, and there is a trial mode.
+
+===Demo mode===
+* This is where the display operates as a normal display.
+* You can tell it what kind of stuff you want it to show, and it will put it on screen.
+* This mode is interactive in the sense that you can change things on the fly, and disrupt normally automated things.
+* There are a wealth of keyboard commands for cycling through depth planes, iterating through depths, turning focus cues on and off, turning calibration on and off... etc.  
+* It is constantly listening for key commands, so it is inherently slower.
+* Dropped frames will be more problematic here than they would normally be during a trial.  
+* This is a good mode for working on geometry and setting up your stimuli.  This way you can code up your stimulus correctly, without needing to worry about trials or any of the other nonsense.
+* This is also used to check the alignment before beginning a test.
+
+===Trial mode===
+* If trial mode is active, then the program follows a strict regiment.  It will think you are doing an experiment and follows the parameters in the experiment file and the routines set up for the specific experiment.  
+* I would reccomend that you only start with the experiment if you have already seen your stimulus in the demo mode and know that it works.  
+* There are a few things you will need to change to build the experiment.  
+# Stimulus
+## You will probably want to use a static scene.  If so, you will want to code the scene if BFrenderscenestatic.
+## This is an easy to use way of wrapping your inefficient code into something that will be optimized with lists.
+## This is primarily straight forward gl, with the units in meters.
+## The cyclopean eye is at the origin and is looking in the negative Z direction.
+# Experiment parameters
+## All the staircases and other important stuff relating to your experiment is stored in an experiment file in the test_params folder.  
+## Make sure that anything that you many want tweak between trials, or to set things up initially is here.  There are also flags that need to be set so that the software knows what to do.  e.g. It needs to know that you are in trial mode or demo mode.  
+## The staircase structure uses the normal adaptive staircase based on X up/Y down.  It was programmed mostly by Robin and Bjorn.
+## **VERY IMPORTANT:  CLEAR ALL is inadequate.  You must use CLEAR CLASSES to change the staircase**
+### If you're adding field to the staircases, this will help you avoid frustration
+# Loadtime
+## Before each trial, the program will pick a staircase at random and then need to initialize all the states so its ready to go when you want to show something.
+## This preparation phase is filled with two things
+### Get the parameters from the staircases
+### Build all the lists needed
+## The lists are optimized commands that are stored in graphics hardware.  
+### Instead of passing in 200 gl commands, compile the 200 commands into a list and then just pass in the pointer for the list.
+#### This saves massively on Matlab overhead.  It would not be possible to run at 180 Hz from matlab without the lists.
+### There are predominately two critical list series that you will need:
+#### Projection lists
+##### This contains the information needed to set up the depth blending for each eye and each focal state.  It also does the subject alignment corrections.  
+##### It is actually a collection of 8 sublists.  There is 1 list for each focal state per eye.  Make sure you cycle through both eyes and all 4 focal states.  Also, remember to tell the system what depthtexturehandle you want to use.
+##### You can have multiple list series if you are doing more complex experiments.  If you are only showing uniformly consistent or uniform conflict situations, then you don't really need to make multiple list series.  If you're uncertain, then just make multiple lists.  
+#### scene lists   
+##### This is where you store all the stimulus geometry. 
+##### I break things down into phases, such as fixation phase and then a stimulus phase.
+##### Multiple intervals might need more phases.  
+##### Precompiling all the phases allow you to make fast transitions by only changing the list that is executed.
+##### Having so many lists for one scene may seem like overkill, and it is most of the time. Most of the time, both eyes will be viewing the same geometry, and the geometry will be the same for each eye and all the depth planes.  In calibration, this is not the case.  There are a variety of other special cases, so it will keep your options open without needing to do hacks or "if" statements in runtime.  All that ugliness belong in the BF renderscene static subroutine.
+# Runtime
+## There are several key steps of a runtime
+### Index the eye
+#### The code deals with each eye's view serially.  
+#### First do eye 1, then eye 2 in a for loop
+### Index the depthplane
+#### During a time interval, you will need to cycle through the image planes.  
+#### There is one image plane per frame.
+### Call the projection list
+#### Very important call, it sets up the projection for the appropriate disparity. 
+### call the geometry list
+#### Also important, this is where it puts up your stimulus.  
+### Synchronization pulses
+#### You need to tell the system what depth plane you are on.  Frame drops happen.  This is how we get caught back up.  
+# Handle response
+## It will first collect a response, and check if the response is recognized.  Escape should always quit, but not close the screen.  (See warnings at top)
+## it will need to determine if the response was correct or incorrect, and tell the staircase what it needs to do.
+## It will also need to write the relevant information to a file.  You'll want to modify this routine so it writes the relevant info that you need.
+
+==File list==
+Note that all of the critical BF display system files are prefixed with BF.  Its a useful convention to maintain.
+
+===Files that are dynamic and easy to edit as a goal===
+====Test Parameters====
+There is a directory of experiment files.  These files need to contain the staircase information, and flags to tell the software what kind of experiment you are running.  The fuse experiments are a good example for what should be present for a basic experiment. 
+In principle, you should be able to tweak an experiment easily modifying only these files.  If its an experimental parameter, this is where it should be set.
+
+Some of the files are particularly important.  The files that are exp_2L, exp_3R, etc. are the critical alignment test files.  
+
+Another important test is the exp_3plane_aligntest.m, which will show some squares that are very valuable for determining if there is proper alignment.  See the calibration section for more information.
+
+====User Parameters====
+This is where each user's calibration parameters are saved.  It gets automatically amended each time they do a calibration procedure.  This means that there will be a record of every set of calibration data.  If you want to undo a calibration, just delete the most recent parameters at the bottom of the file.  Periodically, if the file gets too long, you can manually delete all but the most recent set of calibration data.  
+
+===Files that may require modification for your experiment===
+* BF_build_textures.m
+** This is where you build the textures that you want to use during the experiment.  These textures are loaded for the whole expeirment.  
+*** You can load any type of image that matlab can break up into its matrix values.  
+*** Currently this is made to take in RGB square images.  If you don't want a square image, for now, the thing to do is to squash it to a square texture, and then use gl to stretch it to its correct aspect ratio in load time.  
+**** Also, be sure the size of the square sides is a power of two.  
+**** TODO:  Write a little function that will take a nonsquare texture and pad it so its square.  Then bind the texture to exclude the padded regions.  
+* BF_disp_message.m
+** If you want to put up a mirrored message on the screen to the user, this is the function that you use.
+* BF_initialize_trial.m
+** This is a load time script that sets up the lists for the upcoming trial. It retrieves the important info from the staircases and builds whatever geometry is needed.  It takes only milliseconds usually but is still too slow for runtime.  
+* BF_keyboard_handling.m
+** This function says what keys to watch for, and what to do with them.  
+** Note that typically during the trial, the system is what I call "balistic."  It doesn't accept any sort of control from the user.  Polling the keyboard and mouse can take milliseconds that we just don't have.
+* BF_record_response.m
+** Each experiment needs to be represented.  This is where you say what you want to write in the data file.  
+*** My philosophy is that you should write the data to the file with each button press and not wait to store everything at the end.  
+* BF_run_trial.m
+** This tells the computer what to do during a trial.  The geometry should all be precompiled earlier.  This is just the display loop calling lists really quickly.  You can make the trial have multiple intervals here if you like.  ex.  fixation cross for 1 second, and then a rds for 1.5 seconds.   
+* BF_respond_react.m
+** You have collected a button press, what do you want to do with it.  This is where you can update the staircases with the new info, and then send it to the data write subroutine.  
+* BFRenderScene_static.m
+** This is where you turn your high level ideas of what you want to the basic gl commands.  You set up the scene geometry, bind textures, and do math.  
+** This is in load time, so it doesn't need to be fast, and it will be optimized in a list for drawing in runtime.  
+*** However, if you make the scene to complicated, you may drop frames.  For example, I think I was able to draw rds with up to 1000 dots, but if I did 2000 then I would occassionaly drop frames.  
+*** There is nothing magic about this function.  If you want to specify your geometry another way, no problem.  It offers a convenient place to write inefficient code that will be optimized.  
+*** Another advantage of this coding style is that your effort at adding stim_types here will be available to any expeirment.  e.g. the fixation cross is the same and available for everyone.  
+* BFRenderScene_dynamic.m
+** This is the analog of BFRenderSceneStatic, except it never gets made into a list... its called from runtime.  So make sure your code is as optimized as possible... i.e. no for loops, and minimal moglcore wrappers.  
+
+===Probably don't need to be modified===
+* BF_bind_texture_to_square.m
+** Bread and butter of texturing. It maps a square texture to a square polygon.  Once bound, you can stretch it to whatever aspect ratio you want.
+* BF_make_lum_grating.m
+** Its a quick and dirty script to make a luminance grating texture, it will accept lots of parameters like orientation, sf, size, ...
+* BF_texture_plane.m
+* BF_make_rds_grating.m
+** This will make a random dot stereogram corrugation in depth.  It uses small texture dots so that it is properly antialiased.  Check it out to see how to pass in sf, dot density, orientation, etc. 
+* BFWaitForInput
+** Boiler plate code that we use to just wait for a person to press a button.
+*** Remember that even if you set it for a nanosecond, it will still take milliseconds to execute which is all it takes to drop a frame.  This is why it is never called during a trial if it can be avoided.  
+
+===Very unlikely it needs to be modified===
+These contain the heart of the volumetric display calculations.  They should only be modified if you really really want to.
+If any part of the code were "black box", then this would be it
+The algorithms are taken almost verbatim from Kurt's layers.c code
+The functions are sparsely annotated with what the various parts do.
+* BF_viewport_specific_GL_commands.m
+* BF_calcDepthTexture.m
+** This is where the depth blending equations are.  This runs at the program startup and then the depth dextures don't change the whole session.  Many of the focus cue manipulations can be made by changing the parameters that you pass into the viewport specific commands script.  
+* BFRebuildTextureMatrix.m
+* BFStereoProjection.m
+
+
+===Not Categorized===
+* BF_display_start.m
+** This is the main program that you use to start the demo or the experiment
+** It will want a display mode, an observer and an experiment
+*** For displaymode, use 10 if you want to do it as a dual monitor, or 9 for anaglyph. 
+* BF_display_Start_flicker_frame.m
+*** Like BF_display_start, but it is set up to use one monitor with crystal eyes and using the synch pulses differently
+*** One of the pulses tells the lenses to cycle, and the other synchronizes every 4th frame.  The glasses as usual pick off the vertical resync.  
+* BF_make_cylinder_dots.m
+** This is a script to make a cylinder made of tiny circular dots.  Used for structure from motion.  
+* BF_solid_square.m
+* BF_texture_cube.m
+
+===File graveyard===
+Some of the code is now buried in the Psychtoolbox itself.  It is not readily useraccessible.  I have kept a few files that are reminders of what is going on inside some of these mysterious Screen commands.
+* BFcalibroutine_runtime.m
+** This is now obsolete.  The runtime calibration is built into the Screen's flip command if the calibration has been set up correctly in the PrepareConfiguration. 
+* BFGeneratetextcoord.m
+** This is now obsolete.  The runtime calibration is built into the Screen's flip command if the calibration has been set up correctly in the PrepareConfiguration. 
+* BFRenderScene_w_wrapper.m
+** This is now obsolete.  Originally, I did some experiments with stripping the wrappers from the moglcore commands.  Its good but comes at a terrible price when debugging.  If you use the list techniques, then stipping the wrappers in unnecessary.
