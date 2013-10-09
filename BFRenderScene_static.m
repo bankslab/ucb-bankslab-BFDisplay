@@ -21,7 +21,16 @@
     matCubeAmb      = builtin('single',[1 1 1 1]);
     matCubeDiff     = builtin('single',[1 1 1.0 1]);
     
-
+    if strcmp(experiment_type, 'hing')
+        glDisable(GL.DEPTH_TEST);
+        glPushMatrix();
+        glTranslatef(0, 0, -imageplanedist(depthplane));
+        vertFOV = 23.3;
+		horizFOV = 32.6;
+        glScalef(tan((horizFOV/2)*pi/180), tan((vertFOV/2)*pi/180), 1);
+        BF_bind_texture_to_square(texname_static, depthplane+whichEye*4);
+        glPopMatrix();
+    end
  
     if strcmp(experiment_type, 'alignmode') && trial_mode==0
         if depthplane==alignplane % This means that we are in the size calibration.

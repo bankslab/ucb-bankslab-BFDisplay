@@ -1980,8 +1980,18 @@ eval([exp_num]);
                 if exist('record_data','var')
     				save (datafilename,'record_data') % If the experiment is 'exp_fatigue_time,' save variable 'record_data' when dumping workspace.
                 end
-                plot(frameTimePlot);
-                axis([1 length(frameTimePlot) 0 2/100]);
+                if exist('frameTimePlot','var')
+                    clf;
+                    subplot(2,1,1);
+                    plot(frameTimePlot,'bo-');
+                    axis([1 length(frameTimePlot) 3/1000 8/1000]);
+                    subplot(2,1,2);
+                    hist(frameTimePlot,(1/180-2/1000):(2/10000):(1/180+2/1000));
+                    xlim([1/180-2/1000-2/10000 1/180+2/1000+2/10000]);
+                    frameTimeMean=mean(frameTimePlot*1000);
+                    frameTimeStd=std(frameTimePlot*1000,1);
+                    title(['Mean: ' num2str(frameTimeMean,3) 'msec, STD: ' num2str(frameTimeStd,3) 'msec']);
+                end
             elseif strcmp(experiment_type,'focusVaryingStereo')
                 if exist('block','var')
     				save (datafilename,'block') % If the experiment is 'exp_fatigue_time,' save variable 'record_data' when dumping workspace.
