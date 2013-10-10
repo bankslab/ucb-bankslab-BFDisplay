@@ -2,7 +2,7 @@
 experiment_type = 'hing';
 trial_mode = 1;
 dynamic_mode = 0;
-static_mode = 1;
+static_mode = 0;
 renderviews = [0 1]; %0 is the left eye
 projection_type = 1;
 
@@ -16,10 +16,10 @@ param.stim_duration = 1;
 
 % MCS hinge values
 param.algorithm = {'optimization', 'blending', 'single', 'sharp'};
-param.hinge_dist = [2 3.4]; %[2 : 0.3 : 3.4];
-param.focus_dist = [2 3.4]; %[1.4 : 0.6 : 3.4];
-param.MCS_stimuli = [60 : 20 : 120]; %[60 : 3 : 120]; %angle values
-param.angle_noise = [0 5];
+param.hinge_dist = [2 3.2]; %[2 : 0.3 : 3.4];
+param.focus_dist = [2 3.2]; %[1.4 : 0.6 : 3.4];
+param.MCS_stimuli = [105 : 3 : 120]; %[60 : 3 : 120]; %angle values
+param.angle_noise = [0 0];
 param.num_responses = 5;
 
 % count how many staircases we want 4

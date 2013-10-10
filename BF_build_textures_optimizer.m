@@ -20,10 +20,10 @@ elseif trial_mode == 1
     if ~isempty(trial_params)
         trial_parameters = strjoin(trial_params, '_');
         for plane = (1:4)
-            for eye = (0:4)
+            for eye = (0:1)
                 img_index = plane + eye*4;
                 param_string = strjoin({trial_parameters, num2str(plane), num2str(eye)}, '_');
-                fname = strcat('/BF_texture_files/optimizer/', exp_num, '/', param_string, '.hdr');
+                fname = strcat('BF_texture_files/optimizer/', exp_num, '/', param_string, '.hdr');
                 image_list{img_index} = 255 * hdrread(fname);
             end
         end
