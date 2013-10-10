@@ -1044,7 +1044,13 @@ eval([exp_num]);
 					else
 						Screen('FillRect', windowPtr, [255 255 255], [0, winRect(4)*.85, winRect(3)*.15 , winRect(4)]);
 % 						Screen('FillRect', windowPtr, [255 255 255], [0, winRect(4)*.85, winRect(3)*.5 , winRect(4)]);
-					end
+                    end
+                else % Black square for photodiode
+                    if whichEye==1
+						Screen('FillRect', windowPtr, [0 0 0], [winRect(3)*.85, winRect(4)*.85, winRect(3) , winRect(4)]);
+					else
+						Screen('FillRect', windowPtr, [0 0 0], [0, winRect(4)*.85, winRect(3)*.15 , winRect(4)]);
+                    end
 				end
 
                 timeStamp(whichEye*3+3)=toc;
