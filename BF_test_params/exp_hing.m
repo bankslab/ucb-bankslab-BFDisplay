@@ -2,7 +2,7 @@
 experiment_type = 'hing';
 trial_mode = 1;
 dynamic_mode = 0;
-static_mode = 0;
+static_mode = 1;
 renderviews = [0 1]; %0 is the left eye
 projection_type = 1;
 
@@ -37,6 +37,8 @@ for alg_index = 1:length(param.algorithm)
                 'focus_distance', param.focus_dist(focus_index),...
                 'MCS_stimuli', param.MCS_stimuli,... %will need to be more specific for 2nd test
                 'angle_noise', param.angle_noise(randi(2)),...
+                'MCS_num_responses',zeros(length(param.MCS_stimuli)),...
+                'MCS_num_stimuli',length(param.MCS_stimuli),...
                 'MCS_max_responses', param.num_responses * length(param.MCS_stimuli));
             scell{alg_index, hinge_dist_index, focus_index}=...
                 initializeStaircase(scell{alg_index, hinge_dist_index, focus_index});

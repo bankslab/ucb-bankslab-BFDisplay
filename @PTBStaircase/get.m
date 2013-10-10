@@ -110,6 +110,8 @@ while length(propertyArgIn) >= 1,
             uit = s.angle_noise;
        case 'initialized'
            uit = s.initialized;
+       case 'responses'
+           uit = s.responses;
    otherwise
       error('Property does not exist')
    end

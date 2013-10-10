@@ -1135,6 +1135,7 @@ if trial_mode==1
     BF_display_initial_message;
     
     if strcmp(experiment_type, 'hing')
+        record_filename = [pwd '/BF_data_files/optimizer/' observer_initials '_' exp_num '_' datestr(clock,30) '.mat'];
         stop_flag=0;
         while stop_flag==0
             trial_params{1} = get(scellThisRound{s_i},'algorithm');
@@ -1144,39 +1145,168 @@ if trial_mode==1
             trial_params{4} = num2str(get(scellThisRound{s_i}, 'currentValue')); % angle
             trial_params{5} = num2str(get(scellThisRound{s_i}, 'angle_noise'));
             BF_build_textures_optimizer;
-
+            
             BF_initialize_trial; % calls RenderSceneStatic
             BF_run_trial; % calls actual GL commands
-            process_response; % gets keyboard input and updates staircase  
+            process_response; % gets keyboard input and updates staircase
         end
+        save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound');
     end
+    
+    if strcmp(experiment_type,'fatigue_assess1') || strcmp(experiment_type,'fatigue_assess2') || strcmp(experiment_type,'fatigue_assess3')
+        % TD: read the exp record file.
+        % If does not exist, create one.
+        % condition order is determined when it is created only. Later,
+        % just read it.
+        % trial order, corrfreq order is determined here always.
+        %open a data file
+        condition_order=zeros(1,howmanyconditions);
+        recordfilename = [pwd '/BF_data_files/condition_record/' observer_initials '_' exp_num '_record.txt'];
+        finished_conditions=0;
+        if (exist(recordfilename)~=2) % if the record file does not exist
+            file_record=fopen(recordfilename,'a');
+            condition_order=randperm(howmanyconditions);
+            for ii=1:howmanyconditions
+                fprintf(file_record, '%d\n', condition_order(ii));
+            end
+            fprintf(file_record, '%d', finished_conditions);
+        else % if the record file exists
+            temp=textread(recordfilename,'%d');
+            condition_order=temp(1:howmanyconditions);
+            finished_conditions=temp(howmanyconditions+1);
+        end
         
-        if strcmp(experiment_type,'fatigue_assess1') || strcmp(experiment_type,'fatigue_assess2') || strcmp(experiment_type,'fatigue_assess3')
-            % TD: read the exp record file.
-            % If does not exist, create one.
-            % condition order is determined when it is created only. Later,
-            % just read it.
-            % trial order, corrfreq order is determined here always.
-            %open a data file
-            condition_order=zeros(1,howmanyconditions);
-            recordfilename = [pwd '/BF_data_files/condition_record/' observer_initials '_' exp_num '_record.txt'];
-            finished_conditions=0;
-            if (exist(recordfilename)~=2) % if the record file does not exist
-                file_record=fopen(recordfilename,'a');
-                condition_order=randperm(howmanyconditions);
-                for ii=1:howmanyconditions
-                    fprintf(file_record, '%d\n', condition_order(ii));
+        stop_flag=0;
+        for condition_index=finished_conditions+1:howmanyconditions
+            current_condition=condition_order(condition_index);
+            
+            % start of main experiment
+            for ii=1:trialspercorrfreq
+                corrfreq_order=randperm(howmanycorrfreq);
+                for jj=1:howmanycorrfreq
+                    if (stop_flag==1)
+                        break;
+                    end
+                    current_sc=corrfreq_order(jj)+(condition_order(condition_index)-1)*howmanycorrfreq;
+                    BF_initialize_trial;
+                    BF_run_trial;
                 end
-                fprintf(file_record, '%d', finished_conditions);
-            else % if the record file exists
-                temp=textread(recordfilename,'%d');
-                condition_order=temp(1:howmanyconditions);
-                finished_conditions=temp(howmanyconditions+1);
+                if (stop_flag==1)
+                    break;
+                end
+            end
+            if (stop_flag==1)
+                break;
             end
             
-            stop_flag=0;
-            for condition_index=finished_conditions+1:howmanyconditions
+            % TD: This is when one session ends. Rewrite the record.
+            file_record=fopen(recordfilename,'w');
+            for ii=1:howmanyconditions
+                fprintf(file_record, '%d\n', condition_order(ii));
+                file_record=fopen(recordfilename,'a');
+            end
+            fprintf(file_record, '%d', condition_index);
+            
+            % Break message
+            if condition_index<howmanyconditions
+                tic;
+                message='breakuntilnextassessment';
+                BF_disp_message;
+                if strcmp(strInputName2,'ESCAPE')
+                    stop_flag=1;
+                    break;
+                end
+            end
+        end
+    elseif strcmp(experiment_type,'fatigue_time_pilot_03')
+        % I erased all other pilot codes for time study, but left it.
+        % This is an example code for dynamic stimulus
+        % TD: read the exp record file.
+        % If does not exist, create one.
+        % condition order is determined when it is created only. Later,
+        % just read it.
+        % trial order, corrfreq order is determined here always.
+        %open a data file
+        
+        stop_flag=0;
+        facesize=.01;
+        
+        
+        for condition_index=finished_conditions+1:howmanyconditions
+            current_condition=condition_order(condition_index);
+            focus_cue_multiplier=focus_cue(current_condition);
+            vergdist=1/vergence_offset;
+            
+            if ~exist('genlist_projection', 'var')
+                genlist_start=glGenLists(8);
+                genlist_projection=[0 1 2 3 4 5 6 7]+genlist_start;
+            end
+            for depthplane= 4: -1: 1
+                depthtex_handle=depthplane ;
+                for whichEye=renderviews
+                    glNewList(genlist_projection(whichEye*4+depthplane), GL.COMPILE);
+                    BF_viewport_specific_GL_commands;
+                    glEndList();
+                end
+            end
+            
+            % start of main experiment
+            tic;
+            for ii=1:trialspercorrfreq
+                corrfreq_order=randperm(howmanycorrfreq);
+                for jj=1:howmanycorrfreq
+                    if (stop_flag==1)
+                        break;
+                    end
+                    answer=0;
+                    response=0;
+                    
+                    current_corrfreq=corrfreq_order(jj);
+                    rpt_orientation= round(rand(1));
+                    BF_initialize_trial;
+                    BF_run_trial;
+                end
+                if (stop_flag==1)
+                    break;
+                end
+            end
+            if (stop_flag==1)
+                break;
+            end
+            
+            % TD: This is when one session ends. Rewrite the record.
+            file_record=fopen(recordfilename,'w');
+            for ii=1:howmanyconditions
+                fprintf(file_record, '%d\n', condition_order(ii));
+                file_record=fopen(recordfilename,'a');
+            end
+            fprintf(file_record, '%d', condition_index);
+            
+            % Break message
+            if condition_index<howmanyconditions
+                tic;
+                message='breakuntilnextassessment';
+                BF_disp_message;
+                if strcmp(strInputName2,'ESCAPE')
+                    stop_flag=1;
+                    break;
+                end
+            end
+        end
+    elseif strcmp(experiment_type,'fatigue_time')
+        % TD: read the exp record file.
+        % If does not exist, create one.
+        % condition order is determined when it is created only. Later,
+        % just read it.
+        % trial order, corrfreq order is determined here always.
+        %open a data file
+        
+        stop_flag=0;
+        if finished_conditions<howmanyconditions
+            %                 condition_order
+            for condition_index=(finished_conditions+1):howmanyconditions
                 current_condition=condition_order(condition_index);
+                trial_index=0;
                 
                 % start of main experiment
                 for ii=1:trialspercorrfreq
@@ -1185,7 +1315,11 @@ if trial_mode==1
                         if (stop_flag==1)
                             break;
                         end
-                        current_sc=corrfreq_order(jj)+(condition_order(condition_index)-1)*howmanycorrfreq;
+                        answer=0;
+                        response=0;
+                        
+                        trial_index=jj+(ii-1)*howmanycorrfreq;
+                        current_corrfreq=corrfreq_array(corrfreq_order(jj));
                         BF_initialize_trial;
                         BF_run_trial;
                     end
@@ -1196,19 +1330,16 @@ if trial_mode==1
                 if (stop_flag==1)
                     break;
                 end
-                
-                % TD: This is when one session ends. Rewrite the record.
-                file_record=fopen(recordfilename,'w');
-                for ii=1:howmanyconditions
-                    fprintf(file_record, '%d\n', condition_order(ii));
-                    file_record=fopen(recordfilename,'a');
-                end
-                fprintf(file_record, '%d', condition_index);
+                finished_conditions=finished_conditions+1;
                 
                 % Break message
-                if condition_index<howmanyconditions
+                if finished_conditions<howmanyconditions % display only after the first session.
                     tic;
-                    message='breakuntilnextassessment';
+                    if mod(finished_conditions,2)==1
+                        message='persessionQ';
+                    elseif mod(finished_conditions,2)==0
+                        message='persessionQcomparisonQ';
+                    end
                     BF_disp_message;
                     if strcmp(strInputName2,'ESCAPE')
                         stop_flag=1;
@@ -1216,37 +1347,136 @@ if trial_mode==1
                     end
                 end
             end
-        elseif strcmp(experiment_type,'fatigue_time_pilot_03')
-            % I erased all other pilot codes for time study, but left it.
-            % This is an example code for dynamic stimulus
-            % TD: read the exp record file.
-            % If does not exist, create one.
-            % condition order is determined when it is created only. Later,
-            % just read it.
-            % trial order, corrfreq order is determined here always.
-            %open a data file
-            
-            stop_flag=0;
-            facesize=.01;
-            
-            
-            for condition_index=finished_conditions+1:howmanyconditions
+            % TD: Experiment ends. Rewrite the record.
+            file_record=fopen(recordfilename,'w');
+            for ii=1:howmanyconditions
+                fprintf(file_record, '%d\n', condition_order(ii));
+                file_record=fopen(recordfilename,'a');
+            end
+            fprintf(file_record, '%d', finished_conditions);
+        end
+    elseif strcmp(experiment_type,'fatigue_time_3')||strcmp(experiment_type,'fatigue_time_4')
+        % TD: read the exp record file.
+        % If does not exist, create one.
+        % condition order is determined when it is created only. Later,
+        % just read it.
+        % trial order, corrfreq order is determined here always.
+        %open a data file
+        
+        if finished_conditions<howmanyconditions
+            %                 condition_order
+            first_condition_index=finished_conditions+1;
+            if mod(finished_conditions,2)==0
+                last_condition_index=finished_conditions+2;
+            else
+                last_condition_index=finished_conditions+1;
+            end
+            for condition_index=first_condition_index:last_condition_index % 2 conditions per day for now
                 current_condition=condition_order(condition_index);
-                focus_cue_multiplier=focus_cue(current_condition);
-                vergdist=1/vergence_offset;
+                trial_index=0;
                 
-                if ~exist('genlist_projection', 'var')
-                    genlist_start=glGenLists(8);
-                    genlist_projection=[0 1 2 3 4 5 6 7]+genlist_start;
-                end
-                for depthplane= 4: -1: 1
-                    depthtex_handle=depthplane ;
-                    for whichEye=renderviews
-                        glNewList(genlist_projection(whichEye*4+depthplane), GL.COMPILE);
-                        BF_viewport_specific_GL_commands;
-                        glEndList();
+                % start of main experiment
+                for ii=1:trialspercorrfreq
+                    corrfreq_order=randperm(howmanycorrfreq);
+                    for jj=1:howmanycorrfreq
+                        if (stop_flag==1)
+                            break;
+                        end
+                        answer=0;
+                        response=0;
+                        
+                        trial_index=jj+(ii-1)*howmanycorrfreq;
+                        current_corrfreq=corrfreq_array(corrfreq_order(jj));
+                        BF_initialize_trial;
+                        BF_run_trial;
+                    end
+                    if (stop_flag==1)
+                        break;
                     end
                 end
+                if (stop_flag==1)
+                    break;
+                end
+                finished_conditions=finished_conditions+1;
+                
+                % Break message
+                if finished_conditions<last_condition_index % display only after the first session.
+                    tic;
+                    message='break_fatigue_time';
+                    BF_disp_message;
+                    if strcmp(strInputName2,'ESCAPE')
+                        stop_flag=1;
+                        break;
+                    end
+                end
+            end
+            % TD: Experiment ends. Rewrite the record.
+            file_record=fopen(conditionrecordfilename,'w');
+            for ii=1:length(t_c1)
+                if strcmp(t_initials{ii},subject_initials)
+                    if current_condition==7 || current_condition==8
+                        fprintf(file_record, '%s\t%d\t%d\t%d\n',t_initials{ii},t_c1(ii),t_c2(ii),finished_conditions);
+                    else
+                        fprintf(file_record, '%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n',t_initials{ii},t_c1(ii),t_c2(ii),t_c3(ii),t_c4(ii),t_c5(ii),t_c6(ii),finished_conditions);
+                    end
+                else
+                    if current_condition==7 || current_condition==8
+                        fprintf(file_record, '%s\t%d\t%d\t%d\n',t_initials{ii},t_c1(ii),t_c2(ii),t_finished(ii));
+                    else
+                        fprintf(file_record, '%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n',t_initials{ii},t_c1(ii),t_c2(ii),t_c3(ii),t_c4(ii),t_c5(ii),t_c6(ii),t_finished(ii));
+                    end
+                end
+                file_record=fopen(conditionrecordfilename,'a');
+            end
+            fclose(file_record);
+        end
+    elseif strcmp(experiment_type,'fatigue_time_5')
+        if finished_conditions<howmanyconditions
+            %                 condition_order
+            first_condition_index=finished_conditions+1;
+            if strcmp(exp_num((end-6):end),'pretest')||strcmp(exp_num((end-8):(end-2)),'raining')
+                last_condition_index=6; % always run all 6 conditions
+            elseif mod(finished_conditions,2)==0
+                last_condition_index=finished_conditions+2;
+            else
+                last_condition_index=finished_conditions+1;
+            end
+            debugging=[];
+            % generate projection list
+            if ~exist('genlist_projection1', 'var')
+                genlist_projection1=[0 1 2 3 4 5 6 7]+glGenLists(8); % control session projection
+                genlist_projection2=[0 1 2 3 4 5 6 7]+glGenLists(8); % conflict session projection
+            end
+            for depthplane= 4: -1: 1
+                if depthplane==1
+                    depthtex_handle=6; % don't display anything on farthest plane
+                else
+                    depthtex_handle=depthplane;
+                end
+                for whichEye=renderviews
+                    glNewList(genlist_projection1(depthplane+whichEye*4), GL.COMPILE);
+                    BF_viewport_specific_GL_commands;
+                    glEndList();
+                end
+                if depthplane==2 % genlist_projection2 displays only farmimd plane
+                    depthtex_handle=7;
+                else
+                    depthtex_handle=6;
+                end
+                for whichEye=renderviews
+                    glNewList(genlist_projection2(depthplane+whichEye*4), GL.COMPILE);
+                    BF_viewport_specific_GL_commands;
+                    glEndList();
+                end
+            end
+            for condition_index=first_condition_index:last_condition_index % 2 conditions per day for now
+                debugging{condition_index}=[];
+                debugging{condition_index}.vergdist=[];
+                debugging{condition_index}.accdist=[];
+                dIndex=0;
+                current_condition=condition_order(condition_index);
+                
+                trial_index=0;
                 
                 % start of main experiment
                 tic;
@@ -1259,8 +1489,8 @@ if trial_mode==1
                         answer=0;
                         response=0;
                         
-                        current_corrfreq=corrfreq_order(jj);
-                        rpt_orientation= round(rand(1));
+                        trial_index=jj+(ii-1)*howmanycorrfreq;
+                        current_corrfreq=corrfreq_array(corrfreq_order(jj));
                         BF_initialize_trial;
                         BF_run_trial;
                     end
@@ -1271,19 +1501,16 @@ if trial_mode==1
                 if (stop_flag==1)
                     break;
                 end
-                
-                % TD: This is when one session ends. Rewrite the record.
-                file_record=fopen(recordfilename,'w');
-                for ii=1:howmanyconditions
-                    fprintf(file_record, '%d\n', condition_order(ii));
-                    file_record=fopen(recordfilename,'a');
-                end
-                fprintf(file_record, '%d', condition_index);
+                finished_conditions=finished_conditions+1;
                 
                 % Break message
-                if condition_index<howmanyconditions
+                if finished_conditions<last_condition_index % display only after the first session.
                     tic;
-                    message='breakuntilnextassessment';
+                    % reset audio signal object and indices
+                    %                         pause(0.1);
+                    %                         w_i=1;
+                    %                         c_i=1;
+                    message='break_fatigue_time';
                     BF_disp_message;
                     if strcmp(strInputName2,'ESCAPE')
                         stop_flag=1;
@@ -1291,850 +1518,625 @@ if trial_mode==1
                     end
                 end
             end
-        elseif strcmp(experiment_type,'fatigue_time')
-            % TD: read the exp record file.
-            % If does not exist, create one.
-            % condition order is determined when it is created only. Later,
-            % just read it.
-            % trial order, corrfreq order is determined here always.
-            %open a data file
-            
-            stop_flag=0;
-            if finished_conditions<howmanyconditions
-                %                 condition_order
-                for condition_index=(finished_conditions+1):howmanyconditions
-                    current_condition=condition_order(condition_index);
-                    trial_index=0;
-                    
-                    % start of main experiment
-                    for ii=1:trialspercorrfreq
-                        corrfreq_order=randperm(howmanycorrfreq);
-                        for jj=1:howmanycorrfreq
-                            if (stop_flag==1)
-                                break;
-                            end
-                            answer=0;
-                            response=0;
-                            
-                            trial_index=jj+(ii-1)*howmanycorrfreq;
-                            current_corrfreq=corrfreq_array(corrfreq_order(jj));
-                            BF_initialize_trial;
-                            BF_run_trial;
-                        end
-                        if (stop_flag==1)
-                            break;
-                        end
+            %                 figure(1);
+            %                 for ii=1:6
+            %                     subplot(2,3,ii);
+            %                     plot(debugging{ii}.vergdist,'b-');
+            %                     hold on;
+            %                     plot(debugging{ii}.accdist,'r-');
+            %                     hold off;
+            %                 end
+            % TD: Experiment ends. Rewrite the record.
+            file_record=fopen(conditionrecordfilename,'w');
+            for ii=1:length(t_c1)
+                if strcmp(t_initials{ii},subject_initials)
+                    if current_condition==7 || current_condition==8
+                        fprintf(file_record, '%s\t%d\t%d\t%d\n',t_initials{ii},t_c1(ii),t_c2(ii),finished_conditions);
+                    else
+                        fprintf(file_record, '%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n',t_initials{ii},t_c1(ii),t_c2(ii),t_c3(ii),t_c4(ii),t_c5(ii),t_c6(ii),finished_conditions);
                     end
-                    if (stop_flag==1)
-                        break;
-                    end
-                    finished_conditions=finished_conditions+1;
-                    
-                    % Break message
-                    if finished_conditions<howmanyconditions % display only after the first session.
-                        tic;
-                        if mod(finished_conditions,2)==1
-                            message='persessionQ';
-                        elseif mod(finished_conditions,2)==0
-                            message='persessionQcomparisonQ';
-                        end
-                        BF_disp_message;
-                        if strcmp(strInputName2,'ESCAPE')
-                            stop_flag=1;
-                            break;
-                        end
-                    end
-                end
-                % TD: Experiment ends. Rewrite the record.
-                file_record=fopen(recordfilename,'w');
-                for ii=1:howmanyconditions
-                    fprintf(file_record, '%d\n', condition_order(ii));
-                    file_record=fopen(recordfilename,'a');
-                end
-                fprintf(file_record, '%d', finished_conditions);
-            end
-        elseif strcmp(experiment_type,'fatigue_time_3')||strcmp(experiment_type,'fatigue_time_4')
-            % TD: read the exp record file.
-            % If does not exist, create one.
-            % condition order is determined when it is created only. Later,
-            % just read it.
-            % trial order, corrfreq order is determined here always.
-            %open a data file
-            
-            if finished_conditions<howmanyconditions
-                %                 condition_order
-                first_condition_index=finished_conditions+1;
-                if mod(finished_conditions,2)==0
-                    last_condition_index=finished_conditions+2;
                 else
-                    last_condition_index=finished_conditions+1;
-                end
-                for condition_index=first_condition_index:last_condition_index % 2 conditions per day for now
-                    current_condition=condition_order(condition_index);
-                    trial_index=0;
-                    
-                    % start of main experiment
-                    for ii=1:trialspercorrfreq
-                        corrfreq_order=randperm(howmanycorrfreq);
-                        for jj=1:howmanycorrfreq
-                            if (stop_flag==1)
-                                break;
-                            end
-                            answer=0;
-                            response=0;
-                            
-                            trial_index=jj+(ii-1)*howmanycorrfreq;
-                            current_corrfreq=corrfreq_array(corrfreq_order(jj));
-                            BF_initialize_trial;
-                            BF_run_trial;
-                        end
-                        if (stop_flag==1)
-                            break;
-                        end
-                    end
-                    if (stop_flag==1)
-                        break;
-                    end
-                    finished_conditions=finished_conditions+1;
-                    
-                    % Break message
-                    if finished_conditions<last_condition_index % display only after the first session.
-                        tic;
-                        message='break_fatigue_time';
-                        BF_disp_message;
-                        if strcmp(strInputName2,'ESCAPE')
-                            stop_flag=1;
-                            break;
-                        end
-                    end
-                end
-                % TD: Experiment ends. Rewrite the record.
-                file_record=fopen(conditionrecordfilename,'w');
-                for ii=1:length(t_c1)
-                    if strcmp(t_initials{ii},subject_initials)
-                        if current_condition==7 || current_condition==8
-                            fprintf(file_record, '%s\t%d\t%d\t%d\n',t_initials{ii},t_c1(ii),t_c2(ii),finished_conditions);
-                        else
-                            fprintf(file_record, '%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n',t_initials{ii},t_c1(ii),t_c2(ii),t_c3(ii),t_c4(ii),t_c5(ii),t_c6(ii),finished_conditions);
-                        end
+                    if current_condition==7 || current_condition==8
+                        fprintf(file_record, '%s\t%d\t%d\t%d\n',t_initials{ii},t_c1(ii),t_c2(ii),t_finished(ii));
                     else
-                        if current_condition==7 || current_condition==8
-                            fprintf(file_record, '%s\t%d\t%d\t%d\n',t_initials{ii},t_c1(ii),t_c2(ii),t_finished(ii));
-                        else
-                            fprintf(file_record, '%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n',t_initials{ii},t_c1(ii),t_c2(ii),t_c3(ii),t_c4(ii),t_c5(ii),t_c6(ii),t_finished(ii));
-                        end
+                        fprintf(file_record, '%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n',t_initials{ii},t_c1(ii),t_c2(ii),t_c3(ii),t_c4(ii),t_c5(ii),t_c6(ii),t_finished(ii));
                     end
-                    file_record=fopen(conditionrecordfilename,'a');
                 end
-                fclose(file_record);
+                file_record=fopen(conditionrecordfilename,'a');
             end
-        elseif strcmp(experiment_type,'fatigue_time_5')
-            if finished_conditions<howmanyconditions
-                %                 condition_order
-                first_condition_index=finished_conditions+1;
-                if strcmp(exp_num((end-6):end),'pretest')||strcmp(exp_num((end-8):(end-2)),'raining')
-                    last_condition_index=6; % always run all 6 conditions
-                elseif mod(finished_conditions,2)==0
-                    last_condition_index=finished_conditions+2;
-                else
-                    last_condition_index=finished_conditions+1;
-                end
-                debugging=[];
-                % generate projection list
-                if ~exist('genlist_projection1', 'var')
-                    genlist_projection1=[0 1 2 3 4 5 6 7]+glGenLists(8); % control session projection
-                    genlist_projection2=[0 1 2 3 4 5 6 7]+glGenLists(8); % conflict session projection
-                end
-                for depthplane= 4: -1: 1
-                    if depthplane==1
-                        depthtex_handle=6; % don't display anything on farthest plane
-                    else
-                        depthtex_handle=depthplane;
-                    end
-                    for whichEye=renderviews
-                        glNewList(genlist_projection1(depthplane+whichEye*4), GL.COMPILE);
-                        BF_viewport_specific_GL_commands;
-                        glEndList();
-                    end
-                    if depthplane==2 % genlist_projection2 displays only farmimd plane
-                        depthtex_handle=7;
-                    else
-                        depthtex_handle=6;
-                    end
-                    for whichEye=renderviews
-                        glNewList(genlist_projection2(depthplane+whichEye*4), GL.COMPILE);
-                        BF_viewport_specific_GL_commands;
-                        glEndList();
-                    end
-                end
-                for condition_index=first_condition_index:last_condition_index % 2 conditions per day for now
-                    debugging{condition_index}=[];
-                    debugging{condition_index}.vergdist=[];
-                    debugging{condition_index}.accdist=[];
-                    dIndex=0;
-                    current_condition=condition_order(condition_index);
-                    
-                    trial_index=0;
-                    
-                    % start of main experiment
-                    tic;
-                    for ii=1:trialspercorrfreq
-                        corrfreq_order=randperm(howmanycorrfreq);
-                        for jj=1:howmanycorrfreq
-                            if (stop_flag==1)
-                                break;
-                            end
-                            answer=0;
-                            response=0;
-                            
-                            trial_index=jj+(ii-1)*howmanycorrfreq;
-                            current_corrfreq=corrfreq_array(corrfreq_order(jj));
-                            BF_initialize_trial;
-                            BF_run_trial;
-                        end
-                        if (stop_flag==1)
-                            break;
-                        end
-                    end
-                    if (stop_flag==1)
-                        break;
-                    end
-                    finished_conditions=finished_conditions+1;
-                    
-                    % Break message
-                    if finished_conditions<last_condition_index % display only after the first session.
-                        tic;
-                        % reset audio signal object and indices
-                        %                         pause(0.1);
-                        %                         w_i=1;
-                        %                         c_i=1;
-                        message='break_fatigue_time';
-                        BF_disp_message;
-                        if strcmp(strInputName2,'ESCAPE')
-                            stop_flag=1;
-                            break;
-                        end
-                    end
-                end
-                %                 figure(1);
-                %                 for ii=1:6
-                %                     subplot(2,3,ii);
-                %                     plot(debugging{ii}.vergdist,'b-');
-                %                     hold on;
-                %                     plot(debugging{ii}.accdist,'r-');
-                %                     hold off;
-                %                 end
-                % TD: Experiment ends. Rewrite the record.
-                file_record=fopen(conditionrecordfilename,'w');
-                for ii=1:length(t_c1)
-                    if strcmp(t_initials{ii},subject_initials)
-                        if current_condition==7 || current_condition==8
-                            fprintf(file_record, '%s\t%d\t%d\t%d\n',t_initials{ii},t_c1(ii),t_c2(ii),finished_conditions);
-                        else
-                            fprintf(file_record, '%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n',t_initials{ii},t_c1(ii),t_c2(ii),t_c3(ii),t_c4(ii),t_c5(ii),t_c6(ii),finished_conditions);
-                        end
-                    else
-                        if current_condition==7 || current_condition==8
-                            fprintf(file_record, '%s\t%d\t%d\t%d\n',t_initials{ii},t_c1(ii),t_c2(ii),t_finished(ii));
-                        else
-                            fprintf(file_record, '%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n',t_initials{ii},t_c1(ii),t_c2(ii),t_c3(ii),t_c4(ii),t_c5(ii),t_c6(ii),t_finished(ii));
-                        end
-                    end
-                    file_record=fopen(conditionrecordfilename,'a');
-                end
-                fclose(file_record);
+            fclose(file_record);
+        end
+    elseif strcmp(experiment_type,'specularity_flat')
+        genlist_start=glGenLists(8+numReflectionImageInOneSet*8);  %Returns integer of first set of free display lists
+        genlist_projection1=[0 1 2 3 4 5 6 7]+genlist_start;  %Set of indices
+        static_scene_disp_list=(0:1:(numReflectionImageInOneSet*8-1))+genlist_start+8; % necessary?
+        %             static_scene_disp_list
+        for depthplane= 4: -1: 1
+            depthtex_handle=depthplane;
+            for whichEye=renderviews
+                glNewList(genlist_projection1(depthplane+whichEye*4), GL.COMPILE);
+                BF_viewport_specific_GL_commands;
+                glEndList();
             end
-        elseif strcmp(experiment_type,'specularity_flat')
-            genlist_start=glGenLists(8+numReflectionImageInOneSet*8);  %Returns integer of first set of free display lists
-            genlist_projection1=[0 1 2 3 4 5 6 7]+genlist_start;  %Set of indices
-            static_scene_disp_list=(0:1:(numReflectionImageInOneSet*8-1))+genlist_start+8; % necessary?
-            %             static_scene_disp_list
-            for depthplane= 4: -1: 1
-                depthtex_handle=depthplane;
-                for whichEye=renderviews
-                    glNewList(genlist_projection1(depthplane+whichEye*4), GL.COMPILE);
-                    BF_viewport_specific_GL_commands;
-                    glEndList();
-                end
-            end
+        end
+        
+        stop_flag=0;
+        while(stop_flag==0)
+            % decide which condition to run
             
-            stop_flag=0;
-            while(stop_flag==0)
-                % decide which condition to run
-                
-                BF_initialize_trial; % load image files and make scene display list
-                BF_run_trial; % show the images and respond to the input
-            end
-            
-        elseif strcmp(experiment_type,'fatigue_assess_sym0p1D')  || strcmp(experiment_type,'fatigue_assess_sym1p3D')  || strcmp(experiment_type,'fatigue_assess_sym2p5D')
-            % TD: read the exp record file.
-            % If does not exist, create one.
-            % condition order is determined when it is created only. Later,
-            % just read it.
-            % trial order, corrfreq order is determined here always.
-            %open a data file
-            condition_order=zeros(1,howmanyconditions);
-            recordfilename = [pwd '/BF_data_files/condition_record/' observer_initials '_' exp_num '_record.txt'];
-            fatiguerecordstarttime=floor(GetSecs);
-            fatiguerecordfilename = [pwd '/BF_data_files/condition_record/' observer_initials '_' exp_num '_fatigue_time_' num2str(fatiguerecordstarttime) '.txt'];
-            finished_conditions=0;
-            if (exist(recordfilename)~=2) % if the record file does not exist
-                file_record=fopen(recordfilename,'a');
-                condition_order=randperm(howmanyconditions);
-                for ii=1:howmanyconditions
-                    fprintf(file_record, '%d\n', condition_order(ii));
-                end
-                fprintf(file_record, '%d', finished_conditions);
-            else % if the record file exists
-                temp=textread(recordfilename,'%d');
-                condition_order=temp(1:howmanyconditions);
-                finished_conditions=temp(howmanyconditions+1);
-            end
-            
-            file_fatigue_record=fopen(fatiguerecordfilename,'a');
-            stop_flag=0;
-            for condition_index=finished_conditions+1:howmanyconditions
-                current_condition=condition_order(condition_index);
-                if strcmp(experiment_type,'fatigue_assess_sym0p1D')
-                    condition_num_to_be_recorded=current_condition;
-                elseif strcmp(experiment_type,'fatigue_assess_sym1p3D')
-                    condition_num_to_be_recorded=current_condition+howmanyconditions;
-                elseif strcmp(experiment_type,'fatigue_assess_sym2p5D')
-                    condition_num_to_be_recorded=current_condition+2*howmanyconditions;
-                end
-                % Get degree of visual fatigue before the start of the session.
-                degree_fatigue=-1;
-                message='fatiguequestion';
-                BF_disp_message;
-                fatigue_measured_at=0; % It's before the start.
-                fprintf(file_fatigue_record, '%d\t%d\t%d\n', condition_num_to_be_recorded, fatigue_measured_at, degree_fatigue);
-                
-                % start of one session
-                condition_start_time=floor(GetSecs);
-                for ii=1:trialspercorrfreq
-                    corrfreq_order=randperm(howmanycorrfreq);
-                    for jj=1:howmanycorrfreq
-                        if (stop_flag==1)
-                            break;
-                        end
-                        current_sc=corrfreq_order(jj)+(condition_order(condition_index)-1)*howmanycorrfreq;
-                        BF_initialize_trial;
-                        BF_run_trial;
-                    end
-                    if (stop_flag==1)
-                        break;
-                    end
-                    if mod(ii,fatigue_question_period)==0 && ii~=trialspercorrfreq
-                        degree_fatigue=-1; % it means undefined
-                        message='fatiguequestion';
-                        BF_disp_message;
-                        fatigue_measured_at=floor(GetSecs)-condition_start_time;
-                        fprintf(file_fatigue_record, '%d\t%d\t%d\n', condition_num_to_be_recorded, fatigue_measured_at, degree_fatigue);
-                    end
-                end
-                if (stop_flag==1)
-                    break;
-                end
-                
-                % Get degree of visual fatigue at the end of the session.
-                degree_fatigue=-1; % it means undefined
-                message='fatiguequestion';
-                BF_disp_message;
-                fatigue_measured_at=floor(GetSecs)-condition_start_time;
-                fprintf(file_fatigue_record, '%d\t%d\t%d\n', condition_num_to_be_recorded, fatigue_measured_at, degree_fatigue);
-                % TD: This is when one session ends. Rewrite the record.
-                file_record=fopen(recordfilename,'w');
-                for ii=1:howmanyconditions
-                    fprintf(file_record, '%d\n', condition_order(ii));
-                    file_record=fopen(recordfilename,'a');
-                end
-                fprintf(file_record, '%d', condition_index);
-                
-                % Break message
-                if condition_index<howmanyconditions
-                    tic;
-                    message='breakuntilnextassessment';
-                    BF_disp_message;
-                    if strcmp(strInputName2,'ESCAPE')
-                        stop_flag=1;
-                        break;
-                    end
-                end
-            end
-        elseif strcmp(experiment_type,'fatigue_assess_sym_training') % everything is the same but not making any record files.
-            % TD: read the exp record file.
-            % If does not exist, create one.
-            % condition order is determined when it is created only. Later,
-            % just read it.
-            % trial order, corrfreq order is determined here always.
-            %open a data file
-            condition_order=zeros(1,howmanyconditions);
-            finished_conditions=0;
+            BF_initialize_trial; % load image files and make scene display list
+            BF_run_trial; % show the images and respond to the input
+        end
+        
+    elseif strcmp(experiment_type,'fatigue_assess_sym0p1D')  || strcmp(experiment_type,'fatigue_assess_sym1p3D')  || strcmp(experiment_type,'fatigue_assess_sym2p5D')
+        % TD: read the exp record file.
+        % If does not exist, create one.
+        % condition order is determined when it is created only. Later,
+        % just read it.
+        % trial order, corrfreq order is determined here always.
+        %open a data file
+        condition_order=zeros(1,howmanyconditions);
+        recordfilename = [pwd '/BF_data_files/condition_record/' observer_initials '_' exp_num '_record.txt'];
+        fatiguerecordstarttime=floor(GetSecs);
+        fatiguerecordfilename = [pwd '/BF_data_files/condition_record/' observer_initials '_' exp_num '_fatigue_time_' num2str(fatiguerecordstarttime) '.txt'];
+        finished_conditions=0;
+        if (exist(recordfilename)~=2) % if the record file does not exist
+            file_record=fopen(recordfilename,'a');
             condition_order=randperm(howmanyconditions);
-            stop_flag=0;
-            for condition_index=finished_conditions+1:howmanyconditions
-                current_condition=condition_order(condition_index);
-                % Get degree of visual fatigue before the start of the session.
-                degree_fatigue=-1;
-                message='fatiguequestion';
-                BF_disp_message;
-                
-                for ii=1:trialspercorrfreq
-                    corrfreq_order=randperm(howmanycorrfreq);
-                    for jj=1:howmanycorrfreq
-                        if (stop_flag==1)
-                            break;
-                        end
-                        current_sc=corrfreq_order(jj)+(condition_order(condition_index)-1)*howmanycorrfreq;
-                        BF_initialize_trial;
-                        BF_run_trial;
-                    end
+            for ii=1:howmanyconditions
+                fprintf(file_record, '%d\n', condition_order(ii));
+            end
+            fprintf(file_record, '%d', finished_conditions);
+        else % if the record file exists
+            temp=textread(recordfilename,'%d');
+            condition_order=temp(1:howmanyconditions);
+            finished_conditions=temp(howmanyconditions+1);
+        end
+        
+        file_fatigue_record=fopen(fatiguerecordfilename,'a');
+        stop_flag=0;
+        for condition_index=finished_conditions+1:howmanyconditions
+            current_condition=condition_order(condition_index);
+            if strcmp(experiment_type,'fatigue_assess_sym0p1D')
+                condition_num_to_be_recorded=current_condition;
+            elseif strcmp(experiment_type,'fatigue_assess_sym1p3D')
+                condition_num_to_be_recorded=current_condition+howmanyconditions;
+            elseif strcmp(experiment_type,'fatigue_assess_sym2p5D')
+                condition_num_to_be_recorded=current_condition+2*howmanyconditions;
+            end
+            % Get degree of visual fatigue before the start of the session.
+            degree_fatigue=-1;
+            message='fatiguequestion';
+            BF_disp_message;
+            fatigue_measured_at=0; % It's before the start.
+            fprintf(file_fatigue_record, '%d\t%d\t%d\n', condition_num_to_be_recorded, fatigue_measured_at, degree_fatigue);
+            
+            % start of one session
+            condition_start_time=floor(GetSecs);
+            for ii=1:trialspercorrfreq
+                corrfreq_order=randperm(howmanycorrfreq);
+                for jj=1:howmanycorrfreq
                     if (stop_flag==1)
                         break;
                     end
-                    if mod(ii,fatigue_question_period)==0
-                        degree_fatigue=-1; % it means undefined
-                        message='fatiguequestion';
-                        BF_disp_message;
-                    end
+                    current_sc=corrfreq_order(jj)+(condition_order(condition_index)-1)*howmanycorrfreq;
+                    BF_initialize_trial;
+                    BF_run_trial;
                 end
                 if (stop_flag==1)
                     break;
                 end
-                
-                % Get degree of visual fatigue at the end of the session.
-                degree_fatigue=-1; % it means undefined
-                message='fatiguequestion';
-                BF_disp_message;
-                % TD: This is when one session ends. Rewrite the record.
-                
-                % Break message
-                if condition_index<howmanyconditions
-                    tic;
-                    message='breakuntilnextassessment';
+                if mod(ii,fatigue_question_period)==0 && ii~=trialspercorrfreq
+                    degree_fatigue=-1; % it means undefined
+                    message='fatiguequestion';
                     BF_disp_message;
-                    if strcmp(strInputName2,'ESCAPE')
-                        stop_flag=1;
-                        break;
-                    end
+                    fatigue_measured_at=floor(GetSecs)-condition_start_time;
+                    fprintf(file_fatigue_record, '%d\t%d\t%d\n', condition_num_to_be_recorded, fatigue_measured_at, degree_fatigue);
                 end
             end
-        elseif strcmp(experiment_type,'fatigue_dip0p1D')  || strcmp(experiment_type,'fatigue_dip1p3D')  || strcmp(experiment_type,'fatigue_dip2p5D')
-            stop_flag=0;
-            record_flag=0;
-            for ii=1:2
-                disparity=0;
-                if ii==1
-                    message='positivediplopia';
-                    BF_disp_message;
-                elseif ii==2
-                    message='negativediplopia';
+            if (stop_flag==1)
+                break;
+            end
+            
+            % Get degree of visual fatigue at the end of the session.
+            degree_fatigue=-1; % it means undefined
+            message='fatiguequestion';
+            BF_disp_message;
+            fatigue_measured_at=floor(GetSecs)-condition_start_time;
+            fprintf(file_fatigue_record, '%d\t%d\t%d\n', condition_num_to_be_recorded, fatigue_measured_at, degree_fatigue);
+            % TD: This is when one session ends. Rewrite the record.
+            file_record=fopen(recordfilename,'w');
+            for ii=1:howmanyconditions
+                fprintf(file_record, '%d\n', condition_order(ii));
+                file_record=fopen(recordfilename,'a');
+            end
+            fprintf(file_record, '%d', condition_index);
+            
+            % Break message
+            if condition_index<howmanyconditions
+                tic;
+                message='breakuntilnextassessment';
+                BF_disp_message;
+                if strcmp(strInputName2,'ESCAPE')
+                    stop_flag=1;
+                    break;
+                end
+            end
+        end
+    elseif strcmp(experiment_type,'fatigue_assess_sym_training') % everything is the same but not making any record files.
+        % TD: read the exp record file.
+        % If does not exist, create one.
+        % condition order is determined when it is created only. Later,
+        % just read it.
+        % trial order, corrfreq order is determined here always.
+        %open a data file
+        condition_order=zeros(1,howmanyconditions);
+        finished_conditions=0;
+        condition_order=randperm(howmanyconditions);
+        stop_flag=0;
+        for condition_index=finished_conditions+1:howmanyconditions
+            current_condition=condition_order(condition_index);
+            % Get degree of visual fatigue before the start of the session.
+            degree_fatigue=-1;
+            message='fatiguequestion';
+            BF_disp_message;
+            
+            for ii=1:trialspercorrfreq
+                corrfreq_order=randperm(howmanycorrfreq);
+                for jj=1:howmanycorrfreq
+                    if (stop_flag==1)
+                        break;
+                    end
+                    current_sc=corrfreq_order(jj)+(condition_order(condition_index)-1)*howmanycorrfreq;
+                    BF_initialize_trial;
+                    BF_run_trial;
+                end
+                if (stop_flag==1)
+                    break;
+                end
+                if mod(ii,fatigue_question_period)==0
+                    degree_fatigue=-1; % it means undefined
+                    message='fatiguequestion';
                     BF_disp_message;
                 end
-                while record_flag==0 && stop_flag==0 % record_flag becomes 1 when the subject hits ENTER.
+            end
+            if (stop_flag==1)
+                break;
+            end
+            
+            % Get degree of visual fatigue at the end of the session.
+            degree_fatigue=-1; % it means undefined
+            message='fatiguequestion';
+            BF_disp_message;
+            % TD: This is when one session ends. Rewrite the record.
+            
+            % Break message
+            if condition_index<howmanyconditions
+                tic;
+                message='breakuntilnextassessment';
+                BF_disp_message;
+                if strcmp(strInputName2,'ESCAPE')
+                    stop_flag=1;
+                    break;
+                end
+            end
+        end
+    elseif strcmp(experiment_type,'fatigue_dip0p1D')  || strcmp(experiment_type,'fatigue_dip1p3D')  || strcmp(experiment_type,'fatigue_dip2p5D')
+        stop_flag=0;
+        record_flag=0;
+        for ii=1:2
+            disparity=0;
+            if ii==1
+                message='positivediplopia';
+                BF_disp_message;
+            elseif ii==2
+                message='negativediplopia';
+                BF_disp_message;
+            end
+            while record_flag==0 && stop_flag==0 % record_flag becomes 1 when the subject hits ENTER.
+                
+                BF_initialize_trial; % prepare the stimuli
+                BF_run_trial; % run the stimuli
+                
+                if (ii==1 && disparity<0) || (ii==2 && disparity>0)
+                    message='wrongdirection';
+                    BF_disp_message;
+                    disparity=0;
+                end
+                
+                % Renew disparity value according to subject's reponse
+                
+            end
+            if stop_flag==1
+                break;
+            end
+            BF_record_response;
+            record_flag=0;
+        end
+    elseif strcmp(experiment_type,'fatigue_symmetry')
+        % TD: read the exp record file.
+        % If does not exist, create one.
+        % condition order is determined when it is created only. Later,
+        % just read it.
+        % trial order, corrfreq order is determined here always.
+        %open a data file
+        condition_order=zeros(1,howmanyconditions);
+        recordfilename = [pwd '/BF_data_files/condition_record/' observer_initials '_' exp_num '_record.txt'];
+        finished_conditions=0;
+        
+        if (exist(recordfilename)~=2) % if the record file does not exist
+            % confirm below first, and then confirm the whole
+            % exp_condition of fatigue_symmetry
+            file_record=fopen(recordfilename,'a');
+            pair_order=randperm(howmanypairs)-1;
+            for ii=1:howmanypairs
+                subpair_order=randperm(2);
+                condition_order((ii-1)*2+1)=pair_order(ii)+subpair_order(1);
+                condition_order((ii-1)*2+2)=pair_order(ii)+subpair_order(2);
+            end
+            for ii=1:howmanyconditions
+                fprintf(file_record, '%d\n', condition_order(ii));
+            end
+            fprintf(file_record, '%d', finished_conditions);
+        else % if the record file exists
+            temp=textread(recordfilename,'%d');
+            condition_order=temp(1:howmanyconditions);
+            finished_conditions=temp(howmanyconditions+1);
+        end
+        
+        stop_flag=0;
+        for condition_index=finished_conditions+1:howmanyconditions
+            current_condition=condition_order(condition_index);
+            
+            % start of main experiment
+            for ii=1:trialspercorrfreq
+                corrfreq_order=randperm(howmanycorrfreq);
+                for jj=1:howmanycorrfreq
+                    if (stop_flag==1)
+                        break;
+                    end
+                    current_sc=corrfreq_order(jj)+(condition_order(condition_index)-1)*howmanycorrfreq;
+                    BF_initialize_trial;
+                    BF_run_trial;
+                end
+                if (stop_flag==1)
+                    break;
+                end
+            end
+            if (stop_flag==1)
+                break;
+            end
+            
+            % TD: This is when one session ends. Rewrite the record.
+            file_record=fopen(recordfilename,'w');
+            for ii=1:howmanyconditions
+                fprintf(file_record, '%d\n', condition_order(ii));
+                file_record=fopen(recordfilename,'a');
+            end
+            fprintf(file_record, '%d', condition_index);
+            
+            % Break message
+            if condition_index<howmanyconditions
+                tic;
+                message='breakuntilnextassessment';
+                BF_disp_message;
+                if strcmp(strInputName2,'ESCAPE')
+                    stop_flag=1;
+                    break;
+                end
+            end
+        end
+        
+    elseif strcmp(experiment_type,'exp_aca')
+        condition_order=randperm(howmanyconditions);
+        stop_flag=0;
+        exp_aca_phase=0; % initialization
+        acc_stim=0;
+        acc_response=0;
+        acc_conv=0;
+        for condition_index=1:howmanyconditions
+            % decide current condition
+            current_condition=condition_order(condition_index);
+            
+            % start of pre-session AC/A measurement
+            exp_aca_phase=1; % means pre-session AC/A measurement
+            exp_stim_type=stim_type;
+            stim_type='aca_measure';
+            
+            % specify the condition of measurement of AC/A
+            num_data_to_collect=3;
+            aca_plane_list=[FarMidDist MidNearDist NearDist]; % location of accommodative stimulus for AC/A measurement
+            rulerangle=4; % intended angular size of the ruler
+            line_pos_range_degree=4; % angular range of line position, in degrees
+            
+            for ii=1:length(aca_plane_list)
+                aca_plane=aca_plane_list(ii);
+                data_count=1;
+                while data_count<num_data_to_collect && stop_flag==0
+                    % calculate the intended size of the ruler.
+                    % The vertical lines above 0 and 10 are separated by
+                    % 402 pixels.
+                    % The bitmap file is 512 pixels wide.
+                    rulersize=2*aca_plane*(512/402)*tand(rulerangle/2);
+                    linesize=rulersize/7;
+                    
+                    % angular devation of the line from the center
+                    line_pos_degree=line_pos_range_degree/2-line_pos_range_degree*rand;
+                    % actual position of the line
+                    line_pos=aca_plane*tand(line_pos_degree);
                     
                     BF_initialize_trial; % prepare the stimuli
                     BF_run_trial; % run the stimuli
                     
-                    if (ii==1 && disparity<0) || (ii==2 && disparity>0)
-                        message='wrongdirection';
-                        BF_disp_message;
-                        disparity=0;
-                    end
-                    
-                    % Renew disparity value according to subject's reponse
-                    
+                    data_count=data_count+1;
                 end
                 if stop_flag==1
                     break;
                 end
-                BF_record_response;
-                record_flag=0;
             end
-        elseif strcmp(experiment_type,'fatigue_symmetry')
-            % TD: read the exp record file.
-            % If does not exist, create one.
-            % condition order is determined when it is created only. Later,
-            % just read it.
-            % trial order, corrfreq order is determined here always.
-            %open a data file
-            condition_order=zeros(1,howmanyconditions);
-            recordfilename = [pwd '/BF_data_files/condition_record/' observer_initials '_' exp_num '_record.txt'];
-            finished_conditions=0;
+            stim_type=exp_stim_type;
+            % end of pre-session AC/A measurement
             
-            if (exist(recordfilename)~=2) % if the record file does not exist
-                % confirm below first, and then confirm the whole
-                % exp_condition of fatigue_symmetry
-                file_record=fopen(recordfilename,'a');
-                pair_order=randperm(howmanypairs)-1;
-                for ii=1:howmanypairs
-                    subpair_order=randperm(2);
-                    condition_order((ii-1)*2+1)=pair_order(ii)+subpair_order(1);
-                    condition_order((ii-1)*2+2)=pair_order(ii)+subpair_order(2);
-                end
-                for ii=1:howmanyconditions
-                    fprintf(file_record, '%d\n', condition_order(ii));
-                end
-                fprintf(file_record, '%d', finished_conditions);
-            else % if the record file exists
-                temp=textread(recordfilename,'%d');
-                condition_order=temp(1:howmanyconditions);
-                finished_conditions=temp(howmanyconditions+1);
-            end
-            
-            stop_flag=0;
-            for condition_index=finished_conditions+1:howmanyconditions
-                current_condition=condition_order(condition_index);
-                
-                % start of main experiment
-                for ii=1:trialspercorrfreq
-                    corrfreq_order=randperm(howmanycorrfreq);
-                    for jj=1:howmanycorrfreq
-                        if (stop_flag==1)
-                            break;
-                        end
-                        current_sc=corrfreq_order(jj)+(condition_order(condition_index)-1)*howmanycorrfreq;
-                        BF_initialize_trial;
-                        BF_run_trial;
-                    end
+            % start of oddity task
+            exp_aca_phase=2; % means oddity task
+            for ii=1:trialspercorrfreq
+                corrfreq_order=randperm(howmanycorrfreq);
+                for jj=1:howmanycorrfreq
                     if (stop_flag==1)
                         break;
                     end
+                    current_sc=corrfreq_order(jj)+(condition_order(condition_index)-1)*howmanycorrfreq;
+                    BF_initialize_trial;
+                    BF_run_trial;
                 end
                 if (stop_flag==1)
                     break;
                 end
-                
-                % TD: This is when one session ends. Rewrite the record.
-                file_record=fopen(recordfilename,'w');
-                for ii=1:howmanyconditions
-                    fprintf(file_record, '%d\n', condition_order(ii));
-                    file_record=fopen(recordfilename,'a');
-                end
-                fprintf(file_record, '%d', condition_index);
-                
-                % Break message
-                if condition_index<howmanyconditions
-                    tic;
-                    message='breakuntilnextassessment';
-                    BF_disp_message;
-                    if strcmp(strInputName2,'ESCAPE')
-                        stop_flag=1;
-                        break;
-                    end
-                end
+            end
+            if (stop_flag==1)
+                break;
             end
             
-        elseif strcmp(experiment_type,'exp_aca')
-            condition_order=randperm(howmanyconditions);
-            stop_flag=0;
-            exp_aca_phase=0; % initialization
-            acc_stim=0;
-            acc_response=0;
-            acc_conv=0;
-            for condition_index=1:howmanyconditions
-                % decide current condition
-                current_condition=condition_order(condition_index);
-                
-                % start of pre-session AC/A measurement
-                exp_aca_phase=1; % means pre-session AC/A measurement
-                exp_stim_type=stim_type;
-                stim_type='aca_measure';
-                
-                % specify the condition of measurement of AC/A
-                num_data_to_collect=3;
-                aca_plane_list=[FarMidDist MidNearDist NearDist]; % location of accommodative stimulus for AC/A measurement
-                rulerangle=4; % intended angular size of the ruler
-                line_pos_range_degree=4; % angular range of line position, in degrees
-                
-                for ii=1:length(aca_plane_list)
-                    aca_plane=aca_plane_list(ii);
-                    data_count=1;
-                    while data_count<num_data_to_collect && stop_flag==0
-                        % calculate the intended size of the ruler.
-                        % The vertical lines above 0 and 10 are separated by
-                        % 402 pixels.
-                        % The bitmap file is 512 pixels wide.
-                        rulersize=2*aca_plane*(512/402)*tand(rulerangle/2);
-                        linesize=rulersize/7;
-                        
-                        % angular devation of the line from the center
-                        line_pos_degree=line_pos_range_degree/2-line_pos_range_degree*rand;
-                        % actual position of the line
-                        line_pos=aca_plane*tand(line_pos_degree);
-                        
-                        BF_initialize_trial; % prepare the stimuli
-                        BF_run_trial; % run the stimuli
-                        
-                        data_count=data_count+1;
-                    end
-                    if stop_flag==1
-                        break;
-                    end
-                end
-                stim_type=exp_stim_type;
-                % end of pre-session AC/A measurement
-                
-                % start of oddity task
-                exp_aca_phase=2; % means oddity task
-                for ii=1:trialspercorrfreq
-                    corrfreq_order=randperm(howmanycorrfreq);
-                    for jj=1:howmanycorrfreq
-                        if (stop_flag==1)
-                            break;
-                        end
-                        current_sc=corrfreq_order(jj)+(condition_order(condition_index)-1)*howmanycorrfreq;
-                        BF_initialize_trial;
-                        BF_run_trial;
-                    end
-                    if (stop_flag==1)
-                        break;
-                    end
-                end
-                if (stop_flag==1)
-                    break;
-                end
-                
-                % start of post-session AC/A measurement
-                exp_aca_phase=3; % means post-session AC/A measurement
-                exp_stim_type=stim_type;
-                stim_type='aca_measure';
-                
-                % specify the condition of measurement of AC/A
-                num_data_to_collect=3;
-                aca_plane_list=[FarMidDist MidNearDist NearDist]; % location of accommodative stimulus for AC/A measurement
-                rulerangle=4; % intended angular size of the ruler
-                line_pos_range_degree=4; % angular range of line position, in degrees
-                
-                for ii=1:length(aca_plane_list)
-                    aca_plane=aca_plane_list(ii);
-                    data_count=1;
-                    while data_count<num_data_to_collect && stop_flag==0
-                        % calculate the intended size of the ruler.
-                        % The vertical lines above 0 and 10 are separated by
-                        % 402 pixels.
-                        % The bitmap file is 512 pixels wide.
-                        rulersize=2*aca_plane*(512/402)*tand(rulerangle/2);
-                        linesize=rulersize/7;
-                        
-                        % angular devation of the line from the center
-                        line_pos_degree=line_pos_range_degree/2-line_pos_range_degree*rand;
-                        % actual position of the line
-                        line_pos=aca_plane*tand(line_pos_degree);
-                        
-                        BF_initialize_trial; % prepare the stimuli
-                        BF_run_trial; % run the stimuli
-                        
-                        data_count=data_count+1;
-                    end
-                    if stop_flag==1
-                        break;
-                    end
-                end
-                stim_type=exp_stim_type;
-                % end of post-session AC/A measurement
-                
-                % Break message
-                if condition_index<howmanyconditions
-                    tic;
-                    message='breakuntilnextassessment';
-                    BF_disp_message;
-                    if strcmp(strInputName2,'ESCAPE')
-                        stop_flag=1;
-                        break;
-                    end
-                end
-            end
+            % start of post-session AC/A measurement
+            exp_aca_phase=3; % means post-session AC/A measurement
+            exp_stim_type=stim_type;
+            stim_type='aca_measure';
             
-        else
-            while (trial_counter<3000)
-                stop_flag = 0;
-                trial_counter=trial_counter+1;
-                current_sc = selectStaircase(scell); %randomly select a staircase
-                if current_sc<=0
-                    break
+            % specify the condition of measurement of AC/A
+            num_data_to_collect=3;
+            aca_plane_list=[FarMidDist MidNearDist NearDist]; % location of accommodative stimulus for AC/A measurement
+            rulerangle=4; % intended angular size of the ruler
+            line_pos_range_degree=4; % angular range of line position, in degrees
+            
+            for ii=1:length(aca_plane_list)
+                aca_plane=aca_plane_list(ii);
+                data_count=1;
+                while data_count<num_data_to_collect && stop_flag==0
+                    % calculate the intended size of the ruler.
+                    % The vertical lines above 0 and 10 are separated by
+                    % 402 pixels.
+                    % The bitmap file is 512 pixels wide.
+                    rulersize=2*aca_plane*(512/402)*tand(rulerangle/2);
+                    linesize=rulersize/7;
+                    
+                    % angular devation of the line from the center
+                    line_pos_degree=line_pos_range_degree/2-line_pos_range_degree*rand;
+                    % actual position of the line
+                    line_pos=aca_plane*tand(line_pos_degree);
+                    
+                    BF_initialize_trial; % prepare the stimuli
+                    BF_run_trial; % run the stimuli
+                    
+                    data_count=data_count+1;
                 end
-                
-                BF_initialize_trial;
-                BF_run_trial;
-                
                 if stop_flag==1
                     break;
                 end
-                
-                if mod(trial_counter, trials_per_block)==0
-                    message='takeabreak';
-                    BF_disp_message
-                end
-                
-                
-                %Screen('Flip', windowPtr [, when] [, dontclear] [, dontsync]
-                %[, multiflip]);
-                onset=Screen('Flip', windowPtr, [], 2, 1);
             end
-        end
-        %             keyboard;
-        message='experimentcomplete';
-        BF_disp_message
-        
-        
-    end
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    printcalibration_data_to_file=0;
-    if strcmp(exp_num, 'exp_iodrects')  %special case where we want to save the data
-        printcalibration_data_to_file=1;
-    end
-    if trial_mode==1
-        if dumpworkspace
-            if exist('soundCorrect','var')
-                clear soundCorrect;
-                clear soundWrong;
-            end
-            save (dumpworkspacefilename)  %Wrtie out all info to file for after the fact review
-            if strcmp(experiment_type, 'fatigue_time')||strcmp(experiment_type,'fatigue_time_3')...
-                    ||strcmp(experiment_type,'fatigue_time_4')||strcmp(experiment_type,'fatigue_time_5')
-                if exist('record_data','var')
-                    save (datafilename,'record_data') % If the experiment is 'exp_fatigue_time,' save variable 'record_data' when dumping workspace.
-                end
-                if exist('frameTimePlot','var')
-                    clf;
-                    subplot(2,1,1);
-                    plot(frameTimePlot,'bo-');
-                    axis([1 length(frameTimePlot) 3/1000 8/1000]);
-                    subplot(2,1,2);
-                    hist(frameTimePlot,(1/180-2/1000):(2/10000):(1/180+2/1000));
-                    xlim([1/180-2/1000-2/10000 1/180+2/1000+2/10000]);
-                    frameTimeMean=mean(frameTimePlot*1000);
-                    frameTimeStd=std(frameTimePlot*1000,1);
-                    title(['Mean: ' num2str(frameTimeMean,3) 'msec, STD: ' num2str(frameTimeStd,3) 'msec']);
-                end
-            elseif strcmp(experiment_type,'focusVaryingStereo')
-                if exist('block','var')
-                    save (datafilename,'block') % If the experiment is 'exp_fatigue_time,' save variable 'record_data' when dumping workspace.
-                end
-            end
-        end
-        if (strcmp(experiment_type, 'alignmode') && (current_sc<=0));  %report alignment results
-            printcalibration_data_to_file=1;
-            %This loop will do the averaging of the last 5 reversals
-            for i=1: length(scell);
-                alignplane= get(scell{i}, 'align_plane');
-                align_param= get(scell{i}, 'align_parameter');
-                reversalflags=get(scell{i}, 'reversalflag');
-                thevalues=get(scell{i}, 'values');
-                thereversals=thevalues(find(reversalflags==1));
-                lastreversal=length(thereversals);
-                bestguess= mean(thereversals(lastreversal-5:lastreversal));
-                errorestimate=std(thereversals(lastreversal-5:lastreversal));
-                if align_param==1
-                    degvertoffset(alignplane+renderviews*4)=bestguess;
-                    degvertoffseterror(alignplane+renderviews*4)=errorestimate;
-                elseif align_param==2
-                    deghorizoffset(alignplane+renderviews*4)=bestguess;
-                    deghorizoffseterror(alignplane+renderviews*4)=errorestimate;
-                elseif align_param==3
-                    vertFOVoffset(alignplane+renderviews*4)=  -bestguess*vertFOV/horizFOV;
-                    horizFOVoffset(alignplane+renderviews*4)= -bestguess;
-                    horizFOVoffseterror(alignplane+renderviews*4)= errorestimate;
+            stim_type=exp_stim_type;
+            % end of post-session AC/A measurement
+            
+            % Break message
+            if condition_index<howmanyconditions
+                tic;
+                message='breakuntilnextassessment';
+                BF_disp_message;
+                if strcmp(strInputName2,'ESCAPE')
+                    stop_flag=1;
+                    break;
                 end
             end
         end
         
-        
-    end
-    
-    if trial_mode==0 && (strcmp(experiment_type, 'alignmode')) || (strcmp(experiment_type, 'iodrectmode'))
-        
-        printcalibration_data_to_file=1;
-    end
-    if printcalibration_data_to_file==1
-        fprintf(calibrationfile_1, '\n\n%s\n\n', ['%calibration: ' exp_num ' was performed on: ' datestr(clock, 0) '.mat']);
-        fprintf(calibrationfile_1, '\t\t%s\n', ['deghorizoffset = [' num2str(deghorizoffset) '];' ]);
-        fprintf(calibrationfile_1, '\t\t%s\n', ['degvertoffset = [' num2str(degvertoffset) '];' ]);
-        fprintf(calibrationfile_1, '\t\t%s\n', ['vertFOVoffset = [' num2str(vertFOVoffset) '];' ]);
-        fprintf(calibrationfile_1, '\t\t%s\n', ['horizFOVoffset = [' num2str(horizFOVoffset) '];' ]);
-        fprintf(calibrationfile_1, '\t\t%s\n', ['vertFOV = [' num2str(vertFOV) '];' ]);
-        fprintf(calibrationfile_1, '\t\t%s\n', ['horizFOV = [' num2str(horizFOV) '];' ]);
-        
-        if (trial_mode==1)
-            fprintf(calibrationfile_1, '\t\t%s\n', ['horizFOVoffseterror = [' num2str(horizFOVoffseterror) '];' ]);
-            fprintf(calibrationfile_1, '\t\t%s\n', ['deghorizoffseterror = [' num2str(deghorizoffseterror) '];' ]);
-            fprintf(calibrationfile_1, '\t\t%s\n', ['degvertoffseterror = [' num2str(degvertoffseterror) '];' ]);
+    elseif (0)
+        while (trial_counter<3000)
+            stop_flag = 0;
+            trial_counter=trial_counter+1;
+            current_sc = selectStaircase(scell); %randomly select a staircase
+            if current_sc<=0
+                break
+            end
+            
+            BF_initialize_trial;
+            BF_run_trial;
+            
+            if stop_flag==1
+                break;
+            end
+            
+            if mod(trial_counter, trials_per_block)==0
+                message='takeabreak';
+                BF_disp_message
+            end
+            
+            
+            %Screen('Flip', windowPtr [, when] [, dontclear] [, dontsync]
+            %[, multiflip]);
+            onset=Screen('Flip', windowPtr, [], 2, 1);
         end
-        
-        disp('********************************************************************************')
-        disp('********************************************************************************')
-        disp(['********The calibration data has been saved to the ' observer_initials ' file***********'])
-        disp('********************************************************************************')
-        disp('********************************************************************************')
     end
-    
-    
-    
-    
-    message='turnlensoff';
+    %             keyboard;
+    message='experimentcomplete';
     BF_disp_message
     
     
-    
-    
-    
-    %          Screen('LoadNormalizedGammaTable', windowPtr);
-    %
-    %     if exist('windowPtr2', 'var')
-    %     Screen('LoadNormalizedGammaTable', windowPtr2);
-    %     end
-    
-    
-    
-    % Close onscreen window and release all other ressources:
-    Screen('CloseAll');
-    
-    % Reenable Synctests after this simple demo:
-    %Screen('Preference','SkipSyncTests',1);
-    %     figure(5)
-    %     plot(timecounter(3:end)-timecounter(2:end-1))
-    
-    
-    
-    if (viewMode==10) && current_resolution.width==1056;
-        SetResolution(0, oldres);
-        SetResolution(1, oldres);
+end
+
+
+
+
+
+
+
+
+
+printcalibration_data_to_file=0;
+if strcmp(exp_num, 'exp_iodrects')  %special case where we want to save the data
+    printcalibration_data_to_file=1;
+end
+if trial_mode==1
+    if dumpworkspace
+        if exist('soundCorrect','var')
+            clear soundCorrect;
+            clear soundWrong;
+        end
+        save (dumpworkspacefilename)  %Wrtie out all info to file for after the fact review
+        if strcmp(experiment_type, 'fatigue_time')||strcmp(experiment_type,'fatigue_time_3')...
+                ||strcmp(experiment_type,'fatigue_time_4')||strcmp(experiment_type,'fatigue_time_5')
+            if exist('record_data','var')
+                save (datafilename,'record_data') % If the experiment is 'exp_fatigue_time,' save variable 'record_data' when dumping workspace.
+            end
+            if exist('frameTimePlot','var')
+                clf;
+                subplot(2,1,1);
+                plot(frameTimePlot,'bo-');
+                axis([1 length(frameTimePlot) 3/1000 8/1000]);
+                subplot(2,1,2);
+                hist(frameTimePlot,(1/180-2/1000):(2/10000):(1/180+2/1000));
+                xlim([1/180-2/1000-2/10000 1/180+2/1000+2/10000]);
+                frameTimeMean=mean(frameTimePlot*1000);
+                frameTimeStd=std(frameTimePlot*1000,1);
+                title(['Mean: ' num2str(frameTimeMean,3) 'msec, STD: ' num2str(frameTimeStd,3) 'msec']);
+            end
+        elseif strcmp(experiment_type,'focusVaryingStereo')
+            if exist('block','var')
+                save (datafilename,'block') % If the experiment is 'exp_fatigue_time,' save variable 'record_data' when dumping workspace.
+            end
+        end
+    end
+    if (strcmp(experiment_type, 'alignmode') && (current_sc<=0));  %report alignment results
+        printcalibration_data_to_file=1;
+        %This loop will do the averaging of the last 5 reversals
+        for i=1: length(scell);
+            alignplane= get(scell{i}, 'align_plane');
+            align_param= get(scell{i}, 'align_parameter');
+            reversalflags=get(scell{i}, 'reversalflag');
+            thevalues=get(scell{i}, 'values');
+            thereversals=thevalues(find(reversalflags==1));
+            lastreversal=length(thereversals);
+            bestguess= mean(thereversals(lastreversal-5:lastreversal));
+            errorestimate=std(thereversals(lastreversal-5:lastreversal));
+            if align_param==1
+                degvertoffset(alignplane+renderviews*4)=bestguess;
+                degvertoffseterror(alignplane+renderviews*4)=errorestimate;
+            elseif align_param==2
+                deghorizoffset(alignplane+renderviews*4)=bestguess;
+                deghorizoffseterror(alignplane+renderviews*4)=errorestimate;
+            elseif align_param==3
+                vertFOVoffset(alignplane+renderviews*4)=  -bestguess*vertFOV/horizFOV;
+                horizFOVoffset(alignplane+renderviews*4)= -bestguess;
+                horizFOVoffseterror(alignplane+renderviews*4)= errorestimate;
+            end
+        end
     end
     
     
+end
+
+if trial_mode==0 && (strcmp(experiment_type, 'alignmode')) || (strcmp(experiment_type, 'iodrectmode'))
     
-    ListenChar(0);
+    printcalibration_data_to_file=1;
+end
+if printcalibration_data_to_file==1
+    fprintf(calibrationfile_1, '\n\n%s\n\n', ['%calibration: ' exp_num ' was performed on: ' datestr(clock, 0) '.mat']);
+    fprintf(calibrationfile_1, '\t\t%s\n', ['deghorizoffset = [' num2str(deghorizoffset) '];' ]);
+    fprintf(calibrationfile_1, '\t\t%s\n', ['degvertoffset = [' num2str(degvertoffset) '];' ]);
+    fprintf(calibrationfile_1, '\t\t%s\n', ['vertFOVoffset = [' num2str(vertFOVoffset) '];' ]);
+    fprintf(calibrationfile_1, '\t\t%s\n', ['horizFOVoffset = [' num2str(horizFOVoffset) '];' ]);
+    fprintf(calibrationfile_1, '\t\t%s\n', ['vertFOV = [' num2str(vertFOV) '];' ]);
+    fprintf(calibrationfile_1, '\t\t%s\n', ['horizFOV = [' num2str(horizFOV) '];' ]);
     
-    
-    
-    %     catch
-    
-    %     Screen('LoadNormalizedGammaTable', windowPtr);
-    %
-    %     if exist('windowPtr2', 'var')
-    %     Screen('LoadNormalizedGammaTable', windowPtr2);
-    %     end
-    %
-    %     % Executes in case of an error: Closes onscreen window:
-    %     Screen('CloseAll');
-    ListenChar(0);
-    %    psychrethrow(psychlasterror);
-    
-    if (viewMode==10) && current_resolution.width==1056;
-        SetResolution(0, oldres);
-        SetResolution(1, oldres);
+    if (trial_mode==1)
+        fprintf(calibrationfile_1, '\t\t%s\n', ['horizFOVoffseterror = [' num2str(horizFOVoffseterror) '];' ]);
+        fprintf(calibrationfile_1, '\t\t%s\n', ['deghorizoffseterror = [' num2str(deghorizoffseterror) '];' ]);
+        fprintf(calibrationfile_1, '\t\t%s\n', ['degvertoffseterror = [' num2str(degvertoffseterror) '];' ]);
     end
     
-    % end;
-    
-    
-    
+    disp('********************************************************************************')
+    disp('********************************************************************************')
+    disp(['********The calibration data has been saved to the ' observer_initials ' file***********'])
+    disp('********************************************************************************')
+    disp('********************************************************************************')
+end
+
+
+
+
+message='turnlensoff';
+BF_disp_message
+
+
+
+
+
+%          Screen('LoadNormalizedGammaTable', windowPtr);
+%
+%     if exist('windowPtr2', 'var')
+%     Screen('LoadNormalizedGammaTable', windowPtr2);
+%     end
+
+
+
+% Close onscreen window and release all other ressources:
+Screen('CloseAll');
+
+% Reenable Synctests after this simple demo:
+%Screen('Preference','SkipSyncTests',1);
+%     figure(5)
+%     plot(timecounter(3:end)-timecounter(2:end-1))
+
+
+
+if (viewMode==10) && current_resolution.width==1056;
+    SetResolution(0, oldres);
+    SetResolution(1, oldres);
+end
+
+
+
+ListenChar(0);
+
+
+
+%     catch
+
+%     Screen('LoadNormalizedGammaTable', windowPtr);
+%
+%     if exist('windowPtr2', 'var')
+%     Screen('LoadNormalizedGammaTable', windowPtr2);
+%     end
+%
+%     % Executes in case of an error: Closes onscreen window:
+%     Screen('CloseAll');
+ListenChar(0);
+%    psychrethrow(psychlasterror);
+
+if (viewMode==10) && current_resolution.width==1056;
+    SetResolution(0, oldres);
+    SetResolution(1, oldres);
+end
+
+% end;
+
+
+

@@ -8,8 +8,8 @@ if trial_mode == 0
     for plane = (1:4)
         for eye = (0:1)
             img_index = plane + eye*4;
-            demo_params = strcat('/optimization_0.5_0.5_90_0_', num2str(plane), '_', num2str(eye));
-            fname = strcat('BF_texture_files/optimizer/', exp_num, demo_params, '.hdr');
+            demo_params = strcat('optimization_0.5_0.5_90_0_', num2str(plane), '_', num2str(eye));
+            fname = strcat('BF_texture_files/optimizer/', exp_num, '/demo_images/', demo_params, '.hdr');
             image_list{img_index} = 255 * hdrread(fname);
         end
     end

@@ -27,7 +27,7 @@ if strcmp(experiment_type, 'hing')
                 if whichEye==1
                     Screen('FillRect', windowPtr, [255 255 255], [winRect(3)*.85, winRect(4)*.85, winRect(3) , winRect(4)]);
                 else
-                    Screen('FillRect', windowPtr, [255 255 255], [0, winRect(4)*.85, winRect(3)*.15 , winRect(4)]);
+                    Screen('FillRect', windowPtr, [255 255  255], [0, winRect(4)*.85, winRect(3)*.15 , winRect(4)]);
                 end
             else
                 if whichEye==1
@@ -37,6 +37,7 @@ if strcmp(experiment_type, 'hing')
                 end
             end
         end
+%         Screen('DrawText',windowPtr,num2str(stop_flag),[],[],[255 255 255]);
         Screen('Flip', windowPtr, [], 2, 1);
     end
 end
@@ -1316,6 +1317,7 @@ elseif strcmp(experiment_type, 'disparity_blur_sequential')
             end
 
         end
+        
         Screen('Flip', windowPtr, [], 2, 1);   %The fourth parameter of this is 0, which means it will clear the frame buffer after a flip, I nomrally like to keep it at 2 which leaves it underfined
     end
     
@@ -1324,4 +1326,6 @@ end
 
 onset=Screen('Flip', windowPtr, [], []);
 
-BF_respond_react
+if ~strcmp(experiment_type,'hing')
+    BF_respond_react
+end

@@ -18,6 +18,7 @@ function [ms] = processResponse(ms,response)
         if (response ~= 0)                     
             % Add response to response vector.  
             ms.responses = [ms.responses(:)' response];  
+            ms.responses
             % Increment number of resposnes for this stimulus
             it = find(ms.MCS_stimuli == ms.currentValue);
             ms.MCS_num_responses(it) = ms.MCS_num_responses(it) + 1;
