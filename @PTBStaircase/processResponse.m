@@ -54,7 +54,7 @@ function [ms] = processResponse(ms,response)
         end
         
        
-    else
+    else % staircasing
         
 
         % Skip if the response is 0

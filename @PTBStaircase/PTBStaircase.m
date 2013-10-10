@@ -74,5 +74,11 @@ ms.MCS_stimuli = [];            % Vector containin actual stimuli
 ms.MCS_num_responses = [];      % Vector of the number of responses for each stimulus
 ms.MCS_max_responses = [];      % Number of responses desired for each stimulus
 
+% Variables for optimizer experiment
+ms.algorithm = [];
+ms.hinge_dist = [];
+ms.focus_dist = [];
+ms.angle_noise = [];
+ms.initialized = [];
 
 ms = class(ms,'PTBStaircase');

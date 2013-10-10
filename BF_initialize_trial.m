@@ -5,6 +5,28 @@
 
 
   Screen('BeginOpenGL', windowPtr);
+  
+  	% Specific Experiment Code
+if strcmp(experiment_type, 'hing')
+    glDisable(GL.DEPTH_TEST);
+    genlist_start=glGenLists(17);  %Returns integer of first set of free display lists
+    genlist_projection1=[0 1 2 3 4 5 6 7]+genlist_start;  %Set of indices
+    static_scene_disp_list=[0 1 2 3 4 5 6 7]+genlist_start+8;
+    wrap_texture_on_square=16+genlist_start;
+    
+    for depthplane= 4: -1: 1
+        depthtex_handle = depthplane;
+        for whichEye=0:1
+            glNewList(genlist_projection1(depthplane+whichEye*4), GL.COMPILE);
+            BF_viewport_specific_GL_commands;
+            glEndList();
+            
+            glNewList(static_scene_disp_list(depthplane+whichEye*4), GL.COMPILE);
+            BFRenderScene_static;
+            glEndList();
+        end
+    end
+end
 
 if strcmp(stim_type,'aca_measure')
 
