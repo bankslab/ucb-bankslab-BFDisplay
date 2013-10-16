@@ -1,4 +1,7 @@
 /BF_data_files/*
+/BF_params/*
+*.m~
 *.hdr
 .svn
 .svn/
+.DS_Store
