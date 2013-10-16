@@ -1317,7 +1317,6 @@ elseif strcmp(experiment_type, 'disparity_blur_sequential')
             end
 
         end
-        
         Screen('Flip', windowPtr, [], 2, 1);   %The fourth parameter of this is 0, which means it will clear the frame buffer after a flip, I nomrally like to keep it at 2 which leaves it underfined
     end
     

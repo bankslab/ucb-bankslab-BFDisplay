@@ -2,7 +2,6 @@
 function texname_static=BF_build_textures
 
 global GL
-
 % Generate 6 textures and store their handles in vecotr 'texname'
 texname_static=glGenTextures(27);
 

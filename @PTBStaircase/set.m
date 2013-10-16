@@ -42,8 +42,6 @@ while length(property_argin) >= 2,
             a.numUp = val;
         case 'numDown'
             a.numDown = val; 
-        case 'initialized'
-            a.initialized = val;
         case 'initialValue_random_range'
             a.initialValue_random_range =val;
 		case 'elevationAngle'
@@ -122,6 +120,8 @@ while length(property_argin) >= 2,
             a.focus_dist=val;
         case 'angle_noise'
             a.angle_noise=val;
+        case 'initialized'
+            a.initialized = val;
         otherwise
         if ischar(prop),
             error(['Property ' prop ' does not exist in this class!'])

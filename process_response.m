@@ -31,7 +31,6 @@ while(stop_flag==0)
         strInputName=KbName(iKeyIndex(1));
         actualHingeAngle = get(scellThisRound{s_i},'currentValue');
         if strcmp(strInputName,'1') || strcmp(strInputName,'1!')
-            disp('PRESSED 1');
             if actualHingeAngle > 90
                 scellThisRound{s_i}=processResponse(scellThisRound{s_i},1);
             else

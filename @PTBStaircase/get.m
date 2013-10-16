@@ -99,8 +99,8 @@ while length(propertyArgIn) >= 1,
         case 'MCS_num_responses'
             uit = s.MCS_num_responses; 
         case 'MCS_max_responses'
-            uit = s.MCS_max_responses;  
-        case 'algorithm'
+            uit = s.MCS_max_responses;
+                case 'algorithm'
             uit = s.algorithm;
         case 'hinge_distance'
             uit = s.hinge_dist;
@@ -108,10 +108,10 @@ while length(propertyArgIn) >= 1,
             uit = s.focus_dist;
         case 'angle_noise'
             uit = s.angle_noise;
-       case 'initialized'
-           uit = s.initialized;
-       case 'responses'
-           uit = s.responses;
+        case 'initialized'
+            uit = s.initialized;
+        case 'responses'
+            uit = s.responses;
    otherwise
       error('Property does not exist')
    end

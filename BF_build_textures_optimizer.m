@@ -10,7 +10,7 @@ if trial_mode == 0
             img_index = plane + eye*4;
             demo_params = strcat('optimization_0.5_0.5_90_0_', num2str(plane), '_', num2str(eye));
             fname = strcat('BF_texture_files/optimizer/', exp_num, '/demo_images/', demo_params, '.hdr');
-            image_list{img_index} = 255 * hdrread(fname);
+            image_list{img_index} = uint8(255*hdrread(fname));
         end
     end
     %param.rotation = [0 5];
@@ -24,7 +24,7 @@ elseif trial_mode == 1
                 img_index = plane + eye*4;
                 param_string = strjoin({trial_parameters, num2str(plane), num2str(eye)}, '_');
                 fname = strcat('BF_texture_files/optimizer/', exp_num, '/', param_string, '.hdr');
-                image_list{img_index} = 255 * hdrread(fname);
+                image_list{img_index} = uint8(255*hdrread(fname));
             end
         end
     end
