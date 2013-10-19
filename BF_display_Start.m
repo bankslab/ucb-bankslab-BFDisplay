@@ -282,6 +282,9 @@ eval([exp_num]);
         % skip gamma adjustment
 %         load('BF_params/BF_CLUTlookuptables.mat');
 %         origGamma=Screen('LoadNormalizedGammaTable', windowPtr, BF_CLUT_L);
+    elseif viewMode==4 % BF display with DATAPixx
+        load('BF_params/correctedLinearGamma_256steps_zeroOffset.mat');
+        origGamma=Screen('LoadNormalizedGammaTable', windowPtr, correctedGamma{2});
     end
     
     if viewMode == 10

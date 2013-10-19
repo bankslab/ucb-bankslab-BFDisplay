@@ -15,14 +15,15 @@ dumpworkspace=1;
 param.stim_duration = 1;
 
 % MCS hinge values
-param.algorithm = {'optimization', 'blending', 'single', 'sharp'};
-param.hinge_dist = [2 3.2]; %[2 : 0.3 : 3.4];
-param.focus_dist = [2 3.2]; %[1.4 : 0.6 : 3.4];
-param.MCS_stimuli = [105 : 3 : 120]; %[60 : 3 : 120]; %angle values
-param.angle_noise = [0 0];
+%param.algorithm = {'optimization', 'blending', 'single', 'sharp'};
+param.algorithm = {'optimization', 'sharp'};
+param.hinge_dist = [2 : 0.3 : 3.2];
+param.focus_dist = [2 : 0.3 : 3.2];
+param.MCS_stimuli = [57 : 9 : 129]; %[60 : 3 : 120]; %angle values
+param.angle_noise = [-5 0 5];
 param.num_responses = 5;
 
-% count how many staircases we want 4
+% count how many staircases we want
 
 scell{1} = set(s,...
     'MCS',1,...
@@ -30,19 +31,20 @@ scell{1} = set(s,...
 
 for alg_index = 1:length(param.algorithm)
     for hinge_dist_index = 1:length(param.hinge_dist)
-        for focus_index = 1:length(param.focus_dist)
-            scell{alg_index, hinge_dist_index, focus_index} = set(scell{1},...
+        %for focus_index = 1:length(param.focus_dist)
+            scell{alg_index, hinge_dist_index} = set(scell{1},... %scell{alg_index, hinge_dist_index, focus_index} = set(scell{1},...
                 'algorithm',param.algorithm{alg_index},...
                 'hinge_distance',param.hinge_dist(hinge_dist_index),...
-                'focus_distance', param.focus_dist(focus_index),...
+                'focus_distance', param.hinge_dist(hinge_dist_index),... %'focus_distance', param.focus_dist(focus_index),...
                 'MCS_stimuli', param.MCS_stimuli,... %will need to be more specific for 2nd test
                 'angle_noise', param.angle_noise(randi(2)),...
                 'MCS_num_responses',zeros(length(param.MCS_stimuli)),...
                 'MCS_num_stimuli',length(param.MCS_stimuli),...
                 'MCS_max_responses', param.num_responses * length(param.MCS_stimuli));
-            scell{alg_index, hinge_dist_index, focus_index}=...
-                initializeStaircase(scell{alg_index, hinge_dist_index, focus_index});
-        end
+            scell{alg_index, hinge_dist_index}=... %scell{alg_index, hinge_dist_index, focus_index}=...
+                initializeStaircase(scell{alg_index, hinge_dist_index});
+                %initializeStaircase(scell{alg_index, hinge_dist_index, focus_index});
+        %end
     end
 end
 

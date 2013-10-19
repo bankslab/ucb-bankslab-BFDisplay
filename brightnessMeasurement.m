@@ -1,12 +1,12 @@
 PsychImaging('PrepareConfiguration');
-[wid wrect]=PsychImaging('OpenWindow',0,0,[],[],[],10);
-[wid2 wrect2]=Screen('OpenWindow',1,0,[],[],[],10);
+[wid wrect]=PsychImaging('OpenWindow',0,0,[],[],[],4);
+% [wid2 wrect2]=Screen('OpenWindow',1,0,[],[],[],10);
 Screen('TextSize',wid,20);
 %	screen-related parameters
 colorMode='w';
 rectSize=150;
 
-useGammaTable = 1;
+useGammaTable = 0;
 
 if useGammaTable
     %load('BF_params/BF_correctedLinearGammaNew.mat');

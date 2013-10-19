@@ -32,6 +32,17 @@
 		end
         glFrustum(left, right, bottom, top, nearClip, farClip);
     elseif (projection_type==1)
+        %{
+        % Abdullah
+        hor=nearClip*tan((horizFOV/2)*pi/180);
+        ver=nearClip*tan((vertFOV/2)*pi/180);
+		left=nearClip*tan((-horizFOV/2+deghorizoffset(depthplane+whichEye*4)-horizFOVoffset(depthplane+whichEye*4))*pi/180);
+		right=nearClip*tan((+horizFOV/2+deghorizoffset(depthplane+whichEye*4)+horizFOVoffset(depthplane+whichEye*4))*pi/180);
+		top=nearClip*tan((+vertFOV/2+degvertoffset(depthplane+whichEye*4)+vertFOVoffset(depthplane+whichEye*4))*pi/180);
+		bottom=nearClip*tan((-vertFOV/2+degvertoffset(depthplane+whichEye*4)-vertFOVoffset(depthplane+whichEye*4))*pi/180);
+		glOrtho(left/hor, right/hor, bottom/ver, top/ver, nearClip, farClip);
+        %}
+        
          %glFrustum(leftw,  rightw,  bottomw,  topw, clip_near,  clip_far);
 		left=tan((-horizFOV/2+deghorizoffset(depthplane+whichEye*4)-horizFOVoffset(depthplane+whichEye*4))*pi/180);
 		right=tan((+horizFOV/2+deghorizoffset(depthplane+whichEye*4)+horizFOVoffset(depthplane+whichEye*4))*pi/180);

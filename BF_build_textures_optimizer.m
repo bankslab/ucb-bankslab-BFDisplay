@@ -23,8 +23,15 @@ elseif trial_mode == 1
             for eye = (0:1)
                 img_index = plane + eye*4;
                 param_string = strjoin({trial_parameters, num2str(plane), num2str(eye)}, '_');
-                fname = strcat('BF_texture_files/optimizer/', exp_num, '/', param_string, '.hdr');
-                image_list{img_index} = uint8(255*hdrread(fname));
+                fname = strcat('BF_texture_files/optimizer/', exp_num, '/', trial_params{1}, '/', param_string, '.hdr');
+                % This "yellow" section should be cropped by
+                % BF_bind_texture_to_square later on (to make correctly
+                % sized and scaled square texture.
+                hdr = uint8(zeros(800,800,3));
+                hdr(:,:,1:2) = 255;
+                hdr(1:600,:,:) = uint8(255*hdrread(fname));
+                image_list{img_index} = hdr;
+                %image_list{img_index} = uint8(255*hdrread(fname));
             end
         end
     end
