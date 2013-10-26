@@ -1136,18 +1136,18 @@ eval([exp_num]);
             stop_flag=0;
             while stop_flag==0
                 trial_params{1} = get(scellThisRound{s_i},'algorithm');
-                trial_params{2} = num2str(get(scellThisRound{s_i}, 'hinge_distance'));
-                trial_params{3} = num2str(get(scellThisRound{s_i}, 'focus_distance'));
+                trial_params{2} = get(scellThisRound{s_i}, 'hinge_distance');
+                trial_params{3} = get(scellThisRound{s_i}, 'focus_distance');
                 get(scellThisRound{s_i}, 'currentValue');
-                trial_params{4} = num2str(get(scellThisRound{s_i}, 'currentValue')); % angle
-                trial_params{5} = num2str(get(scellThisRound{s_i}, 'angle_noise'));
+                trial_params{4} = get(scellThisRound{s_i}, 'currentValue'); % angle
+                trial_params{5} = get(scellThisRound{s_i}, 'angle_noise');
                 BF_build_textures_optimizer;
 
                 BF_initialize_trial; % calls RenderSceneStatic
                 BF_run_trial; % calls actual GL commands
                 process_response; % gets keyboard input and updates staircase
+                save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound');
             end
-            save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound');
         end
         
         if strcmp(experiment_type,'fatigue_assess1') || strcmp(experiment_type,'fatigue_assess2') || strcmp(experiment_type,'fatigue_assess3')

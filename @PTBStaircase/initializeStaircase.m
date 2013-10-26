@@ -14,7 +14,7 @@ function [scell] = initializeStaircase(scell)
 	random_offset= floor(randomval/scell.stepLimit)*scell.stepLimit;
     
     %Use these lines for optimizer exp (hing)
-	scell.currentValue = scell.MCS_stimuli(randi(length(scell.MCS_stimuli)));
+ 	scell.currentValue = scell.MCS_stimuli(randi(length(scell.MCS_stimuli)));
     scell.initialized='yes';
 	
     %Use this line otherwise

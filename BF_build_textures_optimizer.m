@@ -4,13 +4,35 @@ if ~exist('image_list', 'var')
     image_list{8} = [];
 end
 
-if trial_mode == 0
+if trial_mode == 0 
+    demo_params = strcat('sharp_2.6_2.6_90_0');
+    load(strcat('BF_texture_files/optimizer/', exp_num, '/demo_images/', demo_params, '.mat'))
+        
     for plane = (1:4)
-        for eye = (0:1)
+       for eye = (0:1)
             img_index = plane + eye*4;
-            demo_params = strcat('optimization_0.5_0.5_90_0_', num2str(plane), '_', num2str(eye));
-            fname = strcat('BF_texture_files/optimizer/', exp_num, '/demo_images/', demo_params, '.hdr');
-            image_list{img_index} = uint8(255*hdrread(fname));
+            %for spheres demo
+            %demo_params = strcat('s_optimization_2_2_90_5_', num2str(plane), '_', num2str(eye));
+            %fname = strcat('BF_texture_files/optimizer/', exp_num, '/demo_images/', demo_params, '.hdr');
+            
+            hdr = uint8(zeros(800,800,3));
+            % This "yellow" section should be cropped by
+            % BF_bind_texture_to_square later on (to make correctly
+            % sized and scaled square texture.
+            hdr(:,:,1:2) = 255;
+            
+            %upside down compensation
+            hdr(600:-1:1,:,:) = uint8(double(layers{eye*4+plane}).*generateAperture(18,2.9,2,eye));
+            
+            %compensation for 2.5 diopter vergence angle
+            disparityCompensationShift = -(2*(eye-0.5))*((0.06/2)*800/2)/((1/2.5)*tan(toRadians('d',32.6/2)));
+            dcs = disparityCompensationShift;
+            hdr(:,abs(dcs)+1:(800-abs(dcs)),:) = hdr(:,abs(dcs)+dcs+1:(800-abs(dcs))+dcs,:) ;
+
+            %paint the sides to black
+            hdr(:,1:abs(dcs)+1,:) = 0; 
+            hdr(:,(800-abs(dcs)-1):800,:) = 0;
+            image_list{img_index} = hdr;
         end
     end
     %param.rotation = [0 5];
@@ -18,20 +40,40 @@ if trial_mode == 0
     
 elseif trial_mode == 1
     if ~isempty(trial_params)
-        trial_parameters = strjoin(trial_params, '_');
+        % Convert numbers to strings
+        string_holder{length(trial_params)} = [];
+        string_holder{1} = trial_params{1}; %algorithm
+        for i = 2:length(trial_params)
+            string_holder{i} = num2str(trial_params{i});
+        end
+        param_string = strjoin(string_holder, '_');
+        file_name = strcat(param_string, '.mat');
+        file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, trial_params{1}, file_name}, '/');
+        load(file_path);
+        
         for plane = (1:4)
             for eye = (0:1)
                 img_index = plane + eye*4;
-                param_string = strjoin({trial_parameters, num2str(plane), num2str(eye)}, '_');
-                fname = strcat('BF_texture_files/optimizer/', exp_num, '/', trial_params{1}, '/', param_string, '.hdr');
+            
+                hdr = uint8(zeros(800,800,3));
                 % This "yellow" section should be cropped by
                 % BF_bind_texture_to_square later on (to make correctly
                 % sized and scaled square texture.
-                hdr = uint8(zeros(800,800,3));
                 hdr(:,:,1:2) = 255;
-                hdr(1:600,:,:) = uint8(255*hdrread(fname));
+                
+                %upside down compensation
+                aperture = generateAperture(18,0.3+trial_params{3},trial_params{3},eye);
+                hdr(600:-1:1,:,:) = uint8(double(layers{eye*4+plane}).*aperture);
+                
+                %compensation for 2.5 diopter vergence angle
+                disparityCompensationShift = -(2*(eye-0.5))*((0.06/2)*800/2)/((1/2.5)*tan(toRadians('d',32.6/2)));
+                dcs = round(disparityCompensationShift);
+                hdr(:,abs(dcs)+1:(800-abs(dcs)),:) = hdr(:,abs(dcs)+dcs+1:(800-abs(dcs))+dcs,:) ;
+                
+                %paint the sides to black
+                hdr(:,1:abs(dcs)+1,:) = 0;
+                hdr(:,(800-abs(dcs)-1):800,:) = 0;
                 image_list{img_index} = hdr;
-                %image_list{img_index} = uint8(255*hdrread(fname));
             end
         end
     end

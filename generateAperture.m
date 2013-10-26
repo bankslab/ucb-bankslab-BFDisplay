@@ -1,14 +1,17 @@
-function [ out ] = generateAperture( fovA, apertureDepth, accommodationDepth )
+function [ out ] = generateAperture( fovA, apertureDepth_inDiopters, accommodationDepth_inDiopters, eye )
 %generates an Aperture that has an openness of fovA degrees, depths
-%are in Meters
+%are in Diopters
 %
-%Assumptions 4mm pupilSize 36.4 degrees for 800 by 600 image size
+%Assumptions 4mm pupilSize 32.6 degrees for 800 by 600 image size
 pupilSize = 0.004; %4mm in meters
+ior = 0.06;
 imageWidth = 800; %in pixels
 imageHeight = 600; %in pixels
-fovX = 36.4;
+fovX = 32.6;
+apertureDepth = 1/apertureDepth_inDiopters;
+accommodationDepth = 1/accommodationDepth_inDiopters;
 
-%find the radius assuming the monitor has 800 pixels in 36.4 degrees
+%find the radius assuming the monitor has 800 pixels in 32.6 degrees
 radius = (imageWidth/2)*tan(toRadians('d',fovA/2))/tan(toRadians('d',fovX/2));
 
 %generate a sharp aperture with radius
@@ -28,13 +31,27 @@ apertureSize = size(sharpAperture);
 %find the blur amount in pixels
 necessaryShift = (pupilSize*imageWidth/2)/(accommodationDepth*tan(toRadians('d',fovX/2)));
 apertureShift = (pupilSize*imageWidth/2)/(apertureDepth*tan(toRadians('d',fovX/2)));
+disparityShift = (-2*(eye-0.5))*((ior/2)*imageWidth/2)/(apertureDepth*tan(toRadians('d',fovX/2)));
 
 blurRadius = apertureShift-necessaryShift;
-blurKernel = fspecial('disk',blurRadius);
-%blurKernel
+blurKernel = 1;
+if blurRadius > 0
+    blurKernel = fspecial('disk',blurRadius);
+end
+    %blurKernel
 out2 = padarray(sharpAperture,[(imageHeight-apertureSize(1))/2 (imageWidth-apertureSize(2))/2]);
 out2 = out2/max(max(out2));
-out = imfilter(out2,blurKernel);
+
+out3 = zeros(imageHeight,imageWidth);
+
+if disparityShift > 0    
+    out3(:,disparityShift+1:imageWidth) = out2(:,1:imageWidth-disparityShift);
+else
+    out3(:,1:imageWidth+disparityShift) = out2(:,1-disparityShift:imageWidth);
+end
+
+out = imfilter(out3,blurKernel);
+out = repmat(out,[1 1 3]);
 
 end
 

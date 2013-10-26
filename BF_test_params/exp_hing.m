@@ -15,13 +15,13 @@ dumpworkspace=1;
 param.stim_duration = 1;
 
 % MCS hinge values
-%param.algorithm = {'optimization', 'blending', 'single', 'sharp'};
-param.algorithm = {'optimization', 'sharp'};
-param.hinge_dist = [2 : 0.3 : 3.2];
-param.focus_dist = [2 : 0.3 : 3.2];
-param.MCS_stimuli = [57 : 9 : 129]; %[60 : 3 : 120]; %angle values
+param.algorithm = {'optimization', 'blending', 'single', 'sharp'};
+%param.algorithm = {'optimization', 'sharp'};
+param.hinge_dist = [2 : 0.6 : 3.2];
+param.focus_dist = [2 : 0.6 : 3.2];
+param.MCS_stimuli = [66 : 6 : 120]; %[60 : 3 : 120]; %angle values
 param.angle_noise = [-5 0 5];
-param.num_responses = 5;
+param.num_responses = 10;
 
 % count how many staircases we want
 
