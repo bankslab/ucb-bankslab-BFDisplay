@@ -31,18 +31,10 @@ while(stop_flag==0)
         strInputName=KbName(iKeyIndex(1));
         actualHingeAngle = get(scellThisRound{s_i},'currentValue');
         if strcmp(strInputName,'1') || strcmp(strInputName,'1!')
-            if actualHingeAngle > 90
-                scellThisRound{s_i}=processResponse(scellThisRound{s_i},1);
-            else
-                scellThisRound{s_i}=processResponse(scellThisRound{s_i},2);
-            end
+            scellThisRound{s_i}=processResponse(scellThisRound{s_i},1);
             break;
         elseif strcmp(strInputName,'2') || strcmp(strInputName,'2@')
-            if actualHingeAngle <= 90
-                scellThisRound{s_i}=processResponse(scellThisRound{s_i},2);
-            else
-                scellThisRound{s_i}=processResponse(scellThisRound{s_i},1);
-            end
+            scellThisRound{s_i}=processResponse(scellThisRound{s_i},2);
             break;
         elseif strcmp(strInputName,'space')
             presentAgain=1;

@@ -21,7 +21,7 @@ param.hinge_dist = [2 : 0.6 : 3.2];
 param.focus_dist = [2 : 0.6 : 3.2];
 param.MCS_stimuli = [66 : 6 : 120]; %[60 : 3 : 120]; %angle values
 param.angle_noise = [-5 0 5];
-param.num_responses = 10;
+param.max_responses = 10;
 
 % count how many staircases we want
 
@@ -40,7 +40,7 @@ for alg_index = 1:length(param.algorithm)
                 'angle_noise', param.angle_noise(randi(2)),...
                 'MCS_num_responses',zeros(length(param.MCS_stimuli)),...
                 'MCS_num_stimuli',length(param.MCS_stimuli),...
-                'MCS_max_responses', param.num_responses * length(param.MCS_stimuli));
+                'MCS_max_responses', param.max_responses);
             scell{alg_index, hinge_dist_index}=... %scell{alg_index, hinge_dist_index, focus_index}=...
                 initializeStaircase(scell{alg_index, hinge_dist_index});
                 %initializeStaircase(scell{alg_index, hinge_dist_index, focus_index});
