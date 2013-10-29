@@ -22,9 +22,9 @@ for i = 1:length(allthedata)
         for j = stim_index
             if j <= max_trials
                 out_of = out_of + 1;
-                if trial_values(j) <= 90 && responses(j) == 1 ...
-                    || trial_values(j) > 90 && responses(j) == 2
-%                if responses(j) == 2
+%                if trial_values(j) <= 90 && responses(j) == 1 ...
+%                    || trial_values(j) > 90 && responses(j) == 2
+                if responses(j) == 2
                     num_correct = num_correct + 1;
                 end
             end
@@ -38,7 +38,12 @@ for i = 1:length(allthedata)
         
         data_index = data_index + 1;
     end
-    disp(strjoin({algorithm, num2str(hinge_distance), num2str(focus_distance)}, ' '))
-    disp(data_structure)
+    data_label = strjoin({upper(algorithm), ',', num2str(hinge_distance), 'D dist', num2str(focus_distance), 'D focus'}, ' ');
+    %disp(data_label)
+    %disp(data_structure)
+    subplot(2, length(allthedata)/2, i),  scatter(data_structure(:,1), data_structure(:, 4), 'filled')
+    title(data_label);
+    xlabel('Angles');
+    ylabel('% Responses Greater than 90 degrees');
     
 end
