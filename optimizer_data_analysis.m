@@ -1,6 +1,7 @@
 %load data file(s)
 %load RAA_Test_Optimization_exp_hing_20131018T172845.mat
-allthedata = [scellThisRound, scellNextRound];
+%allthedata = [scellThisRound, scellNextRound];
+allthedata = scellCompleted;
 for i = 1:length(allthedata)
     algorithm = get(allthedata{i}, 'algorithm');
     hinge_distance = get(allthedata{i},'hinge_distance');
@@ -8,8 +9,9 @@ for i = 1:length(allthedata)
     trial_values = get(allthedata{i},'values');
     responses = get(allthedata{i},'responses');
     unique_values = unique(get(allthedata{i},'values'));
-    %max_trials = max(length(trial_values), length(responses));
-    max_trials = 28;
+    max_trials = length(responses);
+    %max_trials = min(length(trial_values), length(responses));
+    %max_trials = 28;
     
     data_index = 1;
     data_structure = [unique_values', nan(length(unique_values), 3)];
@@ -20,9 +22,9 @@ for i = 1:length(allthedata)
         for j = stim_index
             if j <= max_trials
                 out_of = out_of + 1;
-%                if trial_values(j) <= 90 && responses(j) == 2 ...
-%                    || trial_values(j) > 90 && responses(j) == 1
-                if responses(j) == 2
+                if trial_values(j) <= 90 && responses(j) == 1 ...
+                    || trial_values(j) > 90 && responses(j) == 2
+%                if responses(j) == 2
                     num_correct = num_correct + 1;
                 end
             end

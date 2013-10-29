@@ -284,6 +284,10 @@ eval([exp_num]);
 %         origGamma=Screen('LoadNormalizedGammaTable', windowPtr, BF_CLUT_L);
     elseif viewMode==4 % BF display with DATAPixx
         load('BF_params/correctedLinearGamma_256steps_zeroOffset.mat');
+        
+        if strcmp(experiment_type, 'hing')
+            correctedGamma{2} = transpose(repmat(0:1/255:1, [3 1]));
+        end
         origGamma=Screen('LoadNormalizedGammaTable', windowPtr, correctedGamma{2});
     end
     

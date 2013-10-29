@@ -1,8 +1,8 @@
 [win wrect]=Screen('OpenWindow',0,1,[],[],[],4);
 
-gammaRed = 2.2;%2.32345;%2.324;%2.37;
-gammaGreen = 2.2;%2.22135;%2.223;%2.22;%2.14;
-gammaBlue = 2.2;%2.277;%2.324;%2.29;
+gammaRed = 1;%2.2;%2.32345;%2.324;%2.37;
+gammaGreen = 1;%2.2;%2.22135;%2.223;%2.22;%2.14;
+gammaBlue = 1;%2.2;%2.277;%2.324;%2.29;
 rgb=1:255;
 gr = rgb.^(1/gammaRed);
 gr = gr/max(gr);
@@ -51,7 +51,7 @@ end
 % origGamma=Screen('LoadNormalizedGammaTable', win, correctedGamma{1});
 % Screen('SelectStereoDrawBuffer',win,1);
 % origGamma=Screen('LoadNormalizedGammaTable', win, correctedGamma{2});
-origGamma=Screen('LoadNormalizedGammaTable', win, correctedGamma{2});
+origGamma=Screen('LoadNormalizedGammaTable', win, glt);
 
 %load('gammalookuptable.mat');
 %load('newGammaLUT.mat');
@@ -88,30 +88,44 @@ len = length(lums);
 
 layer = 1;
 
+
+load('BF_params/correctedLinearGamma_256steps_zeroOffset.mat');
+cg1{1} = correctedGamma{1}(:,1);
+cg2{1} = correctedGamma{1}(:,2);
+cg3{1} = correctedGamma{1}(:,3);
+cg1{2} = correctedGamma{2}(:,1);
+cg2{2} = correctedGamma{2}(:,2);
+cg3{2} = correctedGamma{2}(:,3);
+
 stop_flag=0;
 while (stop_flag==0)
     for ii=0:1
         Screen('SelectStereoDrawBuffer',win,ii);
+        
+        lumsr = uint8(255*cg1{ii+1}(lums+1));
+        lumsg = uint8(255*cg2{ii+1}(lums+1));
+        lumsb = uint8(255*cg3{ii+1}(lums+1));
+        
 %         Screen('LoadNormalizedGammaTable', win, correctedGamma{ii+1});
         Screen('FillRect',win,[0 0 0], [0 0 800 600]);
 
         if layer == 1
             for i = 1:len
-                Screen('FillRect',win,[lumsr(i) lumsg(i) lumsb(i)], [((i-1)*800/len) 200 ((i)*800/len) 400]);
-                Screen('FillRect',win,[lumsr(i)/2 lumsg(i)/2 lumsb(i)/2], [((i-1)*800/len) 0 ((i)*800/len) 200]);
-                Screen('FillRect',win,[lumsr(i)/4 lumsg(i)/4 lumsb(i)/4], [((i-1)*800/len) 400 ((i)*800/len) 600]);
+                Screen('FillRect',win,[uint8(255*cg1{ii+1}(lumsr(i)+1)) uint8(255*cg1{ii+1}(lumsg(i)+1)) uint8(255*cg1{ii+1}(lumsb(i)+1))], [((i-1)*800/len) 200 ((i)*800/len) 400]);
+                Screen('FillRect',win,[uint8(255*cg1{ii+1}(lumsr(i)/2+1)) uint8(255*cg1{ii+1}(lumsg(i)/2+1)) uint8(255*cg1{ii+1}(lumsb(i)/2+1))], [((i-1)*800/len) 0 ((i)*800/len) 200]);
+                Screen('FillRect',win,[uint8(255*cg1{ii+1}(lumsr(i)/4+1)) uint8(255*cg1{ii+1}(lumsg(i)/4+1)) uint8(255*cg1{ii+1}(lumsb(i)/4+1))], [((i-1)*800/len) 400 ((i)*800/len) 600]);
 
             end
         end
         if layer == 2
             for i = 1:length(lums)
-                Screen('FillRect',win,[lumsr(i)/2 lumsg(i)/2 lumsb(i)/2], [((i-1)*800/len) 0 ((i)*800/len) 200]);
-                Screen('FillRect',win,[lumsr(i)/4 lumsg(i)/4 lumsb(i)/4], [((i-1)*800/len) 400 ((i)*800/len) 600]);
+                Screen('FillRect',win,[uint8(255*cg1{ii+1}(lumsr(i)/2+1)) uint8(255*cg1{ii+1}(lumsg(i)/2+1)) uint8(255*cg1{ii+1}(lumsb(i)/2+1))], [((i-1)*800/len) 0 ((i)*800/len) 200]);
+                Screen('FillRect',win,[uint8(255*cg1{ii+1}(lumsr(i)/4+1)) uint8(255*cg1{ii+1}(lumsg(i)/4+1)) uint8(255*cg1{ii+1}(lumsb(i)/4+1))], [((i-1)*800/len) 400 ((i)*800/len) 600]);
             end
         end
         if layer > 2
             for i = 1:length(lums)
-                Screen('FillRect',win,[lumsr(i)/4 lumsg(i)/4 lumsb(i)/4], [((i-1)*800/len) 400 ((i)*800/len) 600]);
+                Screen('FillRect',win,[uint8(255*cg1{ii+1}(lumsr(i)/4+1)) uint8(255*cg1{ii+1}(lumsg(i)/4+1)) uint8(255*cg1{ii+1}(lumsb(i)/4+1))], [((i-1)*800/len) 400 ((i)*800/len) 600]);
             end
         end
 

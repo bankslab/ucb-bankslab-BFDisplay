@@ -17,10 +17,10 @@ param.stim_duration = 1;
 % MCS hinge values
 param.algorithm = {'optimization', 'blending', 'single', 'sharp'};
 %param.algorithm = {'optimization', 'sharp'};
-param.hinge_dist = [2 : 0.6 : 3.2];
-param.focus_dist = [2 : 0.6 : 3.2];
-param.MCS_stimuli = [66 : 6 : 120]; %[60 : 3 : 120]; %angle values
-param.angle_noise = [-5 0 5];
+param.hinge_dist = 2;%[2 : 1.2 : 3.2];
+param.focus_dist = 2;%[2 : 1.2 : 3.2];
+param.MCS_stimuli = [78 : 3 : 102]; %[60 : 3 : 120]; %angle values
+param.angle_noise = [0 0];%[-5 0 5];
 param.max_responses = 10;
 
 % count how many staircases we want
@@ -38,7 +38,7 @@ for alg_index = 1:length(param.algorithm)
                 'focus_distance', param.hinge_dist(hinge_dist_index),... %'focus_distance', param.focus_dist(focus_index),...
                 'MCS_stimuli', param.MCS_stimuli,... %will need to be more specific for 2nd test
                 'angle_noise', param.angle_noise(randi(2)),...
-                'MCS_num_responses',zeros(length(param.MCS_stimuli)),...
+                'MCS_num_responses',zeros(1,length(param.MCS_stimuli)),...
                 'MCS_num_stimuli',length(param.MCS_stimuli),...
                 'MCS_max_responses', param.max_responses);
             scell{alg_index, hinge_dist_index}=... %scell{alg_index, hinge_dist_index, focus_index}=...

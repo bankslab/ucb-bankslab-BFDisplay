@@ -1,14 +1,14 @@
 function [] = testBF(geometryCalibration, gammaCalibration, vernierAdjustment)
 % open windows in stereo mode 10: 2 monitors regarded as composing one
 % stereo view (left eye view and right eye view)
-stereoMode=10;
+stereoMode=4;
 clear GL;
 calibratingVernier=0;
 
 AssertOpenGL;
 InitializeMatlabOpenGL(0,0);
 
-if stereoMode==10
+if stereoMode==4
 
     PsychImaging('PrepareConfiguration');  
     
@@ -25,7 +25,7 @@ if stereoMode==10
     PsychImaging('AddTask','General','UseFastOffscreenWindows');
     
     [wid wrect]=PsychImaging('OpenWindow',0,[],[],[],[],stereoMode, 8);
-    [wid2 wrect2]=Screen('OpenWindow',1,0,[],[],[],stereoMode, 8);
+    %[wid2 wrect2]=Screen('OpenWindow',1,0,[],[],[],stereoMode, 8);
     
     if gammaCalibration
         %{
@@ -53,7 +53,7 @@ if stereoMode==10
         %origGamma=Screen('LoadNormalizedGammaTable', wid2, correctedGammaNew{2});
         load('BF_params/BF_correctedLinearGamma.mat');
         origGamma=Screen('LoadNormalizedGammaTable', wid, correctedGamma{1});
-        origGamma=Screen('LoadNormalizedGammaTable', wid2, correctedGamma{2});
+        %origGamma=Screen('LoadNormalizedGammaTable', wid2, correctedGamma{2});
     else
         BF_CLUT_L(:,1)=0:1:255;
         BF_CLUT_L(:,2)=0:1:255;
@@ -61,7 +61,7 @@ if stereoMode==10
         BF_CLUT_L= (BF_CLUT_L)/255;
         BF_CLUT_R=BF_CLUT_L;
         origGamma=Screen('LoadNormalizedGammaTable', wid, BF_CLUT_L);
-        origGamma=Screen('LoadNormalizedGammaTable', wid2, BF_CLUT_R);
+        %origGamma=Screen('LoadNormalizedGammaTable', wid2, BF_CLUT_R);
     end
 else
     [wid wrect]=Screen('OpenWindow',1,[],[],[],[],stereoMode,4);
@@ -192,9 +192,9 @@ scv = [0.9375    0.9625    0.9750 1];
 
 
 additionalScaleFactor = 0;
-aperture(:,:,1) = generateAperture(20,0.05,1);
-aperture(:,:,2) = generateAperture(20,0.05,1);
-aperture(:,:,3) = generateAperture(20,0.05,1);
+%aperture(:,:,1) = generateAperture(20,0.05,1);
+%aperture(:,:,2) = generateAperture(20,0.05,1);
+%aperture(:,:,3) = generateAperture(20,0.05,1);
 
 function [] = setTextures()
     
@@ -206,10 +206,10 @@ function [] = setTextures()
     for i = 1:4
         if apertureOn
             [h w d] = size(textures{currentSet}{algorithm}{1*4+i}(:,:,:));
-            taperture = imresize(aperture,[h w]);
+            %taperture = imresize(aperture,[h w]);
             % burada kaldim abdullah
-            tex(i) = Screen('MakeTexture',wid,uint8(taperture.*double(textures{currentSet}{algorithm}{1*4+i}(:,:,:))));
-            tex_l(i) = Screen('MakeTexture',wid,uint8(taperture.*double(textures{currentSet}{algorithm}{0*4+i}(:,:,:))));
+            tex(i) = Screen('MakeTexture',wid,uint8(double(textures{currentSet}{algorithm}{1*4+i}(:,:,:))));
+            tex_l(i) = Screen('MakeTexture',wid,uint8(double(textures{currentSet}{algorithm}{0*4+i}(:,:,:))));
         else
             tex(i) = Screen('MakeTexture',wid,textures{currentSet}{algorithm}{1*4+i}(:,:,:));
             tex_l(i) = Screen('MakeTexture',wid,textures{currentSet}{algorithm}{0*4+i}(:,:,:));

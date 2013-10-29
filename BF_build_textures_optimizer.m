@@ -4,13 +4,26 @@ if ~exist('image_list', 'var')
     image_list{8} = [];
 end
 
+%test
+load('BF_params/correctedLinearGamma_256steps_zeroOffset.mat');
+cg1{1} = correctedGamma{1}(:,1);
+cg2{1} = correctedGamma{1}(:,2);
+cg3{1} = correctedGamma{1}(:,3);
+cg1{2} = correctedGamma{2}(:,1);
+cg2{2} = correctedGamma{2}(:,2);
+cg3{2} = correctedGamma{2}(:,3);
+    
 if trial_mode == 0 
-    demo_params = strcat('sharp_2.6_2.6_90_0');
-    load(strcat('BF_texture_files/optimizer/', exp_num, '/demo_images/', demo_params, '.mat'))
-        
+    %demo_params = strcat('optimization_2.6_2.6_90_0');
+    %load(strcat('BF_texture_files/optimizer/', exp_num, '/optimization/', demo_params, '.mat'))
+
+    demo_params = strcat('optimization_2_2_90_0');
+    load(strcat('BF_texture_files/optimizer/', exp_num, '/optimization/', demo_params, '.mat'))
+    
+    
     for plane = (1:4)
        for eye = (0:1)
-            img_index = plane + eye*4;
+            img_index = 5-plane + eye*4;
             %for spheres demo
             %demo_params = strcat('s_optimization_2_2_90_5_', num2str(plane), '_', num2str(eye));
             %fname = strcat('BF_texture_files/optimizer/', exp_num, '/demo_images/', demo_params, '.hdr');
@@ -22,7 +35,19 @@ if trial_mode == 0
             hdr(:,:,1:2) = 255;
             
             %upside down compensation
-            hdr(600:-1:1,:,:) = uint8(double(layers{eye*4+plane}).*generateAperture(18,2.9,2,eye));
+            hdr(600:-1:1,:,:) = uint8(double(layers{eye*4+plane}).*generateAperture(18,2.3,2,eye));
+            %test
+            hdr1 = hdr(:,:,1);
+            hdr2 = hdr(:,:,2);
+            hdr3 = hdr(:,:,3);
+            
+            hdr1 = uint8(255*cg1{eye+1}(hdr1+1));
+            hdr2 = uint8(255*cg2{eye+1}(hdr2+1));
+            hdr3 = uint8(255*cg3{eye+1}(hdr3+1));
+            
+            hdr(:,:,1) = hdr1;
+            hdr(:,:,2) = hdr2;
+            hdr(:,:,3) = hdr3;
             
             %compensation for 2.5 diopter vergence angle
             disparityCompensationShift = -(2*(eye-0.5))*((0.06/2)*800/2)/((1/2.5)*tan(toRadians('d',32.6/2)));
@@ -64,6 +89,19 @@ elseif trial_mode == 1
                 %upside down compensation
                 aperture = generateAperture(18,0.3+trial_params{3},trial_params{3},eye);
                 hdr(600:-1:1,:,:) = uint8(double(layers{eye*4+plane}).*aperture);
+                
+                %test
+                hdr1 = hdr(:,:,1);
+                hdr2 = hdr(:,:,2);
+                hdr3 = hdr(:,:,3);
+
+                hdr1 = uint8(255*cg1{eye+1}(hdr1+1));
+                hdr2 = uint8(255*cg2{eye+1}(hdr2+1));
+                hdr3 = uint8(255*cg3{eye+1}(hdr3+1));
+
+                hdr(:,:,1) = hdr1;
+                hdr(:,:,2) = hdr2;
+                hdr(:,:,3) = hdr3;
                 
                 %compensation for 2.5 diopter vergence angle
                 disparityCompensationShift = -(2*(eye-0.5))*((0.06/2)*800/2)/((1/2.5)*tan(toRadians('d',32.6/2)));
