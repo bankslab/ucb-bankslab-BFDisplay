@@ -340,6 +340,14 @@ while(1)
                     tex(2) = Screen('MakeTexture',wid,test1_depth2(:,:,:));
                     tex(3) = Screen('MakeTexture',wid,test1_depth3(:,:,:));
                     tex(4) = Screen('MakeTexture',wid,test1_depth4(:,:,:));
+                    Screen('Close',tex_l(1));
+                    Screen('Close',tex_l(2));
+                    Screen('Close',tex_l(3));
+                    Screen('Close',tex_l(4));
+                    tex_l(1) = Screen('MakeTexture',wid,test1_depth1(:,:,:));
+                    tex_l(2) = Screen('MakeTexture',wid,test1_depth2(:,:,:));
+                    tex_l(3) = Screen('MakeTexture',wid,test1_depth3(:,:,:));
+                    tex_l(4) = Screen('MakeTexture',wid,test1_depth4(:,:,:));
                 elseif strcmp(inputstr,'2%')
                     currentSet = 1; 
                     setTextures();
