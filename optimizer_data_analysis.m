@@ -41,7 +41,27 @@ for i = 1:length(allthedata)
     data_label = strjoin({upper(algorithm), ',', num2str(hinge_distance), 'D dist', num2str(focus_distance), 'D focus'}, ' ');
     %disp(data_label)
     %disp(data_structure)
-    subplot(2, length(allthedata)/2, i),  scatter(data_structure(:,1), data_structure(:, 4), 'filled')
+    switch algorithm
+        case 'sharp'
+            column = 1;
+        case 'single'
+            column = 2;
+        case 'blending'
+            column = 3;
+        case 'optimization'
+            column = 4;
+    end
+    
+    switch num2str(focus_distance)
+        case '2'
+            row = 0;
+        case '3.2'
+            row = 4;
+    end
+    
+    num_rows = 2;
+    num_columns = length(allthedata)/num_rows;
+    subplot(num_rows, num_columns, column+row),  scatter(data_structure(:,1), data_structure(:, 4), 'filled')
     title(data_label);
     xlabel('Angles');
     ylabel('% Responses Greater than 90 degrees');
