@@ -21,7 +21,7 @@
     matCubeAmb      = builtin('single',[1 1 1 1]);
     matCubeDiff     = builtin('single',[1 1 1.0 1]);
     
-    if strcmp(experiment_type, 'hing')
+    if strcmp(experiment_type, 'hinge')
         glDisable(GL.DEPTH_TEST);
         glPushMatrix();
         glTranslatef(0, 0, -imageplanedist(depthplane));

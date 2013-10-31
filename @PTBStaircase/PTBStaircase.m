@@ -76,8 +76,8 @@ ms.MCS_max_responses = [];      % Number of responses desired for each stimulus
 
 % Variables for optimizer experiment
 ms.algorithm = [];
-ms.hinge_dist = [];
-ms.focus_dist = [];
+ms.disparity_dist = [];
+ms.accom_dist = [];
 ms.angle_noise = [];
 ms.initialized = [];
 

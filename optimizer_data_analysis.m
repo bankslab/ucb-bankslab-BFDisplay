@@ -4,8 +4,8 @@
 allthedata = scellCompleted;
 for i = 1:length(allthedata)
     algorithm = get(allthedata{i}, 'algorithm');
-    hinge_distance = get(allthedata{i},'hinge_distance');
-    focus_distance = get(allthedata{i},'focus_distance');
+    disparity_distance = get(allthedata{i},'disparity_distance');
+    accom_distance = get(allthedata{i},'accom_distance');
     trial_values = get(allthedata{i},'values');
     responses = get(allthedata{i},'responses');
     unique_values = unique(get(allthedata{i},'values'));
@@ -38,11 +38,11 @@ for i = 1:length(allthedata)
         
         data_index = data_index + 1;
     end
-    data_label = strjoin({upper(algorithm), ',', num2str(hinge_distance), 'D dist', num2str(focus_distance), 'D focus'}, ' ');
+    data_label = strjoin({upper(algorithm), ',', num2str(disparity_distance), 'D dist', num2str(accom_distance), 'D focus'}, ' ');
     %disp(data_label)
     %disp(data_structure)
     switch algorithm
-        case 'sharp'
+        case 'pinhole'
             column = 1;
         case 'single'
             column = 2;
@@ -52,7 +52,7 @@ for i = 1:length(allthedata)
             column = 4;
     end
     
-    switch num2str(focus_distance)
+    switch num2str(accom_distance)
         case '2'
             row = 0;
         case '3.2'

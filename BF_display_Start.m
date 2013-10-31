@@ -285,7 +285,7 @@ eval([exp_num]);
     elseif viewMode==4 % BF display with DATAPixx
         load('BF_params/correctedLinearGamma_256steps_zeroOffset.mat');
         
-        if strcmp(experiment_type, 'hing')
+        if strcmp(experiment_type, 'hinge')
             correctedGamma{2} = transpose(repmat(0:1/255:1, [3 1]));
         end
         origGamma=Screen('LoadNormalizedGammaTable', windowPtr, correctedGamma{2});
@@ -429,7 +429,7 @@ eval([exp_num]);
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glEnable(GL.DEPTH_TEST);
     
-    if strcmp(experiment_type, 'hing')
+    if strcmp(experiment_type, 'hinge')
         glDisable(GL.DEPTH_TEST);
     end
     %glShadeModel(GL.SMOOTH);
@@ -477,7 +477,7 @@ eval([exp_num]);
         BF_build_textures_for_specularity_project3;
     end
     
-    if strcmp(experiment_type, 'hing')
+    if strcmp(experiment_type, 'hinge')
         glDisable(GL.DEPTH_TEST);
         trial_params=[];
         BF_build_textures_optimizer;
@@ -667,7 +667,7 @@ eval([exp_num]);
                 end
             end
             
-            elseif strcmp(experiment_type, 'hing')
+            elseif strcmp(experiment_type, 'hinge')
             glDisable(GL.DEPTH_TEST);
             genlist_start=glGenLists(17);  %Returns integer of first set of free display lists
             genlist_projection1=[0 1 2 3 4 5 6 7]+genlist_start;  %Set of indices
@@ -1135,13 +1135,13 @@ eval([exp_num]);
         BF_initialize_trial;    %Just to build projections for splash screen
 		BF_display_initial_message;
 
-        if strcmp(experiment_type, 'hing')
+        if strcmp(experiment_type, 'hinge')
             record_filename = [pwd '/BF_data_files/optimizer/' observer_initials '_' exp_num '_' datestr(clock,30) '.mat'];
             stop_flag=0;
             while stop_flag==0
                 trial_params{1} = get(scellThisRound{s_i},'algorithm');
-                trial_params{2} = get(scellThisRound{s_i}, 'hinge_distance');
-                trial_params{3} = get(scellThisRound{s_i}, 'focus_distance');
+                trial_params{2} = get(scellThisRound{s_i}, 'disparity_distance');
+                trial_params{3} = get(scellThisRound{s_i}, 'accom_distance');
                 get(scellThisRound{s_i}, 'currentValue');
                 trial_params{4} = get(scellThisRound{s_i}, 'currentValue'); % angle
                 trial_params{5} = get(scellThisRound{s_i}, 'angle_noise');
@@ -1949,7 +1949,7 @@ eval([exp_num]);
                 end
             end
             
-        elseif ~strcmp(experiment_type, 'hing')
+        elseif ~strcmp(experiment_type, 'hinge')
             while (trial_counter<3000)
                  stop_flag = 0;
                  trial_counter=trial_counter+1;
