@@ -1140,8 +1140,8 @@ eval([exp_num]);
             stop_flag=0;
             while stop_flag==0
                 trial_params{1} = get(scellThisRound{s_i},'algorithm');
-                trial_params{2} = get(scellThisRound{s_i}, 'disparity_distance');
-                trial_params{3} = get(scellThisRound{s_i}, 'accom_distance');
+                trial_params{2} = get(scellThisRound{s_i}, 'accom_distance');
+                trial_params{3} = get(scellThisRound{s_i}, 'disparity_distance');
                 get(scellThisRound{s_i}, 'currentValue');
                 trial_params{4} = get(scellThisRound{s_i}, 'currentValue'); % angle
                 trial_params{5} = get(scellThisRound{s_i}, 'angle_noise');

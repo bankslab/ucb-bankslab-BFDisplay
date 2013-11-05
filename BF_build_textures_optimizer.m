@@ -18,7 +18,7 @@ if trial_mode == 0
     %load(strcat('BF_texture_files/optimizer/', exp_num, '/optimization/', demo_params, '.mat'))
 
     demo_params = strcat('optimization_2_2_90_0');
-    load(strcat('BF_texture_files/optimizer/', exp_num, '/optimization/', demo_params, '.mat'))
+    load(strcat('BF_texture_files/optimizer/', exp_num, '/61/optimization/', demo_params, '.mat'))
     
     
     for plane = (1:4)
@@ -32,10 +32,10 @@ if trial_mode == 0
             % This "yellow" section should be cropped by
             % BF_bind_texture_to_square later on (to make correctly
             % sized and scaled square texture.
-            hdr(:,:,1:2) = 255;
+            %hdr(:,:,1:2) = 255;
             
             %upside down compensation
-            hdr(600:-1:1,:,:) = uint8(double(layers{eye*4+plane}).*generateAperture(18,2.3,2,eye));
+            hdr(550:-1:51,101:700,:) = uint8(double(layers{eye*4+plane}).*generateAperture(18,2.3,1.5,eye));
             %test
             hdr1 = hdr(:,:,1);
             hdr2 = hdr(:,:,2);
@@ -50,13 +50,13 @@ if trial_mode == 0
             hdr(:,:,3) = hdr3;
             
             %compensation for 2.5 diopter vergence angle
-            disparityCompensationShift = -(2*(eye-0.5))*((0.06/2)*800/2)/((1/2.5)*tan(toRadians('d',32.6/2)));
-            dcs = disparityCompensationShift;
-            hdr(:,abs(dcs)+1:(800-abs(dcs)),:) = hdr(:,abs(dcs)+dcs+1:(800-abs(dcs))+dcs,:) ;
+            %disparityCompensationShift = -(2*(eye-0.5))*((0.06/2)*800/2)/((1/2.5)*tan(toRadians('d',32.6/2)));
+            %dcs = disparityCompensationShift;
+            %hdr(:,abs(dcs)+1:(800-abs(dcs)),:) = hdr(:,abs(dcs)+dcs+1:(800-abs(dcs))+dcs,:) ;
 
             %paint the sides to black
-            hdr(:,1:abs(dcs)+1,:) = 0; 
-            hdr(:,(800-abs(dcs)-1):800,:) = 0;
+            %hdr(:,1:abs(dcs)+1,:) = 0; 
+            %hdr(:,(800-abs(dcs)-1):800,:) = 0;
             image_list{img_index} = hdr;
         end
     end
@@ -73,7 +73,7 @@ elseif trial_mode == 1
         end
         param_string = strjoin(string_holder, '_');
         file_name = strcat(param_string, '.mat');
-        file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, trial_params{1}, file_name}, '/');
+        file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, '61', trial_params{1}, file_name}, '/');
         load(file_path);
         
         for plane = (1:4)
@@ -84,11 +84,11 @@ elseif trial_mode == 1
                 % This "yellow" section should be cropped by
                 % BF_bind_texture_to_square later on (to make correctly
                 % sized and scaled square texture.
-                hdr(:,:,1:2) = 255;
+                %hdr(:,:,1:2) = 255;
                 
                 %upside down compensation
                 aperture = generateAperture(18,0.3+trial_params{3},trial_params{3},eye);
-                hdr(600:-1:1,:,:) = uint8(double(layers{eye*4+plane}).*aperture);
+                hdr(550:-1:51,101:700,:) = uint8(double(layers{eye*4+plane}).*generateAperture(18,2.3,1.5,eye));
                 
                 %test
                 hdr1 = hdr(:,:,1);

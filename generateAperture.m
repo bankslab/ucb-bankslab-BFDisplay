@@ -4,7 +4,7 @@ function [ out ] = generateAperture( fovA, apertureDepth_inDiopters, accommodati
 %
 %Assumptions 4mm pupilSize 32.6 degrees for 800 by 600 image size
 pupilSize = 0.004; %4mm in meters
-ior = 0.06;
+ior = 0.061;
 imageWidth = 800; %in pixels
 imageHeight = 600; %in pixels
 fovX = 32.6;
@@ -31,7 +31,12 @@ apertureSize = size(sharpAperture);
 %find the blur amount in pixels
 necessaryShift = (pupilSize*imageWidth/2)/(accommodationDepth*tan(toRadians('d',fovX/2)));
 apertureShift = (pupilSize*imageWidth/2)/(apertureDepth*tan(toRadians('d',fovX/2)));
-disparityShift = (-2*(eye-0.5))*((ior/2)*imageWidth/2)/(apertureDepth*tan(toRadians('d',fovX/2)));
+%0.25 less because it is the natural disparity of mirrors 
+disparityShift = (-2*(eye-0.5))*((ior/2)*imageWidth/2)/((apertureDepth)*tan(toRadians('d',fovX/2)));
+disparityShiftNatural = (-2*(eye-0.5))*((ior/2)*imageWidth/2)/((0.4)*tan(toRadians('d',fovX/2)));
+disparityShift
+disparityShiftNatural
+disparityShift = disparityShift-disparityShiftNatural;
 
 blurRadius = apertureShift-necessaryShift;
 blurKernel = 1;
@@ -51,7 +56,8 @@ else
 end
 
 out = imfilter(out3,blurKernel);
-out = repmat(out,[1 1 3]);
+out = repmat(out(51:550,101:700),[1 1 3]);
+
 
 end
 
