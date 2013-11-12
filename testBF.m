@@ -86,10 +86,10 @@ target{3}=[wrect(3)/2 wrect(4)/2-0.5*rectSize ...
 target{4}=[wrect(3)/2+1*rectSize wrect(4)/2-0.5*rectSize ...
     wrect(3)/2+2*rectSize wrect(4)/2+0.5*rectSize];
 
-test1_depth1 = imresize(uint8(255*hdrread('BF_texture_files/reflections/siemens_star/siemens_star_p1.hdr')), 0.5);
-test1_depth2 = imresize(uint8(255*hdrread('BF_texture_files/reflections/siemens_star/siemens_star_p2.hdr')), 0.5);
-test1_depth3 = imresize(uint8(255*hdrread('BF_texture_files/reflections/siemens_star/siemens_star_p3.hdr')), 0.5);
-test1_depth4 = imresize(uint8(255*hdrread('BF_texture_files/reflections/siemens_star/siemens_star_p4.hdr')), 0.5);
+test1_depth1 = imresize((imread('BF_texture_files/reflections/siemens_star/siemens_star_p1.bmp')), 0.5);
+test1_depth2 = imresize((imread('BF_texture_files/reflections/siemens_star/siemens_star_p2.bmp')), 0.5);
+test1_depth3 = imresize((imread('BF_texture_files/reflections/siemens_star/siemens_star_p3.bmp')), 0.5);
+test1_depth4 = imresize((imread('BF_texture_files/reflections/siemens_star/siemens_star_p4.bmp')), 0.5);
 
 prefix = 'BF_texture_files/reflections/hdr/'
 sets = {'spheres' 'supels' 'supels2' 'hinge2D' 'hinge0.8D'};
@@ -107,9 +107,9 @@ for j = 1:length(sets)
     for i = 1:4 %each depth plane 
         for eye = 0:1 %right or left 1 means right
             for a = 1:length(algNames) %algorithm single, blending, optimized
-                fn = [prefix sets{j} '-stereo/' sets{j} '-' eyeNames{eye+1} '/' algNames{a} '_layers_' num2str(i) '.hdr'];
+                fn = [prefix sets{j} '-stereo/' sets{j} '-' eyeNames{eye+1} '/' algNames{a} '_layers_' num2str(i) '.bmp'];
                 if exist(fn,'file');
-                    textures{j}{a}{eye*4+i} = imresize(uint8(255*(hdrread(fn ))), imageScale);
+                    textures{j}{a}{eye*4+i} = imresize(((imread(fn ))), imageScale);
                 else
                     textures{j}{a}{eye*4+i} = zeros(8,8,3);
                 end
@@ -118,33 +118,33 @@ for j = 1:length(sets)
     end
 end
 
-test7_depth1_l = imresize(uint8(255*(hdrread('BF_texture_files/reflections/hinge_left_glasses.hdr').^(2.2))),2);
+test7_depth1_l = imresize((double(imread('BF_texture_files/reflections/hinge_right_glasses.bmp')).^(2.2)),2);
 test7_depth2_l = zeros(8,8,3);
 test7_depth3_l = zeros(8,8,3);
 test7_depth4_l = zeros(8,8,3);
 
-test7_depth1_r = imresize(uint8(255*(hdrread('BF_texture_files/reflections/hinge_right_glasses.hdr').^(2.2))),2);
+test7_depth1_r = imresize((double(imread('BF_texture_files/reflections/hinge_right_glasses.bmp')).^(2.2)),2);
 test7_depth2_r = zeros(8,8,3);
 test7_depth3_r = zeros(8,8,3);
 test7_depth4_r = zeros(8,8,3);
 
 
-test8_depth1_r = uint8(255*hdrread('BF_texture_files/reflections/hinge_stereo800/hinge_right_800_p1.hdr'));
-test8_depth2_r = uint8(255*hdrread('BF_texture_files/reflections/hinge_stereo800/hinge_right_800_p2.hdr'));
-test8_depth3_r = uint8(255*hdrread('BF_texture_files/reflections/hinge_stereo800/hinge_right_800_p3.hdr'));
-test8_depth4_r = uint8(255*hdrread('BF_texture_files/reflections/hinge_stereo800/hinge_right_800_p4.hdr'));
+test8_depth1_r = (imread('BF_texture_files/reflections/hinge_stereo800/hinge_right_800_p1.bmp'));
+test8_depth2_r = (imread('BF_texture_files/reflections/hinge_stereo800/hinge_right_800_p2.bmp'));
+test8_depth3_r = (imread('BF_texture_files/reflections/hinge_stereo800/hinge_right_800_p3.bmp'));
+test8_depth4_r = (imread('BF_texture_files/reflections/hinge_stereo800/hinge_right_800_p4.bmp'));
 
-test8_depth1_l = uint8(255*hdrread('BF_texture_files/reflections/hinge_stereo800/hinge_left_800_p1.hdr'));
-test8_depth2_l = uint8(255*hdrread('BF_texture_files/reflections/hinge_stereo800/hinge_left_800_p2.hdr'));
-test8_depth3_l = uint8(255*hdrread('BF_texture_files/reflections/hinge_stereo800/hinge_left_800_p3.hdr'));
-test8_depth4_l = uint8(255*hdrread('BF_texture_files/reflections/hinge_stereo800/hinge_left_800_p4.hdr'));
+test8_depth1_l = (imread('BF_texture_files/reflections/hinge_stereo800/hinge_left_800_p1.bmp'));
+test8_depth2_l = (imread('BF_texture_files/reflections/hinge_stereo800/hinge_left_800_p2.bmp'));
+test8_depth3_l = (imread('BF_texture_files/reflections/hinge_stereo800/hinge_left_800_p3.bmp'));
+test8_depth4_l = (imread('BF_texture_files/reflections/hinge_stereo800/hinge_left_800_p4.bmp'));
 
-test9_depth1_l = imresize(uint8(255*hdrread('BF_texture_files/reflections/hinge_left_800.hdr')),1);
+test9_depth1_l = imresize((imread('BF_texture_files/reflections/hinge_right_800.bmp')),1);
 test9_depth2_l = zeros(8,8,3);
 test9_depth3_l = zeros(8,8,3);
 test9_depth4_l = zeros(8,8,3);
 
-test9_depth1_r = imresize(uint8(255*hdrread('BF_texture_files/reflections/hinge_right_800.hdr')),1);
+test9_depth1_r = imresize((imread('BF_texture_files/reflections/hinge_right_800.bmp')),1);
 test9_depth2_r = zeros(8,8,3);
 test9_depth3_r = zeros(8,8,3);
 test9_depth4_r = zeros(8,8,3);
@@ -337,26 +337,74 @@ while(1)
                     Screen('Close',tex(3));
                     Screen('Close',tex(4));
                     tex(1) = Screen('MakeTexture',wid,test1_depth1(:,:,:));
-                    tex(2) = Screen('MakeTexture',wid,test1_depth2(:,:,:));
-                    tex(3) = Screen('MakeTexture',wid,test1_depth3(:,:,:));
-                    tex(4) = Screen('MakeTexture',wid,test1_depth4(:,:,:));
+                    tex(2) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    tex(3) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    tex(4) = Screen('MakeTexture',wid,zeros(600,800,3));
                     Screen('Close',tex_l(1));
                     Screen('Close',tex_l(2));
                     Screen('Close',tex_l(3));
                     Screen('Close',tex_l(4));
                     tex_l(1) = Screen('MakeTexture',wid,test1_depth1(:,:,:));
+                    tex_l(2) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    tex_l(3) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    tex_l(4) = Screen('MakeTexture',wid,zeros(600,800,3));
+                elseif strcmp(inputstr,'2@')
+                    Screen('Close',tex(1));
+                    Screen('Close',tex(2));
+                    Screen('Close',tex(3));
+                    Screen('Close',tex(4));
+                    tex(1) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    tex(2) = Screen('MakeTexture',wid,test1_depth2(:,:,:));
+                    tex(3) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    tex(4) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    Screen('Close',tex_l(1));
+                    Screen('Close',tex_l(2));
+                    Screen('Close',tex_l(3));
+                    Screen('Close',tex_l(4));
+                    tex_l(1) = Screen('MakeTexture',wid,zeros(600,800,3));
                     tex_l(2) = Screen('MakeTexture',wid,test1_depth2(:,:,:));
-                    tex_l(3) = Screen('MakeTexture',wid,test1_depth3(:,:,:));
-                    tex_l(4) = Screen('MakeTexture',wid,test1_depth4(:,:,:));
-                elseif strcmp(inputstr,'2%')
-                    currentSet = 1; 
-                    setTextures();
+                    tex_l(3) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    tex_l(4) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    %currentSet = 1; 
+                    %setTextures();
                 elseif strcmp(inputstr,'3#')
-                    currentSet = 2; 
-                    setTextures();
+                    Screen('Close',tex(1));
+                    Screen('Close',tex(2));
+                    Screen('Close',tex(3));
+                    Screen('Close',tex(4));
+                    tex(1) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    tex(2) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    tex(3) = Screen('MakeTexture',wid,test1_depth3(:,:,:));
+                    tex(4) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    Screen('Close',tex_l(1));
+                    Screen('Close',tex_l(2));
+                    Screen('Close',tex_l(3));
+                    Screen('Close',tex_l(4));
+                    tex_l(1) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    tex_l(2) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    tex_l(3) = Screen('MakeTexture',wid,test1_depth3(:,:,:));
+                    tex_l(4) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    %currentSet = 2; 
+                    %setTextures();
                 elseif strcmp(inputstr,'4$')
-                    currentSet = 3; 
-                    setTextures();
+                    Screen('Close',tex(1));
+                    Screen('Close',tex(2));
+                    Screen('Close',tex(3));
+                    Screen('Close',tex(4));
+                    tex(1) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    tex(2) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    tex(3) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    tex(4) = Screen('MakeTexture',wid,test1_depth4(:,:,:));
+                    Screen('Close',tex_l(1));
+                    Screen('Close',tex_l(2));
+                    Screen('Close',tex_l(3));
+                    Screen('Close',tex_l(4));
+                    tex_l(1) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    tex_l(2) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    tex_l(3) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    tex_l(4) = Screen('MakeTexture',wid,test1_depth4(:,:,:));
+                    %currentSet = 3; 
+                    %setTextures();
                 elseif strcmp(inputstr,'5%')
                     currentSet = 4; 
                     setTextures();
