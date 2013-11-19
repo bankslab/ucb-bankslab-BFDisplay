@@ -67,7 +67,7 @@ elseif trial_mode == 1
         end
         param_string = strjoin(string_holder, '_');
         file_name = strcat(param_string, '.mat');
-        file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, '61', trial_params{1}, file_name}, '/');
+        file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, '66', trial_params{1}, file_name}, '/');
         load(file_path);
         
         for plane = (1:4)

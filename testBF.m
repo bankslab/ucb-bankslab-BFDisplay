@@ -51,8 +51,8 @@ if stereoMode==4
         %load('BF_params/BF_correctedLinearGammaNew.mat');
         %origGamma=Screen('LoadNormalizedGammaTable', wid, correctedGammaNew{1});
         %origGamma=Screen('LoadNormalizedGammaTable', wid2, correctedGammaNew{2});
-        load('BF_params/BF_correctedLinearGamma.mat');
-        origGamma=Screen('LoadNormalizedGammaTable', wid, correctedGamma{1});
+        load('BF_params/correctedLinearGamma_256steps_zeroOffset.mat');
+        origGamma=Screen('LoadNormalizedGammaTable', wid, correctedGamma{2});
         %origGamma=Screen('LoadNormalizedGammaTable', wid2, correctedGamma{2});
     else
         BF_CLUT_L(:,1)=0:1:255;
@@ -118,36 +118,42 @@ for j = 1:length(sets)
     end
 end
 
-test7_depth1_l = imresize((double(imread('BF_texture_files/reflections/hinge_right_glasses.bmp')).^(2.2)),2);
+test7_depth1_l = zeros(8,8,3);%imresize((double(imread('BF_texture_files/reflections/hinge_right_glasses.bmp')).^(2.2)),2);
 test7_depth2_l = zeros(8,8,3);
 test7_depth3_l = zeros(8,8,3);
 test7_depth4_l = zeros(8,8,3);
 
-test7_depth1_r = imresize((double(imread('BF_texture_files/reflections/hinge_right_glasses.bmp')).^(2.2)),2);
+test7_depth1_r = imresize(uint8(255*((double(imread('BF_texture_files/reflections/real_photo/input_focus_6.png'))/255).^2.2)),0.85);
 test7_depth2_r = zeros(8,8,3);
 test7_depth3_r = zeros(8,8,3);
 test7_depth4_r = zeros(8,8,3);
 
 
-test8_depth1_r = (imread('BF_texture_files/reflections/hinge_stereo800/hinge_right_800_p1.bmp'));
-test8_depth2_r = (imread('BF_texture_files/reflections/hinge_stereo800/hinge_right_800_p2.bmp'));
-test8_depth3_r = (imread('BF_texture_files/reflections/hinge_stereo800/hinge_right_800_p3.bmp'));
-test8_depth4_r = (imread('BF_texture_files/reflections/hinge_stereo800/hinge_right_800_p4.bmp'));
+test8_depth1_r = imresize(uint8(255*((double(imread('BF_texture_files/reflections/real_photo/optimized_layers_1.png'))/255).^2.2)),0.85);
+test8_depth2_r = imresize(uint8(255*((double(imread('BF_texture_files/reflections/real_photo/optimized_layers_2.png'))/255).^2.2)),0.85);
+test8_depth3_r = imresize(uint8(255*((double(imread('BF_texture_files/reflections/real_photo/optimized_layers_3.png'))/255).^2.2)),0.85);
+test8_depth4_r = imresize(uint8(255*((double(imread('BF_texture_files/reflections/real_photo/optimized_layers_4.png'))/255).^2.2)),0.85);
 
-test8_depth1_l = (imread('BF_texture_files/reflections/hinge_stereo800/hinge_left_800_p1.bmp'));
-test8_depth2_l = (imread('BF_texture_files/reflections/hinge_stereo800/hinge_left_800_p2.bmp'));
-test8_depth3_l = (imread('BF_texture_files/reflections/hinge_stereo800/hinge_left_800_p3.bmp'));
-test8_depth4_l = (imread('BF_texture_files/reflections/hinge_stereo800/hinge_left_800_p4.bmp'));
+test8_depth1_l = zeros(8,8,3);%(imread('BF_texture_files/reflections/hinge_stereo800/hinge_left_800_p1.bmp'));
+test8_depth2_l = zeros(8,8,3);%(imread('BF_texture_files/reflections/hinge_stereo800/hinge_left_800_p2.bmp'));
+test8_depth3_l = zeros(8,8,3);%(imread('BF_texture_files/reflections/hinge_stereo800/hinge_left_800_p3.bmp'));
+test8_depth4_l = zeros(8,8,3);%(imread('BF_texture_files/reflections/hinge_stereo800/hinge_left_800_p4.bmp'));
 
-test9_depth1_l = imresize((imread('BF_texture_files/reflections/hinge_right_800.bmp')),1);
-test9_depth2_l = zeros(8,8,3);
-test9_depth3_l = zeros(8,8,3);
-test9_depth4_l = zeros(8,8,3);
+[h,w,temp3] = size( test7_depth1_r);
+test9_depth1_l = zeros(h,w,3);%imresize((imread('BF_texture_files/reflections/hinge_right_800.bmp')),1);
+test9_depth2_l = zeros(h,w,3);
+test9_depth3_l = zeros(h,w,3);
+test9_depth4_l = zeros(h,w,3);
 
-test9_depth1_r = imresize((imread('BF_texture_files/reflections/hinge_right_800.bmp')),1);
-test9_depth2_r = zeros(8,8,3);
-test9_depth3_r = zeros(8,8,3);
-test9_depth4_r = zeros(8,8,3);
+calibrationStimuli = zeros(h,w,3);
+
+calibrationStimuli([round(h/3), round(h/2), round(2*h/3)],:,:) = 255;
+calibrationStimuli(:,[round(w/3), round(w/2), round(2*w/3)],:) = 255;
+test9_depth1_r = calibrationStimuli;%imresize((imread('BF_texture_files/reflections/hinge_right_800.bmp')),1);
+test9_depth2_r = calibrationStimuli;
+test9_depth3_r = calibrationStimuli;
+test9_depth4_r = calibrationStimuli;
+
 
 test0_depth1 = imresize(imread('BF_texture_files/reflections/faces_with_1_gap0.3ideal4.png'), 0.5);
 test0_depth2 = imresize(imread('BF_texture_files/reflections/faces_with_1_gap0.3ideal3.png'), 0.5);
