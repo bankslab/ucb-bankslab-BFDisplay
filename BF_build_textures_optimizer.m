@@ -4,57 +4,47 @@ if ~exist('image_list', 'var')
     image_list{8} = [];
 end
 
-%test
+% Gamma Correction
 load('BF_params/correctedLinearGamma_256steps_zeroOffset.mat');
-cg1{1} = correctedGamma{1}(:,1);
-cg2{1} = correctedGamma{1}(:,2);
-cg3{1} = correctedGamma{1}(:,3);
-cg1{2} = correctedGamma{2}(:,1);
-cg2{2} = correctedGamma{2}(:,2);
-cg3{2} = correctedGamma{2}(:,3);
+for monitor = 1:2
+    cGamma1{monitor} = correctedGamma{monitor}(:,1);
+    cGamma2{monitor} = correctedGamma{monitor}(:,2);
+    cGamma3{monitor} = correctedGamma{monitor}(:,3);
+end
     
 if trial_mode == 0 
-    %demo_params = strcat('optimization_2.6_2.6_90_0');
-    %load(strcat('BF_texture_files/optimizer/', exp_num, '/optimization/', demo_params, '.mat'))
-
     demo_params = strcat('blending_3.2_3.2_90_0');
-    load(strcat('BF_texture_files/optimizer/', exp_num, '/61/blending/', demo_params, '.mat'))
-    
+    load(strcat('BF_texture_files/optimizer/', exp_num, '/61/blending/', demo_params, '.mat'));
     
     for plane = (1:4)
        for eye = (0:1)
-            img_index = 5-plane + eye*4;
-            %for spheres demo
+            img_index = 5 - plane + eye*4;
+            
+            % for spheres demo
             %demo_params = strcat('s_optimization_2_2_90_5_', num2str(plane), '_', num2str(eye));
             %fname = strcat('BF_texture_files/optimizer/', exp_num, '/demo_images/', demo_params, '.hdr');
             
             hdr = uint8(zeros(800,800,3));
-            % This "yellow" section should be cropped by
-            % BF_bind_texture_to_square later on (to make correctly
-            % sized and scaled square texture.
-            %hdr(:,:,1:2) = 255;
             
-            %upside down compensation
+            % upside down compensation
             hdr(550:-1:51,101:700,:) = uint8(double(layers{eye*4+plane}).*generateAperture(18,3.2,1.5,eye));
-            %test
+            
+            % Implement Gamma Correction
             hdr1 = hdr(:,:,1);
             hdr2 = hdr(:,:,2);
             hdr3 = hdr(:,:,3);
             
-            hdr1 = uint8(255*cg1{eye+1}(hdr1+1));
-            hdr2 = uint8(255*cg2{eye+1}(hdr2+1));
-            hdr3 = uint8(255*cg3{eye+1}(hdr3+1));
+            hdr1 = uint8(255*cGamma1{eye+1}(hdr1+1));
+            hdr2 = uint8(255*cGamma2{eye+1}(hdr2+1));
+            hdr3 = uint8(255*cGamma3{eye+1}(hdr3+1));
             
             hdr(:,:,1) = hdr1;
             hdr(:,:,2) = hdr2;
             hdr(:,:,3) = hdr3;
             
-            
-            image_list{img_index} = hdr;
-            
+            image_list{img_index} = hdr;     
         end
     end
-    %param.rotation = [0 5];
     
     
 elseif trial_mode == 1
@@ -67,7 +57,7 @@ elseif trial_mode == 1
         end
         param_string = strjoin(string_holder, '_');
         file_name = strcat(param_string, '.mat');
-        file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, '61', trial_params{1}, file_name}, '/');
+        file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), trial_params{1}, file_name}, '/');
         load(file_path);
         
         for plane = (1:4)
@@ -75,37 +65,33 @@ elseif trial_mode == 1
                 img_index = plane + eye*4;
             
                 hdr = uint8(zeros(800,800,3));
-                % This "yellow" section should be cropped by
-                % BF_bind_texture_to_square later on (to make correctly
-                % sized and scaled square texture.
-                %hdr(:,:,1:2) = 255;
+                
+                % Add black circular aperture
+                aperture = generateAperture(18, 0.3+trial_params{3}, trial_params{3}, eye);
                 
                 %upside down compensation
-                aperture = generateAperture(18,0.3+trial_params{3},trial_params{3},eye);
-                
                 hdr(550:-1:51,101:700,:) = uint8(double(layers{eye*4+plane}).*aperture);
                 
-                %individual gamma correction
+                % Implement Gamma Correction
                 hdr1 = hdr(:,:,1);
                 hdr2 = hdr(:,:,2);
                 hdr3 = hdr(:,:,3);
                 
-                hdr1 = uint8(255*cg1{eye+1}(hdr1+1));
-                hdr2 = uint8(255*cg2{eye+1}(hdr2+1));
-                hdr3 = uint8(255*cg3{eye+1}(hdr3+1));
+                hdr1 = uint8(255*cGamma1{eye+1}(hdr1+1));
+                hdr2 = uint8(255*cGamma2{eye+1}(hdr2+1));
+                hdr3 = uint8(255*cGamma3{eye+1}(hdr3+1));
 
                 hdr(:,:,1) = hdr1;
                 hdr(:,:,2) = hdr2;
                 hdr(:,:,3) = hdr3;
-                %gamma correction finished
                 
                 image_list{img_index} = hdr;
-                
             end
         end
     end
 end
 
+% Turn images into OpenGL textures for faster loading
 texname_static = glGenTextures(8);
 img_size = [800 600];
 

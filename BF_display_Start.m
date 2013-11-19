@@ -1135,22 +1135,61 @@ eval([exp_num]);
         BF_initialize_trial;    %Just to build projections for splash screen
 		BF_display_initial_message;
 
-        if strcmp(experiment_type, 'hinge')
-            record_filename = [pwd '/BF_data_files/optimizer/' observer_initials '_' exp_num '_' datestr(clock,30) '.mat'];
-            stop_flag=0;
-            while stop_flag==0
-                trial_params{1} = get(scellThisRound{s_i},'algorithm');
-                trial_params{2} = get(scellThisRound{s_i}, 'accom_distance');
-                trial_params{3} = get(scellThisRound{s_i}, 'disparity_distance');
-                get(scellThisRound{s_i}, 'currentValue');
-                trial_params{4} = get(scellThisRound{s_i}, 'currentValue'); % angle
-                trial_params{5} = get(scellThisRound{s_i}, 'angle_noise');
-                BF_build_textures_optimizer;
+        if strcmp(experiment_type, 'hinge')            
+            stop_flag = 0;
+            numCompleted = 0;
+            while stop_flag == 0
+                % Randomly select a staircase
+                s_i   = randi(length(scell));
+                sNum  = randi(2);
+                thisS = scell{s_i}{sNum};
+                
+                % Check if this staircase is complete
+                if thisS.complete == 1
+                    continue
+                else
+                    % Set and record random angle noise value for this trial
+                    scell{s_i}{sNum}.angle_noise_vals(end+1) = p.angle_noise(randi(length(p.angle_noise)));
 
-                BF_initialize_trial; % calls RenderSceneStatic
-                BF_run_trial; % calls actual GL commands
-                process_response; % gets keyboard input and updates staircase
-                save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound');
+                    % Get images for this trial
+                    trial_params{1} = thisS.algorithm;
+                    trial_params{2} = thisS.accom_dist;
+                    trial_params{3} = thisS.disparity_dist;
+                    trial_params{4} = thisS.currentValue; % angle
+                    trial_params{5} = thisS.angle_noise_vals(end);
+                    BF_build_textures_optimizer;
+
+                    % Run trial
+                    BF_initialize_trial; % calls RenderSceneStatic
+                    BF_run_trial;        % calls actual GL display commands
+                    process_response;    % gets keyboard input and updates staircase
+                    save(record_filename,'p','scell');
+                    trial_counter = trial_counter + 1;
+                
+                    % Mark complete staircases as complete
+                    if isempty(thisS.stimVal) || thisS.indexVal >= thisS.nTrials
+                        scell{s_i}{sNum}.complete = 1;
+                        numCompleted = numCompleted + 1;
+                        save(record_filename,'p','scell');
+                    end
+
+                    % If all cells are complete, stop
+                    if numCompleted == 2*length(scell)
+                        save(record_filename,'p','scell');
+                        stop_flag = 1;
+                    end
+
+                    % Every 350 trials, take a break
+                    if mod(trial_counter, p.trialsPerBlock) == 0
+                        % Save an extra copy after each block, just in case
+                        backup_filename = strcat(record_filename(1:end-4), '_', datestr(clock,30), '.mat');
+                        save(backup_filename, 'p', 'scell');
+                        save(record_filename, 'p', 'scell');
+                        disp([num2str(trial_counter/p.trialsPerBlock) 'blocks completed'])
+                        message = 'endofblock';
+                        BF_disp_message
+                    end
+                end
             end
         end
         
