@@ -11,15 +11,15 @@ while(stop_flag==0)
     if a == 1
         iKeyIndex = find(c);
         strInputName = KbName(iKeyIndex(1));
-        actualHingeAngle = scellInProgress{s_i}{sNum}.stimVal;
+        actualHingeAngle = scell{s_i}{sNum}.stimVal;
         if strcmp(strInputName,'1') || strcmp(strInputName,'1!')
             % record response and update staircase
             correct = (actualHingeAngle < 90);
-            scellInProgress{s_i}{sNum} = staircase('update', scellInProgress{s_i}{sNum}, [correct, 1]);
+            scell{s_i}{sNum} = staircase('update', scell{s_i}{sNum}, [correct, 1]);
             break;
         elseif strcmp(strInputName,'2') || strcmp(strInputName,'2@')
             correct = (actualHingeAngle >= 90);
-            scellInProgress{s_i}{sNum} = staircase('update', scellInProgress{s_i}{sNum}, [correct, 2]);
+            scell{s_i}{sNum} = staircase('update', scell{s_i}{sNum}, [correct, 2]);
             break;
         elseif strcmp(strInputName,'ESCAPE')||strcmp(strInputName,'esc')
             stop_flag=1;

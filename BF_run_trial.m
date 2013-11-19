@@ -1,7 +1,7 @@
 
 if strcmp(experiment_type, 'hinge')
     tic
-    while toc < param.stim_duration
+    while toc < p.stim_duration
         depthplane = depthplane + 1;
         if depthplane > 4
             depthplane = 1;

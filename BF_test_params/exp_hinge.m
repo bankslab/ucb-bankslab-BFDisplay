@@ -5,6 +5,7 @@ dynamic_mode    = 0;
 static_mode     = 1;
 renderviews     = [0 1]; %0 is the left eye
 projection_type = 1;
+dumpworkspace   = 1;
 
 record_filename = [pwd '/BF_data_files/optimizer/' observer_initials '_' exp_num '_record.mat'];
 
@@ -15,19 +16,20 @@ if (exist(record_filename, 'file') == 2)
 else
 % Otherwise, create a new experiment
     % Experiment Parameters
-    p.trialsPerBlock = 350;
+    p.trialsPerBlock = 4;
     p.stim_duration  = 1; %sec
-    p.algorithm      = {'optimization', 'blending', 'single', 'pinhole'};
+    %p.algorithm      = {'optimization', 'blending', 'single', 'pinhole'};
+    p.algorithm      = {'pinhole'};
     p.disparity_dist = 2;              % [2 : 1.2 : 3.2];
     p.accom_dist     = [2, 3.2];       % [2 : 1.2 : 3.2];
     p.angle_noise    = [0 0];          % [-5 0 5];
     
     % Staircase Parameters
     p.updown         = [1 1];
-    p.minmax         = [30 120];
-    p.startVals      = [42 108];
-    p.nTrials        = []; % actually 100
-    p.nReversals     = 10;
+    p.minmax         = [84 90];
+    p.startVals      = [87 93];
+    p.nTrials        = []; %set by nReversals
+    p.nReversals     = 2;
     p.linStep        = 3;
     
     % Build staircases
@@ -37,6 +39,7 @@ else
         s.stimVal = p.startVals(s_index);
         s.angle_noise_vals = [];
         s.indexVal = 0;
+        s.complete = 0;
         
         for alg_index = 1:length(p.algorithm)
             for disparity_dist_index = 1:length(p.disparity_dist)

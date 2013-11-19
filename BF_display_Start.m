@@ -1142,21 +1142,20 @@ eval([exp_num]);
                 % Randomly select a staircase
                 s_i   = randi(length(scell));
                 sNum  = randi(2);
-                thisS = scell{s_i}{sNum};
                 
                 % Check if this staircase is complete
-                if thisS.complete == 1
+                if scell{s_i}{sNum}.complete == 1
                     continue
                 else
                     % Set and record random angle noise value for this trial
                     scell{s_i}{sNum}.angle_noise_vals(end+1) = p.angle_noise(randi(length(p.angle_noise)));
 
                     % Get images for this trial
-                    trial_params{1} = thisS.algorithm;
-                    trial_params{2} = thisS.accom_dist;
-                    trial_params{3} = thisS.disparity_dist;
-                    trial_params{4} = thisS.currentValue; % angle
-                    trial_params{5} = thisS.angle_noise_vals(end);
+                    trial_params{1} = scell{s_i}{sNum}.algorithm;
+                    trial_params{2} = scell{s_i}{sNum}.accom_dist;
+                    trial_params{3} = scell{s_i}{sNum}.disparity_dist;
+                    trial_params{4} = scell{s_i}{sNum}.stimVal; % angle
+                    trial_params{5} = scell{s_i}{sNum}.angle_noise_vals(end);
                     BF_build_textures_optimizer;
 
                     % Run trial
@@ -1167,7 +1166,7 @@ eval([exp_num]);
                     trial_counter = trial_counter + 1;
                 
                     % Mark complete staircases as complete
-                    if isempty(thisS.stimVal) || thisS.indexVal >= thisS.nTrials
+                    if isempty(scell{s_i}{sNum}.stimVal) || scell{s_i}{sNum}.indexVal >= scell{s_i}{sNum}.nTrials
                         scell{s_i}{sNum}.complete = 1;
                         numCompleted = numCompleted + 1;
                         save(record_filename,'p','scell');
