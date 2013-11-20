@@ -168,7 +168,9 @@ if strcmpi(cmd,'update') % first update, maybe faster?
     end
 
     val=sc.stimVal; % read current stim value
-    ok= vector(1)~=0; % 1 or 0, response correct or not
+    %ok=vector(1)~=0; % 1 or 0, response correct or not
+    % Instead of % correct, we want % response >90 (2@)
+    ok=vector(2)~=1;
     vec=vector(2:end); % take care of column vector
     sc.data(iT,:)=[val ok vec(:)']; % update a row
     
