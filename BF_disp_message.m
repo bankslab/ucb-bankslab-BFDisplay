@@ -49,7 +49,9 @@ while(displaymessage==1)
                 Screen('DrawText', windowPtr, ['Take a break'], 300, 200, [255, 255, 255, 255]); 
                 Screen('DrawText', windowPtr, ['Press enter to continue'], 200, 300, [255, 255, 255, 255]);  
                 Screen('DrawText', windowPtr, ['Press escape to stop'], 200, 300, [255, 255, 255, 255]);
-                Screen('DrawText', windowPtr, [num2str(trial_counter/350) 'blocks completed'], 200, 350, [255, 255, 255, 255]);  
+                Screen('DrawText', windowPtr, [num2str(trial_counter/350) 'blocks completed'], 200, 350, [255, 255, 255, 255]);
+                Screen('Flip', windowPtr, [], 2, 1);
+                WaitSecs(2);
             elseif strcmp(message, 'takeabreak')
                 Screen('TextSize',windowPtr, 25);
                 Screen('DrawText', windowPtr, ['Take a break'], 300, 200, [255, 255, 255, 255]); 

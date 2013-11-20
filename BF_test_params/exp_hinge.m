@@ -16,21 +16,22 @@ if (exist(record_filename, 'file') == 2)
 else
 % Otherwise, create a new experiment
     % Experiment Parameters
-    p.trialsPerBlock = 4;
+    p.trialsPerBlock = 175;
     p.stim_duration  = 1; %sec
     %p.algorithm      = {'optimization', 'blending', 'single', 'pinhole'};
-    p.algorithm      = {'pinhole'};
+    p.algorithm      = {'optimization'};
     p.disparity_dist = 2;              % [2 : 1.2 : 3.2];
     p.accom_dist     = [2, 3.2];       % [2 : 1.2 : 3.2];
     p.angle_noise    = [0 0];          % [-5 0 5];
     
     % Staircase Parameters
-    p.updown         = {[2 1] [1 2]};
-    p.minmax         = [84 90];
-    p.startVals      = [108 42];
-    p.nTrials        = []; %set by nReversals
-    p.nReversals     = 5;
     p.linStep        = 3;
+    p.updown         = {[2 1] [1 2]};
+    p.minmax         = [60 120];
+    p.startVals      = [p.minmax(1) + p.linStep,...
+                        p.minmax(2) - p.linStep];
+    p.nTrials        = []; %set by nReversals
+    p.nReversals     = 6;
     
     % Check that staircase values are valid
     assert(p.startVals(1) > p.minmax(1) & p.startVals(2) < p.minmax(2), 'Starting values are not within valid range');
@@ -42,7 +43,7 @@ else
         p.this_updown = p.updown{s_index};
         s = staircase('create', p.this_updown, p.minmax, p.nTrials, p.nReversals, p.linStep);
         s.stimVal = p.startVals(s_index);
-        s.step = [3 3];
+        s.step = [p.linStem p.linStep];
         s.angle_noise_vals = [];
         s.indexVal = 0;
         s.complete = 0;
@@ -69,7 +70,3 @@ else
         scell{end + 1} = scellArray{scellID};
     end
 end
-
-    
-    
->>>>>>> staircase
