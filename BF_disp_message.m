@@ -44,7 +44,13 @@ while(displaymessage==1)
             messageplane=1; % Farthest plane
         end
         if depthplane==messageplane
-            if strcmp(message, 'takeabreak')
+            if strcmp(message, 'endofblock')
+                Screen('TextSize',windowPtr, 25);
+                Screen('DrawText', windowPtr, ['Take a break'], 300, 200, [255, 255, 255, 255]); 
+                Screen('DrawText', windowPtr, ['Press enter to continue'], 200, 300, [255, 255, 255, 255]);  
+                Screen('DrawText', windowPtr, ['Press escape to stop'], 200, 300, [255, 255, 255, 255]);
+                Screen('DrawText', windowPtr, [num2str(trial_counter/350) 'blocks completed'], 200, 350, [255, 255, 255, 255]);  
+            elseif strcmp(message, 'takeabreak')
                 Screen('TextSize',windowPtr, 25);
                 Screen('DrawText', windowPtr, ['Take a break'], 300, 200, [255, 255, 255, 255]); 
                 Screen('DrawText', windowPtr, ['Press any key to continue'], 200, 300, [255, 255, 255, 255]);  
@@ -219,6 +225,21 @@ while(displaymessage==1)
         glClear();
     end
     Screen('Flip', windowPtr, [], 2, 1);
+    
+    if strcmp(message, 'endofblock') && strcmp(strInputName2, 'Return') == 1
+        displaymessage=0;
+        break;
+    elseif strcmp(message, 'endofblock') && strcmp(strInputName2, 'ESCAPE') == 1
+        displaymessage=0;
+        stop_flag=1;
+        for whichEye=[0 1]
+            Screen('SelectStereoDrawBuffer', windowPtr, whichEye);
+            glClear;
+            onset=Screen('Flip', windowPtr, [], 2, 1);
+        end
+        break;
+    end
+                
 
     if strcmp(strInputName2, '')==0 && strcmp(message, 'turnlensoff')~=1 && strcmp(message, 'breakuntilnextassessment')~=1 && strcmp(message, 'marktheansweranddiscomfort')~=1 ...
         && strcmp(message, 'fatiguequestion')~=1 && strcmp(message, 'pressentertocontinue')~=1 && strcmp(message, 'persessionQ')~=1 && strcmp(message, 'persessionQcomparisonQ')~=1 ...
