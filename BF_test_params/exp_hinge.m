@@ -25,18 +25,24 @@ else
     p.angle_noise    = [0 0];          % [-5 0 5];
     
     % Staircase Parameters
-    p.updown         = [1 1];
+    p.updown         = {[2 1] [1 2]};
     p.minmax         = [84 90];
-    p.startVals      = [87 93];
+    p.startVals      = [108 42];
     p.nTrials        = []; %set by nReversals
-    p.nReversals     = 2;
+    p.nReversals     = 5;
     p.linStep        = 3;
+    
+    % Check that staircase values are valid
+    assert(p.startVals(1) > p.minmax(1) & p.startVals(2) < p.minmax(2), 'Starting values are not within valid range');
+    assert(p.startVals(1) > p.startVals(2), 'First start value must be greater than second start value');
     
     % Build staircases
     % Two different staircases per scell
     for s_index = [1 2]
-        s = staircase('create', p.updown, p.minmax, p.nTrials, p.nReversals, p.linStep);
+        p.this_updown = p.updown{s_index};
+        s = staircase('create', p.this_updown, p.minmax, p.nTrials, p.nReversals, p.linStep);
         s.stimVal = p.startVals(s_index);
+        s.step = [3 3];
         s.angle_noise_vals = [];
         s.indexVal = 0;
         s.complete = 0;

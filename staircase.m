@@ -319,7 +319,7 @@ elseif strcmpi(cmd,'create')
             warning('staircase:fakePC',str); %#ok
         end
     end
-    
+        
     sc.stimVal=mean(sc.minMax); % use the middle value for first trial
     % pre-allocate is important for huge number of trials for simulation
     sc.data=nan(sc.nTrials,2);
