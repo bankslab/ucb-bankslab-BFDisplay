@@ -1126,8 +1126,7 @@ eval([exp_num]);
         numframes = numframes + 1;
         
     end  %while trial mode==0
-
-
+    
     trial_counter=0;
     if trial_mode==1
         
@@ -1184,9 +1183,10 @@ eval([exp_num]);
                         backup_filename = strcat(record_filename(1:end-4), '_', datestr(clock,30), '.mat');
                         save(backup_filename, 'p', 'scell');
                         save(record_filename, 'p', 'scell');
-                        disp([num2str(trial_counter/p.trialsPerBlock) 'blocks completed'])
+                        disp([num2str(p.block_counter) ' block(s) completed'])
                         message = 'endofblock';
                         BF_disp_message
+                        p.block_counter = p.block_counter + 1;
                     end
                 end
             end

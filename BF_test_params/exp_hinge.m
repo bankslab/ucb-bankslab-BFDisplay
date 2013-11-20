@@ -16,7 +16,8 @@ if (exist(record_filename, 'file') == 2)
 else
 % Otherwise, create a new experiment
     % Experiment Parameters
-    p.trialsPerBlock = 175;
+    p.trialsPerBlock = 350;
+    p.block_counter  = 0;
     p.stim_duration  = 1; %sec
     %p.algorithm      = {'optimization', 'blending', 'single', 'pinhole'};
     p.algorithm      = {'optimization'};
@@ -28,8 +29,8 @@ else
     p.linStep        = 3;
     p.updown         = {[2 1] [1 2]};
     p.minmax         = [60 120];
-    p.startVals      = [p.minmax(1) + p.linStep,...
-                        p.minmax(2) - p.linStep];
+    p.startVals      = [p.minmax(2) - p.linStep,...
+                        p.minmax(1) + p.linStep];
     p.nTrials        = []; %set by nReversals
     p.nReversals     = 6;
     
@@ -43,7 +44,7 @@ else
         p.this_updown = p.updown{s_index};
         s = staircase('create', p.this_updown, p.minmax, p.nTrials, p.nReversals, p.linStep);
         s.stimVal = p.startVals(s_index);
-        s.step = [p.linStem p.linStep];
+        s.step = [p.linStep, p.linStep];
         s.angle_noise_vals = [];
         s.indexVal = 0;
         s.complete = 0;
