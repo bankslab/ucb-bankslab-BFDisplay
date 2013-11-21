@@ -16,9 +16,9 @@ if (exist(record_filename, 'file') == 2)
 else
 % Otherwise, create a new experiment
     % Experiment Parameters
-    p.trialsPerBlock = 350;
+    p.trialsPerBlock = 200;
     p.block_counter  = 0;
-    p.stim_duration  = 1; %sec
+    p.stim_duration  = 0.75; %sec
     %p.algorithm      = {'optimization', 'blending', 'single', 'pinhole'};
     p.algorithm      = {'optimization'};
     p.disparity_dist = 2;              % [2 : 1.2 : 3.2];
@@ -29,10 +29,10 @@ else
     p.linStep        = 3;
     p.updown         = {[2 1] [1 2]};
     p.minmax         = [60 120];
-    p.startVals      = [p.minmax(2) - p.linStep,...
-                        p.minmax(1) + p.linStep];
+    p.startVals      = [p.minmax(2) - 3*p.linStep,...
+                        p.minmax(1) + 3*p.linStep];
     p.nTrials        = []; %set by nReversals
-    p.nReversals     = 6;
+    p.nReversals     = 14;
     
     % Check that staircase values are valid
     assert(p.startVals(1) > p.minmax(1) & p.startVals(2) < p.minmax(2), 'Starting values are not within valid range');
