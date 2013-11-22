@@ -316,7 +316,7 @@ elseif strcmpi(cmd,'create')
         elseif all(sc.upDown==[2 4]), prob=0.667; % by simulation
         elseif all(sc.upDown==[4 2]), prob=1-0.667;
         else
-            str=sprintf(['Probability of correct for staircase '...
+            str=sprintf(['Probability of >90 for staircase '...
                 '[%g %g] is an estimate.'],sc.upDown);
             warning('staircase:fakePC',str); %#ok
         end
@@ -325,7 +325,7 @@ elseif strcmpi(cmd,'create')
     sc.stimVal=mean(sc.minMax); % use the middle value for first trial
     % pre-allocate is important for huge number of trials for simulation
     sc.data=nan(sc.nTrials,2);
-    sc.dataLabel={'stimVal' 'correct'}; % data column label
+    sc.dataLabel={'stimVal' '>90'}; % data column label
     sc.reversal=nan(1,sc.nReversals);
 
     if sc.logStep
@@ -343,15 +343,32 @@ elseif strcmpi(cmd,'plot')
     sc=varargin{1};
     if isnan(sc(1).threshold(1)), sc=staircase('compute',sc); end
     nsc=length(sc);
-    figure(7);
+    figure;
     set(gcf,'position',[100 100 800 200*nsc+100],'Name','Staircase Result');
+    
+    % Find min and max values for x and y axes
+    xMinMax = nan*ones(nsc, 2);
+    yMinMax = nan*ones(nsc, 1);
     for i=1:nsc
-        subplot(nsc,1,i);
-        plot(sc(i).data(:,1),'b'); hold all;
+        xMinMax(i,1) = length(sc(i).data);
+        yMinMax(i,1:2) = [min(sc(i).data(:,1)), max(sc(i).data(:,1))];
+    end
+    xVals = [-1, max(xMinMax)+1];
+    yVals = [min(yMinMax(:,1))-3, max(yMinMax(:,2))+3];
+    hold all;
+    for i=1:nsc
+        subplot(1,1,1);
+        if i == 1
+            colors={'*b', 'ob', '*b'};
+        else
+            colors={'*g', '*g', 'og'};
+        end
+        plot(sc(i).data(:,1),colors{1}(2)); 
+        axis([xVals(1) xVals(2) yVals(1) yVals(2)]); 
         ind=find(sc(i).data(:,2)); % index for correct trials
-        h(1)=plot(ind,sc(i).data(ind,1),'.g','markersize',16);
+        h(1)=plot(ind,sc(i).data(ind,1),colors{i+1},'markersize',6);
         ind=find(sc(i).data(:,2)==0); % for wrong trials
-        h(2)=plot(ind,sc(i).data(ind,1),'.r','markersize',16);
+        h(2)=plot(ind,sc(i).data(ind,1),colors{i},'markersize',6);
         
         % find trial index for reversals. we could save this during
         % 'update', but this serves as a checkup for reversals
@@ -362,26 +379,28 @@ elseif strcmpi(cmd,'plot')
         iR(1:length(ind))=ind; % if 1 longer than ind, it is the last trial
 
         x=xlim;
-        h(3)=plot(iR,sc(i).reversal,'+k','markersize',8);
-        h(4)=line(x,[1 1]*sc(i).threshold(1),'color','m','LineStyle',':');
-        if i==1, legend(h,{'Correct' 'Wrong' 'Reversal' 'Threshold'}); end
+        h(3)=plot(iR,sc(i).reversal,'+k','markersize',10);
+        h(4)=line(x,[1 1]*sc(i).threshold(1),'color','m');
+        if i==1, legend(h,{'>90 deg' '<90 deg' 'Reversal' 'Threshold'}); end
         if i==nsc, xlabel('Trial Number'); ylabel('Stimulus Value'); end
         if nsc>1
-            y=ylim;
-            text(x(1)+diff(x)*0.3,y(1)+diff(y)*0.8,sc(i).result); 
+            y=ylim+(-i*5);
+            text(x(1)+diff(x)*0.3,y(1)+diff(y)*0.8,strcat(['# ', num2str(i), ' - ', sc(i).result])); 
         end
-        hold off;
     end
     if nsc==1
         str=sc.result;
     else
         if ~isfield(sc(1),'meanResult'), sc=staircase('compute',sc); end
-        str=sprintf(['Average of %g staircases: threshold = ' ...
-            '%.3g %s %.2g (N=%g), at %.1f%% correct'], ...
-            nsc, sc(1).meanResult(1), char(177),sc(1).meanResult(2:4));
-        subplot(nsc,1,1);
+        str=sprintf(['Algorithm: %s,  Disparity Dist = %.2g D,  Accom. Dist = %.2g D\n'...
+                     'Average of %g staircases: threshold = ' ...
+                     '%.3g %s %.2g (N=%g), at %.1f%% >90 deg'], ...
+            upper(sc(1).algorithm), sc(1).disparity_dist, sc(1).accom_dist,...
+            nsc, sc(1).meanResult(1), char(177), sc(1).meanResult(2:4));
+        subplot(1,1,1);
     end
     title(str);
+    set(findall(gcf,'type','text'),'fontSize',14);
     
 elseif strcmpi(cmd,'compute')
     if nargin<2 || ~isstruct(varargin{1})
@@ -436,8 +455,8 @@ elseif strcmpi(cmd,'compute')
             end
         end
         
-        sc(i).result=sprintf('threshold = %.3g %s %.2g (N=%g), at %.1f%% correct', ...
-                sc(i).threshold(1), char(177),sc(i).threshold(2:4));
+        sc(i).result=sprintf('threshold = %.3g %s %.2g (N=%g), at %.1f%% >90 deg', ...
+                sc(i).threshold(1), char(177), sc(i).threshold(2:4));
     end
     
     if nsc>1
