@@ -13,8 +13,8 @@ for monitor = 1:2
 end
     
 if trial_mode == 0 
-    demo_params = strcat('blending_3.2_3.2_90_0');
-    load(strcat('BF_texture_files/optimizer/', exp_num, '/61/blending/', demo_params, '.mat'));
+    demo_params = strcat('blending_2_2_60_0');
+    load(strcat('BF_texture_files/optimizer/', exp_num, '/0.061/blending/', demo_params, '.mat'));
     
     for plane = (1:4)
        for eye = (0:1)
@@ -27,7 +27,7 @@ if trial_mode == 0
             hdr = uint8(zeros(800,800,3));
             
             % upside down compensation
-            hdr(550:-1:51,101:700,:) = uint8(double(layers{eye*4+plane}).*generateAperture(18,3.2,1.5,eye));
+            hdr(550:-1:51,101:700,:) = uint8(double(layers{eye*4+plane}).*generateAperture(18,2.3,0.1,eye));
             
             % Implement Gamma Correction
             hdr1 = hdr(:,:,1);
@@ -67,7 +67,7 @@ elseif trial_mode == 1
                 hdr = uint8(zeros(800,800,3));
                 
                 % Add black circular aperture
-                aperture = generateAperture(18, 0.3+trial_params{3}, trial_params{3}, eye);
+                aperture = generateAperture(18, 0.3+trial_params{3}, trial_params{3}-1.9, eye);
                 
                 %upside down compensation
                 hdr(550:-1:51,101:700,:) = uint8(double(layers{eye*4+plane}).*aperture);

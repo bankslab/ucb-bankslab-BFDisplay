@@ -1180,13 +1180,13 @@ eval([exp_num]);
                     % Every 350 trials, take a break
                     if mod(trial_counter, p.trialsPerBlock) == 0
                         % Save an extra copy after each block, just in case
+                        p.block_counter = p.block_counter + 1;
                         backup_filename = strcat(record_filename(1:end-4), '_', datestr(clock,30), '.mat');
                         save(backup_filename, 'p', 'scell');
                         save(record_filename, 'p', 'scell');
                         disp([num2str(p.block_counter) ' block(s) completed'])
                         message = 'endofblock';
                         BF_disp_message
-                        p.block_counter = p.block_counter + 1;
                     end
                 end
             end

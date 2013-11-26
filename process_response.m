@@ -12,12 +12,12 @@ while(stop_flag==0)
         iKeyIndex = find(c);
         strInputName = KbName(iKeyIndex(1));
         actualHingeAngle = scell{s_i}{sNum}.stimVal;
-        if strcmp(strInputName,'1') || strcmp(strInputName,'1!')
+        if strcmp(strInputName,'LeftArrow')
             % record response and update staircase
             correct = (actualHingeAngle < 90);
             scell{s_i}{sNum} = staircase('update', scell{s_i}{sNum}, [correct, 1]);
             break;
-        elseif strcmp(strInputName,'2') || strcmp(strInputName,'2@')
+        elseif strcmp(strInputName, 'RightArrow')
             correct = (actualHingeAngle >= 90);
             scell{s_i}{sNum} = staircase('update', scell{s_i}{sNum}, [correct, 2]);
             break;

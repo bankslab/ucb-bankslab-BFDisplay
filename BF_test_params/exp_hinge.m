@@ -18,15 +18,14 @@ else
     % Experiment Parameters
     p.trialsPerBlock = 50;
     p.block_counter  = 0;
-    p.stim_duration  = 0.75; %sec
-    %p.algorithm      = {'optimization', 'blending', 'single', 'pinhole'};
-    p.algorithm      = {'optimization', 'blending', 'single'};
-    p.disparity_dist = 2;              % [2 : 1.2 : 3.2];
-    p.accom_dist     = [2, 3.2];       % [2 : 1.2 : 3.2];
-    p.angle_noise    = [0 0];          % [-5 0 5];
+    p.stim_duration  = 1; %sec
+    p.algorithm      = {'optimization', 'blending', 'single', 'pinhole'};
+    p.disparity_dist = [2, 2.3, 2.6, 2.9, 3.2];
+    p.accom_dist     = [2, 2.3, 2.6, 2.9, 3.2];
+    p.angle_noise    = [-5 0 5];
     
     % Staircase Parameters
-    p.linStep        = 3;
+    p.linStep        = 2;
     p.updown         = {[2 1] [1 2]};
     p.minmax         = [60 120];
     p.startVals      = [p.minmax(2) - 2*p.linStep,...
@@ -47,14 +46,23 @@ else
         s.step = [p.linStep, p.linStep];
         s.angle_noise_vals = [];
         s.indexVal = 0;
-        s.complete = 0;
         
-        for alg_index = 1:length(p.algorithm)
-            for disparity_dist_index = 1:length(p.disparity_dist)
-                for accom_dist_index = 1:length(p.accom_dist)
+        % Do not run non-volumetric cases for in-between planes
+        % Do not run cues inconsistent for in-between planes
+        for disparity_dist_index = 1:length(p.disparity_dist)
+            for accom_dist_index = 1:length(p.accom_dist)
+                for alg_index = 1:length(p.algorithm)
                     s.algorithm      = p.algorithm{alg_index};
                     s.disparity_dist = p.disparity_dist(disparity_dist_index);
                     s.accom_dist     = p.accom_dist(accom_dist_index);
+                    if (s.disparity_dist == 2.3 || s.disparity_dist == 2.9 || ...
+                        s.accom_dist     == 2.3 || s.accom_dist     == 2.9) && ...
+                      ((s.disparity_dist ~= s.accom_dist) || ...
+                       (strcmp(s.algorithm, 'single') || strcmp(s.algorithm, 'pinhole')))
+                        s.complete = 1;
+                    else
+                        s.complete = 0;
+                    end
                     initSCell{alg_index, disparity_dist_index, accom_dist_index}{s_index} = s;
                 end
             end
