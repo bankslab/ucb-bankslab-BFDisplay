@@ -18,20 +18,20 @@ else
     % Experiment Parameters
     p.trialsPerBlock = 50;
     p.block_counter  = 0;
-    p.stim_duration  = 1; %sec
+    p.stim_duration  = 10; %sec
     p.algorithm      = {'optimization', 'blending', 'single', 'pinhole'};
-    p.disparity_dist = [2, 2.3, 2.6, 2.9, 3.2];
-    p.accom_dist     = [2, 2.3, 2.6, 2.9, 3.2];
-    p.angle_noise    = [-5 0 5];
+    p.disparity_dist = 2.6;   %[2, 2.3, 2.6, 2.9, 3.2];
+    p.accom_dist     = 2.6; %[2, 2.3, 2.6, 2.9, 3.2];
+    p.angle_noise    = [0, 180]; %[-5, 0, 5];
     
     % Staircase Parameters
-    p.linStep        = 2;
+    p.linStep        = 10; %2;
     p.updown         = {[2 1] [1 2]};
-    p.minmax         = [60 120];
-    p.startVals      = [p.minmax(2) - 2*p.linStep,...
-                        p.minmax(1) + 2*p.linStep];
+    p.minmax         = [50 90];
+    p.startVals      = [p.minmax(2) - p.linStep,...
+                        p.minmax(1) + p.linStep];
     p.nTrials        = []; %set by nReversals
-    p.nReversals     = 14;
+    p.nReversals     = 10; %14;
     
     % Check that staircase values are valid
     assert(p.startVals(1) > p.minmax(1) & p.startVals(2) < p.minmax(2), 'Starting values are not within valid range');
