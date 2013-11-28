@@ -13,8 +13,8 @@ for monitor = 1:2
 end
     
 if trial_mode == 0 
-    demo_params = strcat('blending_2_2.6_90_0');
-    load(strcat('BF_texture_files/optimizer/', exp_num, '/0.061/blending/', demo_params, '.mat'));
+    demo_params = strcat('pinhole_2.6_2.6_90_180');
+    load(strcat('BF_texture_files/optimizer/', exp_num, '/0.061/pinhole/', demo_params, '.mat'));
     
     for plane = (1:4)
        for eye = (0:1)

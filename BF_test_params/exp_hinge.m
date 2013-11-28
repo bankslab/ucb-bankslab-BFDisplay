@@ -18,24 +18,25 @@ else
     % Experiment Parameters
     p.trialsPerBlock = 50;
     p.block_counter  = 0;
-    p.stim_duration  = 10; %sec
+    p.stim_duration  = 8; %sec
     p.algorithm      = {'optimization', 'blending', 'single', 'pinhole'};
     p.disparity_dist = 2.6;   %[2, 2.3, 2.6, 2.9, 3.2];
     p.accom_dist     = 2.6; %[2, 2.3, 2.6, 2.9, 3.2];
     p.angle_noise    = [0, 180]; %[-5, 0, 5];
     
     % Staircase Parameters
-    p.linStep        = 10; %2;
+    p.linStep        = 20; %2;
     p.updown         = {[2 1] [1 2]};
-    p.minmax         = [50 90];
-    p.startVals      = [p.minmax(2) - p.linStep,...
-                        p.minmax(1) + p.linStep];
+    p.minmax         = [70 90];
+    p.startVals      = [90 70];
+                       %[p.minmax(2) - p.linStep,...
+                       % p.minmax(1) + p.linStep];
     p.nTrials        = []; %set by nReversals
     p.nReversals     = 10; %14;
     
     % Check that staircase values are valid
-    assert(p.startVals(1) > p.minmax(1) & p.startVals(2) < p.minmax(2), 'Starting values are not within valid range');
-    assert(p.startVals(1) > p.startVals(2), 'First start value must be greater than second start value');
+    assert(p.startVals(1) >= p.minmax(1) & p.startVals(2) <= p.minmax(2), 'Starting values are not within valid range');
+    assert(p.startVals(1) >= p.startVals(2), 'First start value must be greater than second start value');
     
     % Build staircases
     % Two different staircases per scell
