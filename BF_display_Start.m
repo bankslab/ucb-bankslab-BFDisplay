@@ -1161,7 +1161,6 @@ eval([exp_num]);
                     BF_initialize_trial; % calls RenderSceneStatic
                     BF_run_trial;        % calls actual GL display commands
                     process_response;    % gets keyboard input and updates staircase
-                    save(record_filename,'p','scell');
                     trial_counter = trial_counter + 1;
                 
                     % Mark complete staircases as complete
