@@ -22,17 +22,17 @@ else
     p.algorithm      = {'optimization', 'blending', 'single', 'pinhole'};
     p.disparity_dist = 2.6;   %[2, 2.3, 2.6, 2.9, 3.2];
     p.accom_dist     = 2.6; %[2, 2.3, 2.6, 2.9, 3.2];
-    p.angle_noise    = [0, 180]; %[-5, 0, 5];
+    p.angle_noise    = [0, 180, 360, 540]; %[-5, 0, 5];
     
     % Staircase Parameters
     p.linStep        = 20; %2;
-    p.updown         = {[2 1] [1 2]};
+    p.updown         = {[1 1] [1 1]};
     p.minmax         = [70 90];
     p.startVals      = [90 70];
                        %[p.minmax(2) - p.linStep,...
                        % p.minmax(1) + p.linStep];
-    p.nTrials        = []; %set by nReversals
-    p.nReversals     = 10; %14;
+    p.nTrials        = 25;
+    p.nReversals     = [];
     
     % Check that staircase values are valid
     assert(p.startVals(1) >= p.minmax(1) & p.startVals(2) <= p.minmax(2), 'Starting values are not within valid range');

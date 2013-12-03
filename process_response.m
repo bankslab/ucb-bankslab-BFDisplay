@@ -14,11 +14,13 @@ while(stop_flag==0)
         actualHingeAngle = scell{s_i}{sNum}.stimVal;
         if strcmp(strInputName, 'UpArrow') %'LeftArrow')
             % record response and update staircase
-            correct = (actualHingeAngle < 90);
+            %correct = (actualHingeAngle < 90);
+            correct = randi(2)-1;
             scell{s_i}{sNum} = staircase('update', scell{s_i}{sNum}, [correct, 1]);
             break;
         elseif strcmp(strInputName, 'DownArrow') %'RightArrow')
-            correct = (actualHingeAngle >= 90);
+            %correct = (actualHingeAngle >= 90);
+            correct = randi(2)-1;
             scell{s_i}{sNum} = staircase('update', scell{s_i}{sNum}, [correct, 2]);
             break;
         elseif strcmp(strInputName,'ESCAPE')||strcmp(strInputName,'esc')

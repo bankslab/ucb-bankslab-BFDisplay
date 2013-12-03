@@ -133,7 +133,7 @@
 function varargout=staircase(cmd, varargin)
 changeStep = 0;
 if nargin<1, help(mfilename); return; end
-if ~ischar(cmd), error('stairecase command must be a string.'); end
+if ~ischar(cmd), error('staircase command must be a string.'); end
 if any(cmd=='?'), subFuncHelp(mfilename,cmd); return; end % online help
 
 if strcmpi(cmd,'update') % first update, maybe faster?
