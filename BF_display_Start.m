@@ -1140,7 +1140,10 @@ eval([exp_num]);
             stop_flag=0;
             while stop_flag==0
                 trial_params{1} = get(scellThisRound{s_i}, 'algorithm');
-                trial_params{2} = get(scellThisRound{s_i}, 'currentValue'); % side in front
+                trial_params{2} = get(scellThisRound{s_i}, 'tex_side');
+                trial_params{3} = get(scellThisRound{s_i}, 'front_plane');
+                trial_params{4} = get(scellThisRound{s_i}, 'currentValue'); % side in front
+
                 BF_build_textures_optimizer;
 
                 BF_initialize_trial; % calls RenderSceneStatic

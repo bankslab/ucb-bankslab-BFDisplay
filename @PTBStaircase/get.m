@@ -100,16 +100,16 @@ while length(propertyArgIn) >= 1,
             uit = s.MCS_num_responses; 
         case 'MCS_max_responses'
             uit = s.MCS_max_responses;
-                case 'algorithm'
+        case 'algorithm'
             uit = s.algorithm;
-        case 'disparity_distance'
-            uit = s.disparity_dist;
-        case 'accom_distance'
-            uit = s.accom_dist;
         case 'angle_noise'
             uit = s.angle_noise;
         case 'initialized'
             uit = s.initialized;
+        case 'front_plane'
+            uit = s.front_plane;
+        case 'tex_side'
+            uit = s.tex_side;
         case 'responses'
             uit = s.responses;
    otherwise

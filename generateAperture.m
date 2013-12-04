@@ -34,8 +34,6 @@ apertureShift = (pupilSize*imageWidth/2)/(apertureDepth*tan(toRadians('d',fovX/2
 %0.25 less because it is the natural disparity of mirrors 
 disparityShift = (-2*(eye-0.5))*((ior/2)*imageWidth/2)/((apertureDepth)*tan(toRadians('d',fovX/2)));
 disparityShiftNatural = (-2*(eye-0.5))*((ior/2)*imageWidth/2)/((0.4)*tan(toRadians('d',fovX/2)));
-disparityShift
-disparityShiftNatural
 disparityShift = disparityShift-disparityShiftNatural;
 
 blurRadius = apertureShift-necessaryShift;
