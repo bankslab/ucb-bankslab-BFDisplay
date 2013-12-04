@@ -1,3 +1,4 @@
+
 function [] = BF_display_Start(viewMode, observer_initials, exp_num)
         %BF_display_Start(viewMode, WhatDefaultParams, observer_initials)
       %David Hoffman
@@ -1140,11 +1141,15 @@ eval([exp_num]);
             record_filename = [pwd '/BF_data_files/optimizer/' observer_initials '_' exp_num '_' datestr(clock,30) '.mat'];
             stop_flag=0;
             while stop_flag==0
-                set(scellThisRound{s_i}, 'fix_side', randi(2)-1); % Choose random side for fixation cross
+                makeFix = 1;
+                scellThisRound{s_i} = set(scellThisRound{s_i}, 'fix_side', (randi(2)-1)); % Choose random side for fixation cross
+                fix_params{1} = 'nonius';
                 fix_params{2} = get(scellThisRound{s_i}, 'fix_plane');
                 fix_params{3} = get(scellThisRound{s_i}, 'fix_side');
                 BF_build_textures_optimizer;
-                fix_params = [];
+                BF_initialize_trial; % calls RenderSceneStatic
+                BF_run_trial; % calls actual GL commands
+                makeFix = 0;
                 
                 trial_params{1} = get(scellThisRound{s_i}, 'algorithm');
                 set(scellThisRound{s_i}, 'tex_side', param.tex_side(randi(2)));

@@ -1,7 +1,12 @@
 
 if strcmp(experiment_type, 'marina_occlusions')
+    if makeFix
+        waitTime = param.fix_duration;
+    else
+        waitTime = param.stim_duration;
+    end
     tic
-    while toc < param.stim_duration
+    while toc < waitTime
         depthplane = depthplane + 1;
         if depthplane > 4
             depthplane = 1;

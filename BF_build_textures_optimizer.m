@@ -45,8 +45,8 @@ if trial_mode == 0
     end   
     
 elseif trial_mode == 1
-    if ~isempty(trial_params)
-        if ~isempty(fix_params)
+    if ~isempty(fix_params)
+        if makeFix
             % Make a fixation cross
             string_holder{length(fix_params)} = [];
             string_holder{1} = 'nonius';

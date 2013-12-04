@@ -16,10 +16,14 @@ while(stop_flag==0)
         strInputName=KbName(iKeyIndex(1));
         actualHingeAngle = get(scellThisRound{s_i},'currentValue');
         if strcmp(strInputName,'LeftArrow')
-            scellThisRound{s_i}=processResponse(scellThisRound{s_i}, 0);
+            fix_plane = get(scellThisRound{s_i}, 'fix_plane');
+            fix_side  = get(scellThisRound{s_i}, 'fix_side');
+            scellThisRound{s_i}=processResponse(scellThisRound{s_i}, [0, fix_plane, fix_side]);
             break;
         elseif strcmp(strInputName,'RightArrow')
-            scellThisRound{s_i}=processResponse(scellThisRound{s_i}, 1);
+            fix_plane = get(scellThisRound{s_i}, 'fix_plane');
+            fix_side  = get(scellThisRound{s_i}, 'fix_side');
+            scellThisRound{s_i}=processResponse(scellThisRound{s_i}, [1, fix_plane, fix_side]);
             break;
         elseif strcmp(strInputName,'ESCAPE')||strcmp(strInputName,'esc')
             stop_flag=1;
