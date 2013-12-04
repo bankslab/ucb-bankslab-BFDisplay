@@ -45,14 +45,13 @@ if trial_mode == 0
     end   
     
 elseif trial_mode == 1
-    if ~isempty(fix_params)
+    if started
         if makeFix
             % Make a fixation cross
-            string_holder{length(fix_params)} = [];
+            string_holder = [];
             string_holder{1} = 'nonius';
-            for i = 2:length(fix_params)
-                string_holder{i} = num2str(fix_params{i});
-            end
+            string_holder{2} = num2str(fix_params{1});
+            string_holder{3} = num2str(fix_params{2});
             param_string = strjoin(string_holder, '_');
             file_name = strcat(param_string, '.mat');
             file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), string_holder{1}, file_name}, '/');
@@ -77,7 +76,7 @@ elseif trial_mode == 1
                 hdr = uint8(zeros(800,800,3));
 
                 %upside down compensation
-                hdr(550:-1:51,101:700,:) = uint8(double(layers{eye*4+plane}).*generateAperture(18,3.2,1.5,eye));
+                hdr(550:-1:51,101:700,:) = uint8(double(layers{eye*4+plane}));
 
                 % gamma calibration
                 hdr1 = hdr(:,:,1);

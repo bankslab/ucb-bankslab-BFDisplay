@@ -482,6 +482,7 @@ eval([exp_num]);
         glDisable(GL.DEPTH_TEST);
         trial_params=[];
         fix_params=[];
+        started=0;
         BF_build_textures_optimizer;
     end
     
@@ -1140,19 +1141,19 @@ eval([exp_num]);
         if strcmp(experiment_type, 'marina_occlusions')
             record_filename = [pwd '/BF_data_files/optimizer/' observer_initials '_' exp_num '_' datestr(clock,30) '.mat'];
             stop_flag=0;
+            started=1;
             while stop_flag==0
                 makeFix = 1;
                 scellThisRound{s_i} = set(scellThisRound{s_i}, 'fix_side', (randi(2)-1)); % Choose random side for fixation cross
-                fix_params{1} = 'nonius';
-                fix_params{2} = get(scellThisRound{s_i}, 'fix_plane');
-                fix_params{3} = get(scellThisRound{s_i}, 'fix_side');
+                fix_params{1} = get(scellThisRound{s_i}, 'fix_plane');
+                fix_params{2} = get(scellThisRound{s_i}, 'fix_side');
                 BF_build_textures_optimizer;
                 BF_initialize_trial; % calls RenderSceneStatic
                 BF_run_trial; % calls actual GL commands
                 makeFix = 0;
                 
                 trial_params{1} = get(scellThisRound{s_i}, 'algorithm');
-                set(scellThisRound{s_i}, 'tex_side', param.tex_side(randi(2)));
+                scellThisRound{s_i} = set(scellThisRound{s_i}, 'tex_side', param.tex_side(randi(2)));
                 trial_params{2} = get(scellThisRound{s_i}, 'tex_side');
                 trial_params{3} = get(scellThisRound{s_i}, 'front_plane');
                 trial_params{4} = get(scellThisRound{s_i}, 'currentValue'); % side in front
