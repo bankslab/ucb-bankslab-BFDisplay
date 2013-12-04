@@ -6,7 +6,7 @@
 
 Screen('BeginOpenGL', windowPtr);
   
-if strcmp(experiment_type, 'hinge')
+if strcmp(experiment_type, 'marina_occlusions')
     glDisable(GL.DEPTH_TEST);
     genlist_start=glGenLists(17);  %Returns integer of first set of free display lists
     genlist_projection1=[0 1 2 3 4 5 6 7]+genlist_start;  %Set of indices

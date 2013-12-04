@@ -74,11 +74,7 @@ ms.MCS_stimuli = [];            % Vector containin actual stimuli
 ms.MCS_num_responses = [];      % Vector of the number of responses for each stimulus
 ms.MCS_max_responses = [];      % Number of responses desired for each stimulus
 
-% Variables for optimizer experiment
-ms.algorithm = [];
-ms.disparity_dist = [];
-ms.accom_dist = [];
-ms.angle_noise = [];
+% Variables for marina occlusions experiment
 ms.initialized = [];
 
 ms = class(ms,'PTBStaircase');

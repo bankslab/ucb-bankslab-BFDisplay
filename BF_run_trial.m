@@ -1,5 +1,5 @@
 
-if strcmp(experiment_type, 'hinge')
+if strcmp(experiment_type, 'marina_occlusions')
     tic
     while toc < param.stim_duration
         depthplane = depthplane + 1;
@@ -1325,6 +1325,6 @@ end
 
 onset=Screen('Flip', windowPtr, [], []);
 
-if ~strcmp(experiment_type,'hinge')
+if ~strcmp(experiment_type,'marina_occlusions')
     BF_respond_react
 end
