@@ -14,7 +14,7 @@ end
     
 if trial_mode == 0 
     demo_params = strcat('optimization_2.6_2.6_90_180');
-    load(strcat('BF_texture_files/optimizer/', exp_num, '/0.066/optimization/', demo_params, '.mat'));
+    load(strcat('BF_texture_files/optimizer/', exp_num, '/0.063/optimization/', demo_params, '.mat'));
     
     for plane = (1:4)
        for eye = (0:1)
