@@ -46,40 +46,52 @@ if trial_mode == 0
     
 elseif trial_mode == 1
     if ~isempty(trial_params)
-        % Convert numbers to strings
-        string_holder{length(trial_params)} = [];
-        string_holder{1} = trial_params{1}{1}; %algorithm
-        string_holder{2} = trial_params{2}{1}; %tex_side
-        for i = 3:length(trial_params)
-            string_holder{i} = num2str(trial_params{i});
+        if ~isempty(fix_params)
+            % Make a fixation cross
+            string_holder{length(fix_params)} = [];
+            string_holder{1} = 'nonius';
+            for i = 2:length(fix_params)
+                string_holder{i} = num2str(fix_params{i});
+            end
+            param_string = strjoin(string_holder, '_');
+            file_name = strcat(param_string, '.mat');
+            file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), string_holder{1}, file_name}, '/');
+            load(file_path);
+        else
+            % Make occlusion stimulus
+            string_holder{length(trial_params)} = [];
+            string_holder{1} = trial_params{1}{1}; %algorithm
+            string_holder{2} = trial_params{2}{1}; %tex_side
+            for i = 3:length(trial_params)
+                string_holder{i} = num2str(trial_params{i});
+            end
+            param_string = strjoin(string_holder, '_');
+            file_name = strcat(param_string, '.mat');
+            file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), trial_params{1}{1}, file_name}, '/');
+            load(file_path);
         end
-        param_string = strjoin(string_holder, '_');
-        file_name = strcat(param_string, '.mat');
-        file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), trial_params{1}{1}, file_name}, '/');
-        load(file_path);
-        
         for plane = (1:4)
             for eye = (0:1)
                 img_index = plane + eye*4;
-                
+
                 hdr = uint8(zeros(800,800,3));
-                
+
                 %upside down compensation
                 hdr(550:-1:51,101:700,:) = uint8(double(layers{eye*4+plane}).*generateAperture(18,3.2,1.5,eye));
-                
+
                 % gamma calibration
                 hdr1 = hdr(:,:,1);
                 hdr2 = hdr(:,:,2);
                 hdr3 = hdr(:,:,3);
-                
+
                 hdr1 = uint8(255*cg1{eye+1}(hdr1+1));
                 hdr2 = uint8(255*cg2{eye+1}(hdr2+1));
                 hdr3 = uint8(255*cg3{eye+1}(hdr3+1));
-                
+
                 hdr(:,:,1) = hdr1;
                 hdr(:,:,2) = hdr2;
                 hdr(:,:,3) = hdr3;
-                
+
                 image_list{img_index} = hdr;
             end
         end

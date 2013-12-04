@@ -118,6 +118,10 @@ while length(property_argin) >= 2,
             a.front_plane=val;
         case 'tex_side'
             a.tex_side=val;
+        case 'fix_plane'
+            a.fix_plane=val;
+        case 'fix_side'
+            a.fix_side=val;
         case 'initialized'
             a.initialized = val;
         otherwise

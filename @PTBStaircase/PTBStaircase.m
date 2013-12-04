@@ -75,6 +75,8 @@ ms.MCS_num_responses = [];      % Vector of the number of responses for each sti
 ms.MCS_max_responses = [];      % Number of responses desired for each stimulus
 
 % Variables for marina occlusions experiment
+ms.fix_side    = [];
+ms.fix_plane   = [];
 ms.algorithm   = [];
 ms.front_plane = [];
 ms.tex_side    = [];

@@ -480,6 +480,7 @@ eval([exp_num]);
     if strcmp(experiment_type, 'marina_occlusions')
         glDisable(GL.DEPTH_TEST);
         trial_params=[];
+        fix_params=[];
         BF_build_textures_optimizer;
     end
     
@@ -1139,7 +1140,14 @@ eval([exp_num]);
             record_filename = [pwd '/BF_data_files/optimizer/' observer_initials '_' exp_num '_' datestr(clock,30) '.mat'];
             stop_flag=0;
             while stop_flag==0
+                set(scellThisRound{s_i}, 'fix_side', randi(2)-1); % Choose random side for fixation cross
+                fix_params{2} = get(scellThisRound{s_i}, 'fix_plane');
+                fix_params{3} = get(scellThisRound{s_i}, 'fix_side');
+                BF_build_textures_optimizer;
+                fix_params = [];
+                
                 trial_params{1} = get(scellThisRound{s_i}, 'algorithm');
+                set(scellThisRound{s_i}, 'tex_side', param.tex_side(randi(2)));
                 trial_params{2} = get(scellThisRound{s_i}, 'tex_side');
                 trial_params{3} = get(scellThisRound{s_i}, 'front_plane');
                 trial_params{4} = get(scellThisRound{s_i}, 'currentValue'); % side in front
