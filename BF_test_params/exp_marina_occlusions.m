@@ -12,7 +12,7 @@ dumpworkspace=1;
 
 %% INITSCELL
 % Experiment parameters
-param.fix_duration  = 1; % seconds
+param.fix_duration  = 2; % seconds
 param.stim_duration = 0.2; % seconds
 
 % MCS marina_occlusions values
