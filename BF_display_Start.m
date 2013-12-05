@@ -1139,6 +1139,25 @@ eval([exp_num]);
 		BF_display_initial_message;
 
         if strcmp(experiment_type, 'marina_occlusions')
+            
+            % MARINA'S ADDITION %%
+            % Open file
+            currentTime = clock;
+            ye = currentTime(1); mo = currentTime(2); da = currentTime(3);
+            ho = currentTime(4); mi = currentTime(5); se = currentTime(6);
+            
+            mkdir('Data_Occlusions');
+            fileName = sprintf('Data_Occlusions/%s_%2d_%2d__%2d_%2d.data', observer_initials, da,  mo, ho, mi);
+            fp = fopen(fileName, 'a');
+            
+            fprintf(fp, '\n*** hinge angle experiment ***\n');
+            fprintf(fp, 'Subject Name:\t%s\n', subjectName);
+            fprintf(fp, 'Date and Time:\t%2d/%2d/%4d\t%2d:%2d:%2.0f\n', da, mo, ye, ho, mi, se);
+            fprintf(fp, 'seed = %.0f (generator=''%s'')\n', seed, whichGen);
+            fprintf(fp, '*** **************************** ***\n');
+            fprintf(fp, ' ss\t text_side\t front_plane\t currentvalue\t resp_curr\n');
+            % MARINA'S ADDITION %%
+
             record_filename = [pwd '/BF_data_files/optimizer/' observer_initials '_' exp_num '_' datestr(clock,30) '.mat'];
             stop_flag=0;
             started=1;
@@ -1160,21 +1179,29 @@ eval([exp_num]);
                     Screen('FillRect',windowPtr,[0 0 0]);
                     Screen('Flip',windowPtr);
                     makeFix = 0;
-
+                    
                     trial_params{1} = get(scellThisRound{s_i}, 'algorithm');
                     scellThisRound{s_i} = set(scellThisRound{s_i}, 'tex_side', param.tex_side(randi(2)));
                     trial_params{2} = get(scellThisRound{s_i}, 'tex_side');
                     trial_params{3} = get(scellThisRound{s_i}, 'front_plane');
                     trial_params{4} = get(scellThisRound{s_i}, 'currentValue'); % side in front
-
+                    
                     BF_build_textures_optimizer;
-
+                    
                     BF_initialize_trial; % calls RenderSceneStatic
                     BF_run_trial; % calls actual GL commands
                     process_response; % gets keyboard input and updates staircase
                     save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound');
+                    
+                    trial_counter = trial_counter + 1;
+                    % Write on file
+                    fprintf(fp, '%d\t %d\t %d\t %d\t %d\n', ...
+                        trial_counter, trial_params{2}, trial_params{3}, trial_params{4}, f_print_response);
                 end
             end
+            
+            fclose(fp);
+      
         end
         
         if strcmp(experiment_type,'fatigue_assess1') || strcmp(experiment_type,'fatigue_assess2') || strcmp(experiment_type,'fatigue_assess3')
