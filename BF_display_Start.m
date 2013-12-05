@@ -1150,6 +1150,11 @@ eval([exp_num]);
                 BF_build_textures_optimizer;
                 BF_initialize_trial; % calls RenderSceneStatic
                 BF_run_trial; % calls actual GL commands
+                Screen('SelectStereoDrawBuffer',windowPtr,0);
+                Screen('FillRect',windowPtr,[0 0 0]);
+                Screen('SelectStereoDrawBuffer',windowPtr,1);
+                Screen('FillRect',windowPtr,[0 0 0]);
+                Screen('Flip',windowPtr);
                 makeFix = 0;
                 
                 trial_params{1} = get(scellThisRound{s_i}, 'algorithm');
