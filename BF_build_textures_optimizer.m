@@ -76,7 +76,7 @@ elseif trial_mode == 1
                 hdr = uint8(zeros(800,800,3));
 
                 %upside down compensation
-                hdr(550:-1:51,101:700,:) = uint8(double(layers{eye*4+plane}));
+                hdr(550:-1:51,101:700,:) = uint8(double(layers{eye*4+plane}).*generateAperture(18,3.2,1.5,eye));
 
                 % gamma calibration
                 hdr1 = hdr(:,:,1);

@@ -1,0 +1,14 @@
+
+*** hinge angle experiment ***
+Subject Name:	M_Z_Test_Optimization
+Date and Time:	 4/12/2013	20:21:55
+*** **************************** ***
+ ss	 fix_plane	 text_side	 front_plane	 currentvalue	 resp_curr
+1	 20	 2	 26	 1	 0
+2	 26	 3	 26	 1	 1
+3	 26	 2	 26	 0	 0
+4	 20	 3	 26	 1	 1
+5	 20	 3	 26	 0	 0
+6	 20	 3	 26	 1	 1
+7	 26	 3	 26	 1	 0
+8	 20	 3	 26	 1	 0

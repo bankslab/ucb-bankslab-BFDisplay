@@ -1151,18 +1151,18 @@ eval([exp_num]);
             fp = fopen(fileName, 'a');
             
             fprintf(fp, '\n*** hinge angle experiment ***\n');
-            fprintf(fp, 'Subject Name:\t%s\n', subjectName);
+            fprintf(fp, 'Subject Name:\t%s\n', observer_initials);
             fprintf(fp, 'Date and Time:\t%2d/%2d/%4d\t%2d:%2d:%2.0f\n', da, mo, ye, ho, mi, se);
-            fprintf(fp, 'seed = %.0f (generator=''%s'')\n', seed, whichGen);
             fprintf(fp, '*** **************************** ***\n');
-            fprintf(fp, ' ss\t text_side\t front_plane\t currentvalue\t resp_curr\n');
+            fprintf(fp, ' ss\t fix_plane\t text_side\t front_plane\t currentvalue\t resp_curr\n');
             % MARINA'S ADDITION %%
 
             record_filename = [pwd '/BF_data_files/optimizer/' observer_initials '_' exp_num '_' datestr(clock,30) '.mat'];
             stop_flag=0;
             started=1;
+            block_counter = zeros(1, length(scellThisRound));
             while stop_flag==0
-                s_i = randi(length(scell));
+                s_i = randi(length(scellThisRound));
                 if (get(scellThisRound{s_i}, 'complete') == 1)
                     continue;
                 else
@@ -1173,19 +1173,19 @@ eval([exp_num]);
                     BF_build_textures_optimizer;
                     BF_initialize_trial; % calls RenderSceneStatic
                     BF_run_trial; % calls actual GL commands
+                    makeFix = 0;
+                    
                     Screen('SelectStereoDrawBuffer',windowPtr,0);
                     Screen('FillRect',windowPtr,[0 0 0]);
                     Screen('SelectStereoDrawBuffer',windowPtr,1);
                     Screen('FillRect',windowPtr,[0 0 0]);
                     Screen('Flip',windowPtr);
-                    makeFix = 0;
                     
                     trial_params{1} = get(scellThisRound{s_i}, 'algorithm');
                     scellThisRound{s_i} = set(scellThisRound{s_i}, 'tex_side', param.tex_side(randi(2)));
                     trial_params{2} = get(scellThisRound{s_i}, 'tex_side');
                     trial_params{3} = get(scellThisRound{s_i}, 'front_plane');
                     trial_params{4} = get(scellThisRound{s_i}, 'currentValue'); % side in front
-                    
                     BF_build_textures_optimizer;
                     
                     BF_initialize_trial; % calls RenderSceneStatic
@@ -1194,9 +1194,22 @@ eval([exp_num]);
                     save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound');
                     
                     trial_counter = trial_counter + 1;
+                    block_counter(s_i) = block_counter(s_i) + 1;
+                    
+                    if block_counter(s_i) == (param.max_responses*length(param.MCS_stimuli))
+                        scellThisRound{s_i} = set(scellThisRound{s_i}, 'complete', 1);
+                    end
+                    
                     % Write on file
-                    fprintf(fp, '%d\t %d\t %d\t %d\t %d\n', ...
-                        trial_counter, trial_params{2}, trial_params{3}, trial_params{4}, f_print_response);
+                    if strcmp(trial_params{2}{1}, 'trial2')
+                        texture_side = 2;
+                    else texture_side = 3;
+                    end
+                    fprintf(fp, '%d\t %d\t %d\t %d\t %d\t %d\n', ...
+                        trial_counter, fix_params{1}, texture_side, trial_params{3}, trial_params{4}, f_print_response);
+                    if trial_counter == param.max_trials
+                        stop_flag = 1;
+                    end
                 end
             end
             

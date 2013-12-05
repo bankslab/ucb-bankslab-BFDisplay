@@ -12,7 +12,7 @@ dumpworkspace=1;
 
 %% INITSCELL
 % Experiment parameters
-param.fix_duration  = 2; % seconds
+param.fix_duration  = 1; % seconds
 param.stim_duration = 0.2; % seconds
 
 % MCS marina_occlusions values
@@ -21,6 +21,7 @@ param.front_plane   = [26, 32]; % Plane number (Diopters)
 param.tex_side      = {'trial2', 'trial3'};
 param.MCS_stimuli   = [0, 1]; % left or right side in front
 param.max_responses = 5;
+param.max_trials    = 40;
 
 % count how many staircases we want
 
