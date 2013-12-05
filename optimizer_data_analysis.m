@@ -1,10 +1,10 @@
 %load data file(s)
 %load RAA_Test_Optimization_exp_hing_20131018T172845.mat
-%allthedata = [scellThisRound, scellNextRound];
-allthedata = scellCompleted;
+allthedata = [scellThisRound, scellNextRound];
+%allthedata = scellCompleted;
 for i = 1:length(allthedata)
-    algorithm = get(allthedata{i}, 'algorithm');
-    disparity_distance = get(allthedata{i},'disparity_distance');
+    closerSide = get(allthedata{i}, 'MCS');
+    fix_plane = get(allthedata{i},'fix_plane');
     accom_distance = get(allthedata{i},'accom_distance');
     trial_values = get(allthedata{i},'values');
     responses = get(allthedata{i},'responses');
