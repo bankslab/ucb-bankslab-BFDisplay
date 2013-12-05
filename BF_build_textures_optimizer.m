@@ -14,7 +14,9 @@ end
     
 if trial_mode == 0 
     demo_params = strcat('optimization_2.6_2.6_90_180');
-    load(strcat('BF_texture_files/optimizer/', exp_num, '/0.063/optimization/', demo_params, '.mat'));
+    %load(strcat('BF_texture_files/optimizer/', exp_num, '/0.063/optimization/', demo_params, '.mat'));
+    %load(strcat('BF_texture_files/optimizer/cardboard/0.061/optimization/optimization_trial_1.mat'));
+    load(strcat('BF_texture_files/optimizer/cardboard/0.061/blending/blending_trial_1.mat'));
     
     for plane = (1:4)
        for eye = (0:1)
@@ -27,7 +29,8 @@ if trial_mode == 0
             hdr = uint8(zeros(800,800,3));
             
             % upside down compensation
-            hdr(550:-1:51,101:700,:) = uint8(double(layers{eye*4+plane}).*generateAperture(18,2.6,2,eye));
+            %hdr(550:-1:51,101:700,:) = uint8(double(layers{eye*4+plane}).*generateAperture(18,2.6,2,eye));
+            hdr(550:-1:51,101:700,:) = uint8(double(layers{eye*4+plane}));
             
             % Implement Gamma Correction
             hdr1 = hdr(:,:,1);
