@@ -51,9 +51,22 @@ if stereoMode==4
         %load('BF_params/BF_correctedLinearGammaNew.mat');
         %origGamma=Screen('LoadNormalizedGammaTable', wid, correctedGammaNew{1});
         %origGamma=Screen('LoadNormalizedGammaTable', wid2, correctedGammaNew{2});
-        load('BF_params/correctedLinearGamma_256steps_zeroOffset.mat');
-        origGamma=Screen('LoadNormalizedGammaTable', wid, correctedGamma{2});
+        %load('BF_params/correctedLinearGamma_256steps_zeroOffset.mat');
+        %origGamma=Screen('LoadNormalizedGammaTable', wid, correctedGamma{2});
         %origGamma=Screen('LoadNormalizedGammaTable', wid2, correctedGamma{2});
+        BF_CLUT_L(:,1)=0:1:255;
+        BF_CLUT_L(:,2)=0:1:255;
+        BF_CLUT_L(:,3)=0:1:255;
+        BF_CLUT_L= (BF_CLUT_L)/255;
+        BF_CLUT_R=BF_CLUT_L;
+        origGamma=Screen('LoadNormalizedGammaTable', wid, BF_CLUT_L);
+   
+        load('BF_params/correctedLinearGamma_256steps_zeroOffset.mat');
+        for monitor = 1:2
+            cGamma1{monitor} = correctedGamma{monitor}(:,1);
+            cGamma2{monitor} = correctedGamma{monitor}(:,2);
+            cGamma3{monitor} = correctedGamma{monitor}(:,3);
+        end
     else
         BF_CLUT_L(:,1)=0:1:255;
         BF_CLUT_L(:,2)=0:1:255;
@@ -201,7 +214,48 @@ additionalScaleFactor = 0;
 %aperture(:,:,1) = generateAperture(20,0.05,1);
 %aperture(:,:,2) = generateAperture(20,0.05,1);
 %aperture(:,:,3) = generateAperture(20,0.05,1);
+function [] = setLayers(fname)
+    load(fname);
+    
+    
+    
+    
+    for ind = 1:4
+        Screen('Close',tex(ind));
+        Screen('Close',tex_l(ind));
+        
+            
+        % upside down compensation
+        %hdr(550:-1:51,101:700,:) = uint8(double(layers{eye*4+plane}).*generateAperture(18,2.6,2,eye));
+        hdr = double(layers{ind+4});
 
+        % Implement Gamma Correction
+
+        hdr1 = uint8(255*cGamma1{2}(hdr(:,:,1)+1));
+        hdr2 = uint8(255*cGamma2{2}(hdr(:,:,2)+1));
+        hdr3 = uint8(255*cGamma3{2}(hdr(:,:,3)+1));
+
+        hdr(:,:,1) = hdr1;
+        hdr(:,:,2) = hdr2;
+        hdr(:,:,3) = hdr3;
+        
+        tex(ind) = Screen('MakeTexture',wid,uint8(hdr));
+        
+        hdr = double(layers{ind});
+
+        % Implement Gamma Correction
+
+        hdr1 = uint8(255*cGamma1{1}(hdr(:,:,1)+1));
+        hdr2 = uint8(255*cGamma2{1}(hdr(:,:,2)+1));
+        hdr3 = uint8(255*cGamma3{1}(hdr(:,:,3)+1));
+
+        hdr(:,:,1) = hdr1;
+        hdr(:,:,2) = hdr2;
+        hdr(:,:,3) = hdr3;
+        
+        tex_l(ind) = Screen('MakeTexture',wid,uint8(hdr));
+    end    
+end
 function [] = setTextures()
     
     for i = 1:4
@@ -354,6 +408,8 @@ while(1)
                     tex_l(2) = Screen('MakeTexture',wid,zeros(600,800,3));
                     tex_l(3) = Screen('MakeTexture',wid,zeros(600,800,3));
                     tex_l(4) = Screen('MakeTexture',wid,zeros(600,800,3));
+                    setLayers('BF_texture_files/optimizer/cardboard/0.061/optimization/optimization_trial_1.mat');
+                    
                 elseif strcmp(inputstr,'2@')
                     Screen('Close',tex(1));
                     Screen('Close',tex(2));
@@ -373,6 +429,8 @@ while(1)
                     tex_l(4) = Screen('MakeTexture',wid,zeros(600,800,3));
                     %currentSet = 1; 
                     %setTextures();
+                    
+                    setLayers('BF_texture_files/optimizer/cardboard/0.061/optimization/optimization_trial_0.mat');
                 elseif strcmp(inputstr,'3#')
                     Screen('Close',tex(1));
                     Screen('Close',tex(2));
@@ -392,6 +450,7 @@ while(1)
                     tex_l(4) = Screen('MakeTexture',wid,zeros(600,800,3));
                     %currentSet = 2; 
                     %setTextures();
+                    setLayers('BF_texture_files/optimizer/cardboard/0.061/blending/blending_trial_1.mat');
                 elseif strcmp(inputstr,'4$')
                     Screen('Close',tex(1));
                     Screen('Close',tex(2));
@@ -411,12 +470,17 @@ while(1)
                     tex_l(4) = Screen('MakeTexture',wid,test1_depth4(:,:,:));
                     %currentSet = 3; 
                     %setTextures();
+                    setLayers('BF_texture_files/optimizer/cardboard/0.061/blending/blending_trial_0.mat');
                 elseif strcmp(inputstr,'5%')
-                    currentSet = 4; 
-                    setTextures();
+                    setLayers('BF_texture_files/optimizer/cardboard/0.061/optimization/optimization_trial2_1.mat');
+                    
+                    %currentSet = 4; 
+                    %setTextures();
                 elseif strcmp(inputstr,'6^')
-                    currentSet = 5; 
-                    setTextures();
+                    setLayers('BF_texture_files/optimizer/cardboard/0.061/optimization/optimization_trial2_0.mat');
+                    
+                    %currentSet = 5; 
+                    %setTextures();
                 elseif strcmp(inputstr,'7&')
                     Screen('Close',tex(1));
                     Screen('Close',tex(2));
@@ -436,6 +500,8 @@ while(1)
                     tex_l(2) = Screen('MakeTexture',wid,test7_depth2_l(:,:,:));
                     tex_l(3) = Screen('MakeTexture',wid,test7_depth3_l(:,:,:));
                     tex_l(4) = Screen('MakeTexture',wid,test7_depth4_l(:,:,:));
+                    setLayers('BF_texture_files/optimizer/cardboard/0.061/blending/blending_trial2_1.mat');
+                    
                 elseif strcmp(inputstr,'8*')
                     Screen('Close',tex(1));
                     Screen('Close',tex(2));
@@ -454,6 +520,7 @@ while(1)
                     tex_l(2) = Screen('MakeTexture',wid,test8_depth2_l(:,:,:));
                     tex_l(3) = Screen('MakeTexture',wid,test8_depth3_l(:,:,:));
                     tex_l(4) = Screen('MakeTexture',wid,test8_depth4_l(:,:,:));
+                    setLayers('BF_texture_files/optimizer/cardboard/0.061/blending/blending_trial2_0.mat');
                 elseif strcmp(inputstr,'9(')
                     Screen('Close',tex(1));
                     Screen('Close',tex(2));
