@@ -1,8 +1,4 @@
 
-if isempty(get(scellThisRound{s_i},'MCS')) % staircasing
-    reversalsBeforeResponse=get(scellThisRound{s_i},'currentReversals'); % remember # reversals
-end
-
 while(stop_flag==0)
     Screen('SelectStereoDrawBuffer',windowPtr,0);
     Screen('FillRect',windowPtr,[0 0 0]);

@@ -1143,32 +1143,37 @@ eval([exp_num]);
             stop_flag=0;
             started=1;
             while stop_flag==0
-                makeFix = 1;
-                scellThisRound{s_i} = set(scellThisRound{s_i}, 'fix_side', (randi(2)-1)); % Choose random side for fixation cross
-                fix_params{1} = get(scellThisRound{s_i}, 'fix_plane');
-                fix_params{2} = get(scellThisRound{s_i}, 'fix_side');
-                BF_build_textures_optimizer;
-                BF_initialize_trial; % calls RenderSceneStatic
-                BF_run_trial; % calls actual GL commands
-                Screen('SelectStereoDrawBuffer',windowPtr,0);
-                Screen('FillRect',windowPtr,[0 0 0]);
-                Screen('SelectStereoDrawBuffer',windowPtr,1);
-                Screen('FillRect',windowPtr,[0 0 0]);
-                Screen('Flip',windowPtr);
-                makeFix = 0;
-                
-                trial_params{1} = get(scellThisRound{s_i}, 'algorithm');
-                scellThisRound{s_i} = set(scellThisRound{s_i}, 'tex_side', param.tex_side(randi(2)));
-                trial_params{2} = get(scellThisRound{s_i}, 'tex_side');
-                trial_params{3} = get(scellThisRound{s_i}, 'front_plane');
-                trial_params{4} = get(scellThisRound{s_i}, 'currentValue'); % side in front
+                s_i = randi(length(scell));
+                if (get(scellThisRound{s_i}, 'complete') == 1)
+                    continue;
+                else
+                    makeFix = 1;
+                    scellThisRound{s_i} = set(scellThisRound{s_i}, 'fix_side', (randi(2)-1)); % Choose random side for fixation cross
+                    fix_params{1} = get(scellThisRound{s_i}, 'fix_plane');
+                    fix_params{2} = get(scellThisRound{s_i}, 'fix_side');
+                    BF_build_textures_optimizer;
+                    BF_initialize_trial; % calls RenderSceneStatic
+                    BF_run_trial; % calls actual GL commands
+                    Screen('SelectStereoDrawBuffer',windowPtr,0);
+                    Screen('FillRect',windowPtr,[0 0 0]);
+                    Screen('SelectStereoDrawBuffer',windowPtr,1);
+                    Screen('FillRect',windowPtr,[0 0 0]);
+                    Screen('Flip',windowPtr);
+                    makeFix = 0;
 
-                BF_build_textures_optimizer;
+                    trial_params{1} = get(scellThisRound{s_i}, 'algorithm');
+                    scellThisRound{s_i} = set(scellThisRound{s_i}, 'tex_side', param.tex_side(randi(2)));
+                    trial_params{2} = get(scellThisRound{s_i}, 'tex_side');
+                    trial_params{3} = get(scellThisRound{s_i}, 'front_plane');
+                    trial_params{4} = get(scellThisRound{s_i}, 'currentValue'); % side in front
 
-                BF_initialize_trial; % calls RenderSceneStatic
-                BF_run_trial; % calls actual GL commands
-                process_response; % gets keyboard input and updates staircase
-                save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound');
+                    BF_build_textures_optimizer;
+
+                    BF_initialize_trial; % calls RenderSceneStatic
+                    BF_run_trial; % calls actual GL commands
+                    process_response; % gets keyboard input and updates staircase
+                    save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound');
+                end
             end
         end
         
