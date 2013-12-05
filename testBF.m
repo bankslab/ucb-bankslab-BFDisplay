@@ -235,9 +235,9 @@ function [] = setLayers(fname)
         hdr2 = uint8(255*cGamma2{2}(hdr(:,:,2)+1));
         hdr3 = uint8(255*cGamma3{2}(hdr(:,:,3)+1));
 
-        hdr(:,:,1) = hdr1;
-        hdr(:,:,2) = hdr2;
-        hdr(:,:,3) = hdr3;
+        %hdr(:,:,1) = hdr1;
+        %hdr(:,:,2) = hdr2;
+        %hdr(:,:,3) = hdr3;
         
         tex(ind) = Screen('MakeTexture',wid,uint8(hdr));
         
@@ -245,9 +245,9 @@ function [] = setLayers(fname)
 
         % Implement Gamma Correction
 
-        hdr1 = uint8(255*cGamma1{1}(hdr(:,:,1)+1));
-        hdr2 = uint8(255*cGamma2{1}(hdr(:,:,2)+1));
-        hdr3 = uint8(255*cGamma3{1}(hdr(:,:,3)+1));
+        %hdr1 = uint8(255*cGamma1{1}(hdr(:,:,1)+1));
+        %hdr2 = uint8(255*cGamma2{1}(hdr(:,:,2)+1));
+        %hdr3 = uint8(255*cGamma3{1}(hdr(:,:,3)+1));
 
         hdr(:,:,1) = hdr1;
         hdr(:,:,2) = hdr2;
@@ -539,6 +539,8 @@ while(1)
                     tex_l(2) = Screen('MakeTexture',wid,test9_depth2_l(:,:,:));
                     tex_l(3) = Screen('MakeTexture',wid,test9_depth3_l(:,:,:));
                     tex_l(4) = Screen('MakeTexture',wid,test9_depth4_l(:,:,:));
+                    
+                    
                 else
                     Screen('Close',tex(1));
                     Screen('Close',tex(2));
@@ -548,6 +550,8 @@ while(1)
                     tex(2) = Screen('MakeTexture',wid,test0_depth2(:,:,:));
                     tex(3) = Screen('MakeTexture',wid,test0_depth3(:,:,:));
                     tex(4) = Screen('MakeTexture',wid,test0_depth4(:,:,:));
+                    setLayers('BF_texture_files/optimizer/real_photo_optimized.mat');
+
                 end
             end
         end
