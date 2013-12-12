@@ -1146,7 +1146,7 @@ eval([exp_num]);
             ye = currentTime(1); mo = currentTime(2); da = currentTime(3);
             ho = currentTime(4); mi = currentTime(5); se = currentTime(6);
             
-            mkdir('Data_Occlusions');
+            mkdir('Data_Monocular_Hinge');
             fileName = sprintf('Data_Occlusions/%s_%2d_%2d__%2d_%2d.data', observer_initials, da,  mo, ho, mi);
             fp = fopen(fileName, 'a');
             
@@ -1154,7 +1154,7 @@ eval([exp_num]);
             fprintf(fp, 'Subject Name:\t%s\n', observer_initials);
             fprintf(fp, 'Date and Time:\t%2d/%2d/%4d\t%2d:%2d:%2.0f\n', da, mo, ye, ho, mi, se);
             fprintf(fp, '*** **************************** ***\n');
-            fprintf(fp, ' ss\t algorithm\t angle\t disparity_dist\t accom_dist\t currentvalue\t resp_curr\n');
+            fprintf(fp, ' ss\t algorithm\t disparity_dist\t accom_dist\t angle\t currentvalue\t resp_curr\n');
             % MARINA''S ADDITION %%
 
             record_filename = [pwd '/BF_data_files/optimizer/' observer_initials '_' exp_num '_' datestr(clock,30) '.mat'];
@@ -1167,10 +1167,10 @@ eval([exp_num]);
                     continue;
                 else
                     trial_params{1} = get(scellThisRound{s_i}, 'algorithm');
-                    trial_params{2} = get(scellThisRound{s_i}, 'angle');
-                    trial_params{3} = get(scellThisRound{s_i}, 'disparity_dist');
-                    trial_params{4} = get(scellThisRound{s_i}, 'accom_dist');
-                    trial_params{5} = get(scellThisRound{s_i}, 'currentvalue'); % hinge direction
+                    trial_params{2} = get(scellThisRound{s_i}, 'disparity_dist');
+                    trial_params{3} = get(scellThisRound{s_i}, 'accom_dist');
+                    trial_params{4} = get(scellThisRound{s_i}, 'angle');
+                    trial_params{5} = get(scellThisRound{s_i}, 'currentValue'); % hinge direction
                     BF_build_textures_optimizer;
                     BF_initialize_trial; % calls RenderSceneStatic
                     BF_run_trial; % calls actual GL commands
@@ -1186,7 +1186,7 @@ eval([exp_num]);
                     
                     % Write on file
                     fprintf(fp, '%d\t %d\t %d\t %d\t %d\t %d\n', ...
-                        trial_counter, fix_params{1}, fix_params{2}, trial_params{3}, trial_params{4}, trial_params{5}, f_print_response);
+                        trial_counter, trial_params{1}{1}, trial_params{2}, trial_params{3}, trial_params{4}, trial_params{5}, f_print_response);
                     if trial_counter == param.max_trials
                         stop_flag = 1;
                     end
