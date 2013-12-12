@@ -13,10 +13,11 @@ for monitor = 1:2
 end
     
 if trial_mode == 0 
-    demo_params = strcat('optimization_2.6_2.6_90_180');
-    %load(strcat('BF_texture_files/optimizer/', exp_num, '/0.063/optimization/', demo_params, '.mat'));
+    demo_params = strcat('pinhole_2_2_90_0');
+    %load(strcat('BF_texture_files/optimizer/', exp_num, '/0.066/optimization/', demo_params, '.mat'));
+    load(strcat('BF_texture_files/optimizer/exp_hinge_regular_voronoi/61/pinhole/', demo_params, '.mat'));
     %load(strcat('BF_texture_files/optimizer/cardboard/0.061/optimization/optimization_trial_1.mat'));
-    load(strcat('BF_texture_files/optimizer/cardboard/0.061/blending/blending_trial_1.mat'));
+    %load(strcat('BF_texture_files/optimizer/cardboard/0.061/blending/blending_trial_1.mat'));
     
     for plane = (1:4)
        for eye = (0:1)

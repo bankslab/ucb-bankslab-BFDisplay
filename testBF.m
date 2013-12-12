@@ -226,8 +226,9 @@ function [] = setLayers(fname)
         
             
         % upside down compensation
-        %hdr(550:-1:51,101:700,:) = uint8(double(layers{eye*4+plane}).*generateAperture(18,2.6,2,eye));
-        hdr = double(layers{ind+4});
+        hdr = imresize(uint8(255*((double(layers{ind+4})/255).^2.2)),600/1024);
+        
+        size(hdr)
 
         % Implement Gamma Correction
 
@@ -235,19 +236,19 @@ function [] = setLayers(fname)
         hdr2 = uint8(255*cGamma2{2}(hdr(:,:,2)+1));
         hdr3 = uint8(255*cGamma3{2}(hdr(:,:,3)+1));
 
-        %hdr(:,:,1) = hdr1;
-        %hdr(:,:,2) = hdr2;
-        %hdr(:,:,3) = hdr3;
+        hdr(:,:,1) = hdr1;
+        hdr(:,:,2) = hdr2;
+        hdr(:,:,3) = hdr3;
         
         tex(ind) = Screen('MakeTexture',wid,uint8(hdr));
         
-        hdr = double(layers{ind});
+        hdr = imresize(uint8(255*((double(layers{ind})/255).^2.2)),600/1024);
 
         % Implement Gamma Correction
 
-        %hdr1 = uint8(255*cGamma1{1}(hdr(:,:,1)+1));
-        %hdr2 = uint8(255*cGamma2{1}(hdr(:,:,2)+1));
-        %hdr3 = uint8(255*cGamma3{1}(hdr(:,:,3)+1));
+        hdr1 = uint8(255*cGamma1{1}(hdr(:,:,1)+1));
+        hdr2 = uint8(255*cGamma2{1}(hdr(:,:,2)+1));
+        hdr3 = uint8(255*cGamma3{1}(hdr(:,:,3)+1));
 
         hdr(:,:,1) = hdr1;
         hdr(:,:,2) = hdr2;
@@ -408,8 +409,8 @@ while(1)
                     tex_l(2) = Screen('MakeTexture',wid,zeros(600,800,3));
                     tex_l(3) = Screen('MakeTexture',wid,zeros(600,800,3));
                     tex_l(4) = Screen('MakeTexture',wid,zeros(600,800,3));
-                    setLayers('BF_texture_files/optimizer/cardboard/0.061/optimization/optimization_trial_1.mat');
-                    
+                    %setLayers('BF_texture_files/optimizer/cardboard/0.061/optimization/optimization_trial_1.mat');
+                    setLayers('BF_texture_files/optimizer/cardboard/pinhole_small.mat');
                 elseif strcmp(inputstr,'2@')
                     Screen('Close',tex(1));
                     Screen('Close',tex(2));
@@ -430,7 +431,8 @@ while(1)
                     %currentSet = 1; 
                     %setTextures();
                     
-                    setLayers('BF_texture_files/optimizer/cardboard/0.061/optimization/optimization_trial_0.mat');
+                    %setLayers('BF_texture_files/optimizer/cardboard/0.061/optimization/optimization_trial_0.mat');
+                    setLayers('BF_texture_files/optimizer/cardboard/single_small.mat');
                 elseif strcmp(inputstr,'3#')
                     Screen('Close',tex(1));
                     Screen('Close',tex(2));
@@ -451,6 +453,7 @@ while(1)
                     %currentSet = 2; 
                     %setTextures();
                     setLayers('BF_texture_files/optimizer/cardboard/0.061/blending/blending_trial_1.mat');
+                    setLayers('BF_texture_files/optimizer/cardboard/blending_small.mat');
                 elseif strcmp(inputstr,'4$')
                     Screen('Close',tex(1));
                     Screen('Close',tex(2));
@@ -470,14 +473,17 @@ while(1)
                     tex_l(4) = Screen('MakeTexture',wid,test1_depth4(:,:,:));
                     %currentSet = 3; 
                     %setTextures();
-                    setLayers('BF_texture_files/optimizer/cardboard/0.061/blending/blending_trial_0.mat');
+                    %setLayers('BF_texture_files/optimizer/cardboard/0.061/blending/blending_trial_0.mat');
+                    setLayers('BF_texture_files/optimizer/cardboard/optimized_small.mat');
                 elseif strcmp(inputstr,'5%')
-                    setLayers('BF_texture_files/optimizer/cardboard/0.061/optimization/optimization_trial2_1.mat');
+                    %setLayers('BF_texture_files/optimizer/cardboard/0.061/optimization/optimization_trial2_1.mat');
+                    setLayers('BF_texture_files/optimizer/cardboard/pinhole_big.mat');
                     
                     %currentSet = 4; 
                     %setTextures();
                 elseif strcmp(inputstr,'6^')
-                    setLayers('BF_texture_files/optimizer/cardboard/0.061/optimization/optimization_trial2_0.mat');
+                    %setLayers('BF_texture_files/optimizer/cardboard/0.061/optimization/optimization_trial2_0.mat');
+                    setLayers('BF_texture_files/optimizer/cardboard/single_big.mat');
                     
                     %currentSet = 5; 
                     %setTextures();
@@ -500,7 +506,8 @@ while(1)
                     tex_l(2) = Screen('MakeTexture',wid,test7_depth2_l(:,:,:));
                     tex_l(3) = Screen('MakeTexture',wid,test7_depth3_l(:,:,:));
                     tex_l(4) = Screen('MakeTexture',wid,test7_depth4_l(:,:,:));
-                    setLayers('BF_texture_files/optimizer/cardboard/0.061/blending/blending_trial2_1.mat');
+                    %setLayers('BF_texture_files/optimizer/cardboard/0.061/blending/blending_trial2_1.mat');
+                    setLayers('BF_texture_files/optimizer/cardboard/blending_big.mat');
                     
                 elseif strcmp(inputstr,'8*')
                     Screen('Close',tex(1));
@@ -520,7 +527,8 @@ while(1)
                     tex_l(2) = Screen('MakeTexture',wid,test8_depth2_l(:,:,:));
                     tex_l(3) = Screen('MakeTexture',wid,test8_depth3_l(:,:,:));
                     tex_l(4) = Screen('MakeTexture',wid,test8_depth4_l(:,:,:));
-                    setLayers('BF_texture_files/optimizer/cardboard/0.061/blending/blending_trial2_0.mat');
+                    %setLayers('BF_texture_files/optimizer/cardboard/0.061/blending/blending_trial2_0.mat');
+                    setLayers('BF_texture_files/optimizer/cardboard/optimized_big.mat');
                 elseif strcmp(inputstr,'9(')
                     Screen('Close',tex(1));
                     Screen('Close',tex(2));

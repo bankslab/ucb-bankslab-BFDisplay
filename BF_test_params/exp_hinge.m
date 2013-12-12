@@ -27,8 +27,8 @@ else
     % Staircase Parameters
     p.linStep        = 20; %2;
     p.updown         = {[1 1] [1 1]};
-    p.minmax         = [70 90];
-    p.startVals      = [90 70];
+    p.minmax         = [70 130];
+    p.startVals      = [130 70];
                        %[p.minmax(2) - p.linStep,...
                        % p.minmax(1) + p.linStep];
     p.nTrials        = 25;
