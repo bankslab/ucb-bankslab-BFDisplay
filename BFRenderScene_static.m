@@ -21,7 +21,7 @@
     matCubeAmb      = builtin('single',[1 1 1 1]);
     matCubeDiff     = builtin('single',[1 1 1.0 1]);
     
-    if strcmp(experiment_type, 'marina_occlusions')
+    if strcmp(experiment_type, 'monocular_hinge')
         glDisable(GL.DEPTH_TEST);
         glPushMatrix();
         glTranslatef(0, 0, -imageplanedist(depthplane));
