@@ -10,11 +10,11 @@ while(stop_flag==0)
     if a==1
         iKeyIndex=find(c);
         strInputName=KbName(iKeyIndex(1));
-        if strcmp(strInputName,'LeftArrow')
+        if strcmp(strInputName,'UpArrow')
             scellThisRound{s_i}=processResponse(scellThisRound{s_i}, 0);
             f_print_response = 0;
             break;
-        elseif strcmp(strInputName,'RightArrow')
+        elseif strcmp(strInputName,'DownArrow')
             scellThisRound{s_i}=processResponse(scellThisRound{s_i}, 1);
             f_print_response = 1;
             break;

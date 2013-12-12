@@ -46,28 +46,16 @@ if trial_mode == 0
     
 elseif trial_mode == 1
     if started
-        if makeFix
-            % Make a fixation cross
-            string_holder = [];
-            string_holder{1} = 'nonius';
-            string_holder{2} = num2str(fix_params{1});
-            string_holder{3} = num2str(fix_params{2});
-            param_string = strjoin(string_holder, '_');
-            file_name = strcat(param_string, '.mat');
-            file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), string_holder{1}, file_name}, '/');
-            load(file_path);
-        else
-            % Make occlusion stimulus
-            string_holder{length(trial_params)} = [];
-            string_holder{1} = trial_params{1}{1}; %algorithm
-            string_holder{2} = trial_params{2}{1}; %tex_side
-            for i = 3:length(trial_params)
-                string_holder{i} = num2str(trial_params{i});
-            end
-            param_string = strjoin(string_holder, '_');
-            file_name = strcat(param_string, '.mat');
-            file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), trial_params{1}{1}, file_name}, '/');
-            load(file_path);
+        % Load Images
+        string_holder{length(trial_params)} = [];
+        string_holder{1} = trial_params{1}{1}; %algorithm
+        for i = 2:length(trial_params)
+            string_holder{i} = num2str(trial_params{i});
+        end
+        param_string = strjoin(string_holder, '_');
+        file_name = strcat(param_string, '.mat');
+        file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), trial_params{1}{1}, file_name}, '/');
+        load(file_path);
         end
         for plane = (1:4)
             for eye = (0:1)
