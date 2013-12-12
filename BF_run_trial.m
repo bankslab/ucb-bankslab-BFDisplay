@@ -1,12 +1,7 @@
 
-if strcmp(experiment_type, 'marina_occlusions')
-    if makeFix
-        waitTime = param.fix_duration;
-    else
-        waitTime = param.stim_duration;
-    end
+if strcmp(experiment_type, 'monocular_hinge')
     tic
-    while toc < waitTime
+    while toc < param.stim_duration
         depthplane = depthplane + 1;
         if depthplane > 4
             depthplane = 1;
@@ -1330,6 +1325,6 @@ end
 
 onset=Screen('Flip', windowPtr, [], []);
 
-if ~strcmp(experiment_type,'marina_occlusions')
+if ~strcmp(experiment_type,'monocular_hinge')
     BF_respond_react
 end

@@ -114,14 +114,12 @@ while length(property_argin) >= 2,
             a.MCS_max_responses=val;
         case 'algorithm'
             a.algorithm=val;
-        case 'front_plane'
-            a.front_plane=val;
-        case 'tex_side'
-            a.tex_side=val;
-        case 'fix_plane'
-            a.fix_plane=val;
-        case 'fix_side'
-            a.fix_side=val;
+        case 'angle'
+            a.angle=val;
+        case 'disparity_dist'
+            a.disparity_dist=val;
+        case 'accom_dist'
+            a.accom_dist=val;
         case 'initialized'
             a.initialized = val;
         otherwise

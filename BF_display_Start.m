@@ -286,7 +286,7 @@ eval([exp_num]);
     elseif viewMode==4 % BF display with DATAPixx
         load('BF_params/correctedLinearGamma_256steps_zeroOffset.mat');
         
-        if strcmp(experiment_type, 'marina_occlusions')
+        if strcmp(experiment_type, 'monocular_hinge')
             correctedGamma{2} = transpose(repmat(0:1/255:1, [3 1]));
         end
         origGamma=Screen('LoadNormalizedGammaTable', windowPtr, correctedGamma{2});
@@ -430,7 +430,7 @@ eval([exp_num]);
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glEnable(GL.DEPTH_TEST);
     
-    if strcmp(experiment_type, 'marina_occlusions')
+    if strcmp(experiment_type, 'monocular_hinge')
         glDisable(GL.DEPTH_TEST);
     end
     %glShadeModel(GL.SMOOTH);
@@ -478,7 +478,7 @@ eval([exp_num]);
         BF_build_textures_for_specularity_project3;
     end
     
-    if strcmp(experiment_type, 'marina_occlusions')
+    if strcmp(experiment_type, 'monocular_hinge')
         glDisable(GL.DEPTH_TEST);
         trial_params=[];
         fix_params=[];
@@ -670,7 +670,7 @@ eval([exp_num]);
                 end
             end
             
-            elseif strcmp(experiment_type, 'marina_occlusions')
+            elseif strcmp(experiment_type, 'monocular_hinge')
             glDisable(GL.DEPTH_TEST);
             genlist_start=glGenLists(17);  %Returns integer of first set of free display lists
             genlist_projection1=[0 1 2 3 4 5 6 7]+genlist_start;  %Set of indices
@@ -1138,7 +1138,7 @@ eval([exp_num]);
         BF_initialize_trial;    %Just to build projections for splash screen
 		BF_display_initial_message;
 
-        if strcmp(experiment_type, 'marina_occlusions')
+        if strcmp(experiment_type, 'monocular_hinge')
             
             % MARINA'S ADDITION %%
             % Open file
@@ -1150,12 +1150,12 @@ eval([exp_num]);
             fileName = sprintf('Data_Occlusions/%s_%2d_%2d__%2d_%2d.data', observer_initials, da,  mo, ho, mi);
             fp = fopen(fileName, 'a');
             
-            fprintf(fp, '\n*** hinge angle experiment ***\n');
+            fprintf(fp, '\n*** monocular hinge direction experiment ***\n');
             fprintf(fp, 'Subject Name:\t%s\n', observer_initials);
             fprintf(fp, 'Date and Time:\t%2d/%2d/%4d\t%2d:%2d:%2.0f\n', da, mo, ye, ho, mi, se);
             fprintf(fp, '*** **************************** ***\n');
-            fprintf(fp, ' ss\t fix_plane\t text_side\t front_plane\t currentvalue\t resp_curr\n');
-            % MARINA'S ADDITION %%
+            fprintf(fp, ' ss\t algorithm\t angle\t disparity_dist\t accom_dist\t currentvalue\t resp_curr\n');
+            % MARINA''S ADDITION %%
 
             record_filename = [pwd '/BF_data_files/optimizer/' observer_initials '_' exp_num '_' datestr(clock,30) '.mat'];
             stop_flag=0;
@@ -1166,28 +1166,12 @@ eval([exp_num]);
                 if (get(scellThisRound{s_i}, 'complete') == 1)
                     continue;
                 else
-                    makeFix = 1;
-                    scellThisRound{s_i} = set(scellThisRound{s_i}, 'fix_side', (randi(2)-1)); % Choose random side for fixation cross
-                    fix_params{1} = get(scellThisRound{s_i}, 'fix_plane');
-                    fix_params{2} = get(scellThisRound{s_i}, 'fix_side');
-                    BF_build_textures_optimizer;
-                    BF_initialize_trial; % calls RenderSceneStatic
-                    BF_run_trial; % calls actual GL commands
-                    makeFix = 0;
-                    
-                    Screen('SelectStereoDrawBuffer',windowPtr,0);
-                    Screen('FillRect',windowPtr,[0 0 0]);
-                    Screen('SelectStereoDrawBuffer',windowPtr,1);
-                    Screen('FillRect',windowPtr,[0 0 0]);
-                    Screen('Flip',windowPtr);
-                    
                     trial_params{1} = get(scellThisRound{s_i}, 'algorithm');
-                    scellThisRound{s_i} = set(scellThisRound{s_i}, 'tex_side', param.tex_side(randi(2)));
-                    trial_params{2} = get(scellThisRound{s_i}, 'tex_side');
-                    trial_params{3} = get(scellThisRound{s_i}, 'front_plane');
-                    trial_params{4} = get(scellThisRound{s_i}, 'currentValue'); % side in front
+                    trial_params{2} = get(scellThisRound{s_i}, 'angle');
+                    trial_params{3} = get(scellThisRound{s_i}, 'disparity_dist');
+                    trial_params{4} = get(scellThisRound{s_i}, 'accom_dist');
+                    trial_params{5} = get(scellThisRound{s_i}, 'currentvalue'); % hinge direction
                     BF_build_textures_optimizer;
-                    
                     BF_initialize_trial; % calls RenderSceneStatic
                     BF_run_trial; % calls actual GL commands
                     process_response; % gets keyboard input and updates staircase
@@ -1201,12 +1185,8 @@ eval([exp_num]);
                     end
                     
                     % Write on file
-                    if strcmp(trial_params{2}{1}, 'trial2')
-                        texture_side = 2;
-                    else texture_side = 3;
-                    end
                     fprintf(fp, '%d\t %d\t %d\t %d\t %d\t %d\n', ...
-                        trial_counter, fix_params{1}, texture_side, trial_params{3}, trial_params{4}, f_print_response);
+                        trial_counter, fix_params{1}, fix_params{2}, trial_params{3}, trial_params{4}, trial_params{5}, f_print_response);
                     if trial_counter == param.max_trials
                         stop_flag = 1;
                     end
@@ -2012,7 +1992,7 @@ eval([exp_num]);
                 end
             end
             
-        elseif ~strcmp(experiment_type, 'marina_occlusions')
+        elseif ~strcmp(experiment_type, 'monocular_hinge')
             while (trial_counter<3000)
                  stop_flag = 0;
                  trial_counter=trial_counter+1;
