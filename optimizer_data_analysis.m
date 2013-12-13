@@ -3,12 +3,10 @@
 allthedata = [scellThisRound, scellNextRound];
 %allthedata = scellCompleted;
 for i = 1:length(allthedata)
-    closerSide = get(allthedata{i}, 'MCS');
-    fix_plane = get(allthedata{i},'fix_plane');
-    accom_distance = get(allthedata{i},'accom_distance');
-    trial_values = get(allthedata{i},'values');
-    responses = get(allthedata{i},'responses');
-    unique_values = unique(get(allthedata{i},'values'));
+    hinge_direction = get(allthedata{i}, 'values');
+    responses = get(allthedata{i}, 'responses');
+    angles = get(allthedata{i}, 'angles');
+    unique_values = unique(hinge_direction);
     max_trials = length(responses);
     %max_trials = min(length(trial_values), length(responses));
     %max_trials = 28;

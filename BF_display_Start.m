@@ -1160,36 +1160,34 @@ eval([exp_num]);
             record_filename = [pwd '/BF_data_files/optimizer/' observer_initials '_' exp_num '_' datestr(clock,30) '.mat'];
             stop_flag=0;
             started=1;
-            block_counter = zeros(1, length(scellThisRound));
+            block_counter=0;
             while stop_flag==0
-                s_i = randi(length(scellThisRound));
-                if (get(scellThisRound{s_i}, 'complete') == 1)
-                    continue;
-                else
-                    trial_params{1} = get(scellThisRound{s_i}, 'algorithm');
-                    trial_params{2} = get(scellThisRound{s_i}, 'disparity_dist');
-                    trial_params{3} = get(scellThisRound{s_i}, 'accom_dist');
-                    trial_params{4} = get(scellThisRound{s_i}, 'angle');
-                    trial_params{5} = get(scellThisRound{s_i}, 'currentValue'); % hinge direction
-                    BF_build_textures_optimizer;
-                    BF_initialize_trial; % calls RenderSceneStatic
-                    BF_run_trial; % calls actual GL commands
-                    process_response; % gets keyboard input and updates staircase
-                    save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound');
-                    
-                    trial_counter = trial_counter + 1;
-                    block_counter(s_i) = block_counter(s_i) + 1;
-                    
-                    if block_counter(s_i) == (param.max_responses*length(param.MCS_stimuli))
-                        scellThisRound{s_i} = set(scellThisRound{s_i}, 'complete', 1);
-                    end
-                    
-                    % Write on file
-                    fprintf(fp, '%d\t %d\t %d\t %d\t %d\t %d\n', ...
-                        trial_counter, trial_params{1}{1}, trial_params{2}, trial_params{3}, trial_params{4}, trial_params{5}, f_print_response);
-                    if trial_counter == param.max_trials
-                        stop_flag = 1;
-                    end
+                trial_params{1} = get(scellThisRound{s_i}, 'algorithm');
+                trial_params{2} = get(scellThisRound{s_i}, 'disparity_dist');
+                trial_params{3} = get(scellThisRound{s_i}, 'accom_dist');
+                trial_params{4} = get(scellThisRound{s_i}, 'angle');
+                trial_params{5} = get(scellThisRound{s_i}, 'currentValue'); % hinge direction
+                BF_build_textures_optimizer;
+                BF_initialize_trial; % calls RenderSceneStatic
+                BF_run_trial; % calls actual GL commands
+                process_response; % gets keyboard input and updates staircase
+                save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound');
+
+                trial_counter = trial_counter + 1;
+
+                if mod(trial_counter, 50)
+                    % take a break
+                    block_counter = block_counter + 1;
+                    disp([num2str(block_counter) ' block(s) completed'])
+                    message = 'endofblock';
+                    BF_disp_message
+                end
+
+                % Write on file
+                fprintf(fp, '%d\t%d\t%d\t%d\t%d\t%d\t%d\n', ...
+                    trial_counter, trial_params{1}, trial_params{2}, trial_params{3}, trial_params{4}, trial_params{5}, f_print_response);
+                if trial_counter == param.max_trials
+                    stop_flag = 1;
                 end
             end
             
