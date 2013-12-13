@@ -44,7 +44,15 @@ while(displaymessage==1)
             messageplane=1; % Farthest plane
         end
         if depthplane==messageplane
-            if strcmp(message, 'takeabreak')
+            if strcmp(message, 'endofblock')
+                Screen('TextSize',windowPtr, 25);
+                Screen('DrawText', windowPtr, ['Take a break'], 300, 100, [255, 255, 255, 255]); 
+                Screen('DrawText', windowPtr, ['Press ENTER to continue'], 300, 200, [255, 255, 255, 255]);  
+                Screen('DrawText', windowPtr, ['Hold down ESCAPE to stop'], 300, 300, [255, 255, 255, 255]);
+                Screen('DrawText', windowPtr, [num2str(block_counter) 'blocks completed'], 300, 400, [255, 255, 255, 255]);
+                Screen('Flip', windowPtr, [], 2, 1);
+                WaitSecs(1);
+            elseif strcmp(message, 'takeabreak')
                 Screen('TextSize',windowPtr, 25);
                 Screen('DrawText', windowPtr, ['Take a break'], 300, 200, [255, 255, 255, 255]); 
                 Screen('DrawText', windowPtr, ['Press any key to continue'], 200, 300, [255, 255, 255, 255]);  
