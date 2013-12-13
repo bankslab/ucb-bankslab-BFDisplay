@@ -12,16 +12,17 @@ dumpworkspace=1;
 
 %% INITSCELL
 % Experiment parameters
-param.stim_duration = 4; % seconds
+param.stim_duration = 7; % seconds
 
 % MCS monocular_hinge values
-param.algorithm      = {'optimization', 'single', 'pinhole', 'blending'};
+%param.algorithm      = {'optimization', 'blending', 'single', 'pinhole'};
+param.algorithm      = [1, 2, 3, 4];
 param.disparity_dist = 2.6;
 param.accom_dist     = 2.6;
-param.angle          = [70, 90, 110, 130]; 
-param.MCS_stimuli    = [0, 180, 360, 540]; % direction of hinge
-param.max_responses  = 10;
-param.max_trials     = 321;
+param.angle          = [70, 90, 110]; 
+param.MCS_stimuli    = [0, 180]; % direction of hinge
+param.max_responses  = 20;
+param.max_trials     = 1000;
 
 % count how many staircases we want
 
@@ -54,7 +55,6 @@ scellThisRound=[];
 scellNextRound=[];
 
 for scellID=randperm(scellLength)
-
     if get(scellArray{scellID},'complete')==1
         scellCompleted{end+1}=scellArray{scellID};
     elseif strcmp(get(scellArray{scellID},'initialized'),'yes')
