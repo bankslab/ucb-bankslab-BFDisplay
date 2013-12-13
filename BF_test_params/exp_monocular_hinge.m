@@ -12,7 +12,8 @@ dumpworkspace=1;
 
 %% INITSCELL
 % Experiment parameters
-param.stim_duration = 7; % seconds
+param.stim_duration = 8; % seconds
+param.trials_per_block = 60;
 
 % MCS monocular_hinge values
 %param.algorithm      = {'optimization', 'blending', 'single', 'pinhole'};

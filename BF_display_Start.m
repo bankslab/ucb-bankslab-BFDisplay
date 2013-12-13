@@ -1147,7 +1147,7 @@ eval([exp_num]);
             ho = currentTime(4); mi = currentTime(5); se = currentTime(6);
             
             mkdir('Data_Monocular_Hinge');
-            fileName = sprintf('Data_Occlusions/%s_%2d_%2d__%2d_%2d.data', observer_initials, da,  mo, ho, mi);
+            fileName = sprintf('Data_Monocular_Hinge/%s_%2d_%2d__%2d_%2d.data', observer_initials, da,  mo, ho, mi);
             fp = fopen(fileName, 'a');
             
             fprintf(fp, '\n*** monocular hinge direction experiment ***\n');
@@ -1171,21 +1171,21 @@ eval([exp_num]);
                 BF_initialize_trial; % calls RenderSceneStatic
                 BF_run_trial; % calls actual GL commands
                 process_response; % gets keyboard input and updates staircase
-                save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound');
 
                 trial_counter = trial_counter + 1;
 
-                if mod(trial_counter, 50)
+                if mod(trial_counter, param.trials_per_block) == 0
                     % take a break
                     block_counter = block_counter + 1;
                     disp([num2str(block_counter) ' block(s) completed'])
                     message = 'endofblock';
                     BF_disp_message
+                    save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound');
                 end
-
-                % Write on file
+                
+                %Write Trial Data
                 fprintf(fp, '%d\t%d\t%d\t%d\t%d\t%d\t%d\n', ...
-                    trial_counter, trial_params{1}, trial_params{2}, trial_params{3}, trial_params{4}, trial_params{5}, f_print_response);
+                trial_counter, trial_params{1}, trial_params{2}, trial_params{3}, trial_params{4}, trial_params{5}, f_print_response);
                 if trial_counter == param.max_trials
                     stop_flag = 1;
                 end

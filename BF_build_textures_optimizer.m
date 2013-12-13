@@ -48,13 +48,23 @@ elseif trial_mode == 1
     if started
         % Load Images
         string_holder{length(trial_params)} = [];
-        string_holder{1} = trial_params{1}{1}; %algorithm
+        switch trial_params{1}
+            case 1
+                alg_name = 'optimization';
+            case 2
+                alg_name = 'blending';
+            case 3
+                alg_name = 'single';
+            case 4
+                alg_name = 'pinhole';
+        end
+        string_holder{1} = alg_name; %algorithm
         for i = 2:length(trial_params)
             string_holder{i} = num2str(trial_params{i});
         end
         param_string = strjoin(string_holder, '_');
         file_name = strcat(param_string, '.mat');
-        file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), trial_params{1}{1}, file_name}, '/');
+        file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), alg_name, file_name}, '/');
         load(file_path);
 
         for plane = (1:4)
