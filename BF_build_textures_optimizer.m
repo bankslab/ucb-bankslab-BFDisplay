@@ -14,8 +14,8 @@ cg2{2} = correctedGamma{2}(:,2);
 cg3{2} = correctedGamma{2}(:,3);
     
 if trial_mode == 0 
-    demo_params = strcat('optimization_trial2_32_0');
-    load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/optimization/', demo_params, '.mat'))
+    demo_params = strcat('pinhole_2.6_2.6_90_0');
+    load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/pinhole/', demo_params, '.mat'))
     
     
     for plane = (1:4)
