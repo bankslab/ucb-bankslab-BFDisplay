@@ -1,28 +1,28 @@
 %load data file(s)
 %load RAA_Test_Optimization_exp_hing_20131018T172845.mat
-allthedata = [scellThisRound, scellNextRound];
-%allthedata = scellCompleted;
+%allthedata = [scellThisRound, scellNextRound];
+allthedata = scellCompleted;
 for i = 1:length(allthedata)
+    algorithm = get(allthedata{i}, 'algorithm');
+    disparity_dist = get(allthedata{i}, 'disparity_dist');
+    accom_dist = get(allthedata{i}, 'accom_dist');
     hinge_direction = get(allthedata{i}, 'values');
     responses = get(allthedata{i}, 'responses');
-    angles = get(allthedata{i}, 'angles');
+    angle = get(allthedata{i}, 'angle');
     unique_values = unique(hinge_direction);
     max_trials = length(responses);
-    %max_trials = min(length(trial_values), length(responses));
-    %max_trials = 28;
     
     data_index = 1;
     data_structure = [unique_values', nan(length(unique_values), 3)];
     for stim_value = unique_values
         num_correct = 0;
         out_of = 0;
-        stim_index = find(trial_values == stim_value);
+        stim_index = find(hinge_direction == stim_value);
         for j = stim_index
             if j <= max_trials
                 out_of = out_of + 1;
-%                if trial_values(j) <= 90 && responses(j) == 1 ...
-%                    || trial_values(j) > 90 && responses(j) == 2
-                if responses(j) == 2
+                if hinge_direction(j) == 0 && responses(j) == 1 ...
+                    || hinge_direction(j) == 180 && responses(j) == 0
                     num_correct = num_correct + 1;
                 end
             end
@@ -36,32 +36,31 @@ for i = 1:length(allthedata)
         
         data_index = data_index + 1;
     end
-    data_label = strjoin({upper(algorithm), ',', num2str(disparity_distance), 'D dist', num2str(accom_distance), 'D focus'}, ' ');
+    
+    switch algorithm
+        case 1
+            alg_name = 'optimization';
+        case 2
+            alg_name = 'blending';
+        case 3
+            alg_name = 'single';
+        case 4
+            alg_name = 'pinhole';
+    end
+    
+    disp(alg_name)
+    disp(angle)
+    disp(data_structure)
+    
+    %{
+    data_label = strjoin({upper(alg_name), ',', num2str(disparity_dist), 'D dist', num2str(accom_dist), 'D focus'}, ' ');
     %disp(data_label)
     %disp(data_structure)
-    switch algorithm
-        case 'pinhole'
-            column = 1;
-        case 'single'
-            column = 2;
-        case 'blending'
-            column = 3;
-        case 'optimization'
-            column = 4;
-    end
     
-    switch num2str(accom_distance)
-        case '2'
-            row = 0;
-        case '3.2'
-            row = 4;
-    end
-    
-    num_rows = 2;
-    num_columns = length(allthedata)/num_rows;
-    subplot(num_rows, num_columns, column+row),  scatter(data_structure(:,1), data_structure(:, 4), 'filled')
+    num_rows = length(allthedata);
+    subplot(num_rows, 1, algorithm),  scatter(data_structure(:,1), data_structure(:, 4), 'filled')
     title(data_label);
     xlabel('Angles');
-    ylabel('% Responses Greater than 90 degrees');
-    
+    ylabel('% Responses V');
+    %}
 end
