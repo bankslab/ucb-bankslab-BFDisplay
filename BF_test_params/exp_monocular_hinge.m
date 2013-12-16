@@ -12,7 +12,7 @@ dumpworkspace=1;
 
 %% INITSCELL
 % Experiment parameters
-param.stim_duration = 8; % seconds
+param.stim_duration = 0.1; % seconds
 param.trials_per_block = 60;
 
 % MCS monocular_hinge values
@@ -21,7 +21,7 @@ param.algorithm      = [1, 2, 3, 4];
 param.disparity_dist = 2.6;
 param.accom_dist     = 2.6;
 param.angle          = [70, 90, 110]; 
-param.MCS_stimuli    = [0, 180]; % direction of hinge
+param.MCS_stimuli    = [0, 180, 360, 540]; % direction of hinge
 param.max_responses  = 20;
 param.max_trials     = 1000;
 

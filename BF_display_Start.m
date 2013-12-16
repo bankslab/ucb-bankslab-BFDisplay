@@ -1189,6 +1189,9 @@ eval([exp_num]);
                 if trial_counter == param.max_trials
                     stop_flag = 1;
                 end
+                Screen('Close', texname_static);
+                Screen('Close', genlist_projection1);
+                Screen('Close', static_scene_disp_list1);
             end
             
             fclose(fp);
