@@ -1156,8 +1156,7 @@ eval([exp_num]);
             fprintf(fp, '*** **************************** ***\n');
             fprintf(fp, ' ss\t algorithm\t disparity_dist\t accom_dist\t angle\t currentvalue\t resp_curr\n');
             % MARINA''S ADDITION %%
-
-            record_filename = [pwd '/BF_data_files/optimizer/' observer_initials '_' exp_num '_' datestr(clock,30) '.mat'];
+            
             stop_flag=0;
             started=1;
             block_counter=0;
