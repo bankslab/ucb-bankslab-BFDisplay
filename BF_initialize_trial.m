@@ -8,7 +8,9 @@ Screen('BeginOpenGL', windowPtr);
   
 if strcmp(experiment_type, 'monocular_hinge')
     glDisable(GL.DEPTH_TEST);
-    genlist_start=glGenLists(17);  %Returns integer of first set of free display lists
+    if ~exist('genlist_start')
+        genlist_start=glGenLists(17);  %Returns integer of first set of free display lists
+    end
     genlist_projection1=[0 1 2 3 4 5 6 7]+genlist_start;  %Set of indices
     static_scene_disp_list1=[0 1 2 3 4 5 6 7]+genlist_start+8;
     wrap_texture_on_square=16+genlist_start;
