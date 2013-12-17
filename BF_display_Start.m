@@ -1131,7 +1131,12 @@ eval([exp_num]);
     end  %while trial mode==0
 
 
-    trial_counter=0;
+    if ~exist('trial_counter')
+        trial_counter=0;
+    end
+    if ~exist('block_counter')
+        block_counter=0;
+    end
     if trial_mode==1
         
         current_sc=1;
@@ -1159,7 +1164,6 @@ eval([exp_num]);
             
             stop_flag=0;
             started=1;
-            block_counter=0;
             while stop_flag==0
                 trial_params{1} = get(scellThisRound{s_i}, 'algorithm');
                 trial_params{2} = get(scellThisRound{s_i}, 'disparity_dist');
@@ -1179,7 +1183,7 @@ eval([exp_num]);
                     disp([num2str(block_counter) ' block(s) completed'])
                     message = 'endofblock';
                     BF_disp_message
-                    save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound');
+                    save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound', trial_counter, block_counter);
                 end
                 
                 %Write Trial Data
@@ -1201,7 +1205,7 @@ eval([exp_num]);
                 Screen('Close', static_scene_disp_list1);
                 
             end
-            
+            save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound', trial_counter, block_counter);
             fclose(fp);
       
         end
