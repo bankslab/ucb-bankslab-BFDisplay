@@ -1183,7 +1183,7 @@ eval([exp_num]);
                     disp([num2str(block_counter) ' block(s) completed'])
                     message = 'endofblock';
                     BF_disp_message
-                    save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound', trial_counter, block_counter);
+                    save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound', 'trial_counter', 'block_counter');
                 end
                 
                 %Write Trial Data
@@ -1205,7 +1205,7 @@ eval([exp_num]);
                 Screen('Close', static_scene_disp_list1);
                 
             end
-            save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound', trial_counter, block_counter);
+            save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound', 'trial_counter', 'block_counter');
             fclose(fp);
       
         end
