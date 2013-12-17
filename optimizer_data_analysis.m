@@ -1,7 +1,7 @@
 %load data file(s)
 %load RAA_Test_Optimization_exp_hing_20131018T172845.mat
-%allthedata = [scellThisRound, scellNextRound];
-allthedata = scellCompleted;
+allthedata = [scellThisRound, scellNextRound];
+%allthedata = scellCompleted;
 for i = 1:length(allthedata)
     algorithm = get(allthedata{i}, 'algorithm');
     disparity_dist = get(allthedata{i}, 'disparity_dist');
@@ -22,7 +22,9 @@ for i = 1:length(allthedata)
             if j <= max_trials
                 out_of = out_of + 1;
                 if hinge_direction(j) == 0 && responses(j) == 1 ...
-                    || hinge_direction(j) == 180 && responses(j) == 0
+                    || hinge_direction(j) == 180 && responses(j) == 0 ...
+                || hinge_direction(j) == 360 && responses(j) == 1 ...
+                    || hinge_direction(j) == 540 && responses(j) == 0
                     num_correct = num_correct + 1;
                 end
             end
@@ -48,9 +50,20 @@ for i = 1:length(allthedata)
             alg_name = 'pinhole';
     end
     
+    combined = [sum(data_structure([1, 3], [2, 3])); ...
+                sum(data_structure([2, 4], [2, 3]))];
+    
+    totals = [combined, 100*combined(:, 1)./combined(:, 2)];
+    
+    combined_totals = sum(totals(:, 1:2));
+    
+    overall = 100*combined_totals(1)/combined_totals(2);
+    
     disp(alg_name)
     disp(angle)
-    disp(data_structure)
+    disp(overall)
+    combined(1,2)
+    
     
     %{
     data_label = strjoin({upper(alg_name), ',', num2str(disparity_dist), 'D dist', num2str(accom_dist), 'D focus'}, ' ');
