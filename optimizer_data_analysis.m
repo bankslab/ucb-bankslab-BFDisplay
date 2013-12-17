@@ -1,7 +1,7 @@
 %load data file(s)
 %load RAA_Test_Optimization_exp_hing_20131018T172845.mat
-%allthedata = [scellThisRound, scellNextRound];
-allthedata = scellCompleted;
+allthedata = [scellThisRound, scellNextRound];
+%allthedata = scellCompleted;
 for i = 1:length(allthedata)
     algorithm = get(allthedata{i}, 'algorithm');
     disparity_dist = get(allthedata{i}, 'disparity_dist');
