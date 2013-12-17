@@ -1,7 +1,7 @@
 %load data file(s)
 %load RAA_Test_Optimization_exp_hing_20131018T172845.mat
-allthedata = [scellThisRound, scellNextRound];
-%allthedata = scellCompleted;
+%allthedata = [scellThisRound, scellNextRound];
+allthedata = scellCompleted;
 for i = 1:length(allthedata)
     algorithm = get(allthedata{i}, 'algorithm');
     disparity_dist = get(allthedata{i}, 'disparity_dist');
@@ -29,7 +29,7 @@ for i = 1:length(allthedata)
                 end
             end
         end
-        
+
         percent_correct = round(100*num_correct/out_of);
 
         data_structure(data_index, 2) = num_correct;
@@ -62,7 +62,7 @@ for i = 1:length(allthedata)
     disp(alg_name)
     disp(angle)
     disp(overall)
-    combined(1,2)
+    %combined(1,2)
     
     
     %{
