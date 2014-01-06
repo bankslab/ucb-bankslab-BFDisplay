@@ -6,7 +6,7 @@
 
 Screen('BeginOpenGL', windowPtr);
   
-if strcmp(experiment_type, 'monocular_hinge')
+if strcmp(experiment_type, 'comparison')
     glDisable(GL.DEPTH_TEST);
     if ~exist('genlist_start')
         genlist_start=glGenLists(17);  %Returns integer of first set of free display lists

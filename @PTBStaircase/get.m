@@ -100,15 +100,11 @@ while length(propertyArgIn) >= 1,
             uit = s.MCS_num_responses; 
         case 'MCS_max_responses'
             uit = s.MCS_max_responses;
-        case 'algorithm'
-            uit = s.algorithm;
-        case 'angle'
-            uit = s.angle;
-        case 'disparity_dist'
-            uit = s.disparity_dist;
-        case 'accom_dist'
-            uit = s.accom_dist;
-        case 'initialized'
+        case 'combination'
+            uit = s.combination;
+        case 'question'
+            uit = s.question;
+       case 'initialized'
             uit = s.initialized;
         case 'responses'
             uit = s.responses;

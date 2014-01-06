@@ -15,7 +15,7 @@ function [scell] = initializeStaircase(scell)
     
     scell.currentValue = (scell.initialValue+(2*round(rand)-1)*random_offset) ;  %If its the first value, then this will return the initial value plus or minus some offset within initialValue_random_range, but rounded to the nearest minimum step unit
     
-    %Uncomment these lines for optimizer exp (hinge)
+    %Uncomment these lines for optimizer exp (comparison)
   	scell.currentValue = scell.MCS_stimuli(randi(length(scell.MCS_stimuli)));
     scell.initialized='yes';
 	
