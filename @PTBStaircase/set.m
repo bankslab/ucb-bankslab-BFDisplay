@@ -112,14 +112,10 @@ while length(property_argin) >= 2,
             a.MCS_num_responses=val; 
         case 'MCS_max_responses'
             a.MCS_max_responses=val;
-        case 'algorithm'
-            a.algorithm=val;
-        case 'angle'
-            a.angle=val;
-        case 'disparity_dist'
-            a.disparity_dist=val;
-        case 'accom_dist'
-            a.accom_dist=val;
+        case 'combination'
+            a.combination=val;
+        case 'question'
+            a.question=val;
         case 'initialized'
             a.initialized = val;
         otherwise
