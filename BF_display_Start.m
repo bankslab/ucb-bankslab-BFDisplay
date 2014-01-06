@@ -286,7 +286,7 @@ eval([exp_num]);
     elseif viewMode==4 % BF display with DATAPixx
         load('BF_params/correctedLinearGamma_256steps_zeroOffset.mat');
         
-        if strcmp(experiment_type, 'monocular_hinge')
+        if strcmp(experiment_type, 'comparison')
             correctedGamma{2} = transpose(repmat(0:1/255:1, [3 1]));
         end
         origGamma=Screen('LoadNormalizedGammaTable', windowPtr, correctedGamma{2});
@@ -430,7 +430,7 @@ eval([exp_num]);
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glEnable(GL.DEPTH_TEST);
     
-    if strcmp(experiment_type, 'monocular_hinge')
+    if strcmp(experiment_type, 'comparison')
         glDisable(GL.DEPTH_TEST);
     end
     %glShadeModel(GL.SMOOTH);
@@ -478,7 +478,7 @@ eval([exp_num]);
         BF_build_textures_for_specularity_project3;
     end
     
-    if strcmp(experiment_type, 'monocular_hinge')
+    if strcmp(experiment_type, 'comparison')
         glDisable(GL.DEPTH_TEST);
         trial_params=[];
         fix_params=[];
@@ -670,7 +670,7 @@ eval([exp_num]);
                 end
             end
             
-            elseif strcmp(experiment_type, 'monocular_hinge')
+            elseif strcmp(experiment_type, 'comparison')
             glDisable(GL.DEPTH_TEST);
             genlist_start=glGenLists(17);  %Returns integer of first set of free display lists
             genlist_projection1=[0 1 2 3 4 5 6 7]+genlist_start;  %Set of indices
@@ -1143,7 +1143,7 @@ eval([exp_num]);
         BF_initialize_trial;    %Just to build projections for splash screen
 		BF_display_initial_message;
 
-        if strcmp(experiment_type, 'monocular_hinge')
+        if strcmp(experiment_type, 'comparison')
             
             % MARINA'S ADDITION %%
             % Open file
@@ -1151,25 +1151,27 @@ eval([exp_num]);
             ye = currentTime(1); mo = currentTime(2); da = currentTime(3);
             ho = currentTime(4); mi = currentTime(5); se = currentTime(6);
             
-            mkdir('Data_Monocular_Hinge');
-            fileName = sprintf('Data_Monocular_Hinge/%s_%2d_%2d__%2d_%2d.data', observer_initials, da,  mo, ho, mi);
+            mkdir('data_comparison');
+            fileName = sprintf('data_comparison/%s_%2d_%2d__%2d_%2d.data', observer_initials, da,  mo, ho, mi);
             fp = fopen(fileName, 'a');
             
-            fprintf(fp, '\n*** monocular hinge direction experiment ***\n');
+            fprintf(fp, '\n*** comparison experiment ***\n');
             fprintf(fp, 'Subject Name:\t%s\n', observer_initials);
             fprintf(fp, 'Date and Time:\t%2d/%2d/%4d\t%2d:%2d:%2.0f\n', da, mo, ye, ho, mi, se);
             fprintf(fp, '*** **************************** ***\n');
-            fprintf(fp, ' ss\t algorithm\t disparity_dist\t accom_dist\t angle\t currentvalue\t resp_curr\n');
+            fprintf(fp, ' ss\t alg_combo\t question\t scene\t response\n');
             % MARINA''S ADDITION %%
             
             stop_flag=0;
             started=1;
             while stop_flag==0
-                trial_params{1} = get(scellThisRound{s_i}, 'algorithm');
-                trial_params{2} = get(scellThisRound{s_i}, 'disparity_dist');
-                trial_params{3} = get(scellThisRound{s_i}, 'accom_dist');
-                trial_params{4} = get(scellThisRound{s_i}, 'angle');
-                trial_params{5} = get(scellThisRound{s_i}, 'currentValue'); % hinge direction
+                % Randomize algorithm side
+                alg_combo = Shuffle(get(scellThisRound{s_i}, 'combination'));
+                
+                % Get parameters for this trial
+                trial_params{1} = alg_combo;
+                trial_params{2} = get(scellThisRound{s_i}, 'question');
+                trial_params{3} = get(scellThisRound{s_i}, 'currentValue'); % scene
                 BF_build_textures_optimizer;
                 BF_initialize_trial; % calls RenderSceneStatic
                 BF_run_trial; % calls actual GL commands
@@ -2005,7 +2007,7 @@ eval([exp_num]);
                 end
             end
             
-        elseif ~strcmp(experiment_type, 'monocular_hinge')
+        elseif ~strcmp(experiment_type, 'comparison')
             while (trial_counter<3000)
                  stop_flag = 0;
                  trial_counter=trial_counter+1;

@@ -13,9 +13,13 @@ cg1{2} = correctedGamma{2}(:,1);
 cg2{2} = correctedGamma{2}(:,2);
 cg3{2} = correctedGamma{2}(:,3);
     
-if trial_mode == 0 
-    demo_params = strcat('pinhole_2.6_2.6_90_0');
-    load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/pinhole/', demo_params, '.mat'))
+if trial_mode == 0
+    demo_comparison = {'optimizer', 'blending'};
+    demo_scene = '1';
+    leftFName  = strjoin(demo_comparison{1}, demo_scene, '0', '_');
+    rightFName = strjoin(demo_comparison{2}, demo_scene, '1', '_');
+    leftImage  = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', leftFName,  '.mat'));
+    rightImage = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', rightFName, '.mat'));
     
     
     for plane = (1:4)

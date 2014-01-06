@@ -74,11 +74,9 @@ ms.MCS_stimuli = [];            % Vector containin actual stimuli
 ms.MCS_num_responses = [];      % Vector of the number of responses for each stimulus
 ms.MCS_max_responses = [];      % Number of responses desired for each stimulus
 
-% Variables for monocular_hinge experiment
-ms.algorithm      = [];
-ms.angle          = [];
-ms.disparity_dist = [];
-ms.accom_dist     = [];
+% Variables for comparison experiment
+ms.combination    = [];
+ms.question       = [];
 ms.initialized    = [];
 
 ms = class(ms,'PTBStaircase');
