@@ -15,11 +15,11 @@ cg3{2} = correctedGamma{2}(:,3);
     
 if trial_mode == 0
     demo_comparison = {'optimizer', 'blending'};
-    demo_scene = '1';
-    leftFName  = strjoin(demo_comparison{1}, demo_scene, '0', '_');
-    rightFName = strjoin(demo_comparison{2}, demo_scene, '1', '_');
-    leftImage  = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', leftFName,  '.mat'));
-    rightImage = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', rightFName, '.mat'));
+    demo_objects = {'budha', 'lucy'};
+    fName1 = strjoin(demo_objects{1}, demo_objects{2}, 'concave', demo_comparison{1}, '-');
+    fName2 = strjoin(demo_objects{1}, demo_objects{2}, 'concave', demo_comparison{2}, '-');
+    imageSet1 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', leftFName,  '.mat'));
+    imageSet2 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', rightFName, '.mat'));
     
     
     for plane = (1:4)
@@ -29,7 +29,8 @@ if trial_mode == 0
             hdr = uint8(zeros(800,800,3));
             
             %upside down compensation
-            hdr(550:-1:51,101:700,:) = uint8(double(layers{eye*4+plane}).*generateAperture(18,3.2,1.5,eye));
+            hdr(729:-1:73,  73:400,:) = uint8(double(imageSet1{eye*4+plane}(1:end/2)));
+            hdr(729:-1:73, 401:473,:) = uint8(double(imageSet1{eye*4+plane}(end/2+1:end)));
             
             % gamma calibration
             hdr1 = hdr(:,:,1);
