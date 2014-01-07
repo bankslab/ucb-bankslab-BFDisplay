@@ -38,13 +38,6 @@ else
     param.num_scenes       = 20;
     param.MCS_stimuli      = 1:param.num_scenes;
 
-    
-    % Create combinations
-    % Move this to large for loops below
-    
-    for c = 1:length(combinations)
-        combo = combinations(c, :);
-    end
 
     % count how many staircases we want
 
