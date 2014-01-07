@@ -14,12 +14,12 @@ cg2{2} = correctedGamma{2}(:,2);
 cg3{2} = correctedGamma{2}(:,3);
     
 if trial_mode == 0
-    demo_comparison = {'optimizer', 'blending'};
-    demo_objects = {'budha', 'lucy'};
-    fName1 = strjoin(demo_objects{1}, demo_objects{2}, 'concave', demo_comparison{1}, '-');
-    fName2 = strjoin(demo_objects{1}, demo_objects{2}, 'concave', demo_comparison{2}, '-');
-    imageSet1 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', leftFName,  '.mat'));
-    imageSet2 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', rightFName, '.mat'));
+    demo_comparison = {'optimized', 'blending'};
+    demo_objects = {'armadillo', 'dragon'};
+    fName1 = strjoin({demo_objects{1}, demo_objects{2}, 'concave', demo_comparison{1}}, '-');
+    fName2 = strjoin({demo_objects{1}, demo_objects{2}, 'concave', demo_comparison{2}}, '-');
+    imageSet1 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName1,  '.mat'));
+    imageSet2 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName2, '.mat'));
     
     
     for plane = (1:4)
@@ -29,8 +29,9 @@ if trial_mode == 0
             hdr = uint8(zeros(800,800,3));
             
             %upside down compensation
-            hdr(729:-1:73,  73:400,:) = uint8(double(imageSet1{eye*4+plane}(1:end/2)));
-            hdr(729:-1:73, 401:473,:) = uint8(double(imageSet1{eye*4+plane}(end/2+1:end)));
+            hdr(600:-1:001, 101:400, :) = uint8(1*double(imageSet1.layers{eye*4+plane}(:, 1:end/2, :)));
+            hdr(600:-1:001, 401:700, :) = uint8(1*double(imageSet2.layers{eye*4+plane}(:, end/2+1:end, :)));
+            hdr(600:-1:001, 399:401, :) = 100;
             
             % gamma calibration
             hdr1 = hdr(:,:,1);
