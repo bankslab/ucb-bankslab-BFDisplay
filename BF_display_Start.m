@@ -1170,8 +1170,11 @@ eval([exp_num]);
                 
                 % Get parameters for this trial
                 trial_params{1} = alg_combo;
-                trial_params{2} = get(scellThisRound{s_i}, 'question');
-                trial_params{3} = get(scellThisRound{s_i}, 'currentValue'); % scene
+                trial_params{2} = get(scellThisRound{s_i}, 'currentValue'); % scene
+                trial_params{3} = param.question_names(get(scellThisRound{s_i}, 'question'));
+                questionText = trial_params{3}{1};
+                message = 'displayquestion';
+                BF_disp_message;
                 BF_build_textures_optimizer;
                 BF_initialize_trial; % calls RenderSceneStatic
                 BF_run_trial; % calls actual GL commands
