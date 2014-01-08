@@ -28,10 +28,12 @@ if trial_mode == 0
             
             hdr = uint8(zeros(800,800,3));
             
-            %upside down compensation
+            % image placement and upside down compensation
             hdr(600:-1:001, 101:400, :) = uint8(1*double(imageSet1.layers{eye*4+plane}(:, 1:end/2, :)));
             hdr(600:-1:001, 401:700, :) = uint8(1*double(imageSet2.layers{eye*4+plane}(:, end/2+1:end, :)));
-            hdr(600:-1:001, 399:401, :) = 100;
+            
+            % divide the two halves
+            hdr(600:-1:001, 400, :) = 0;
             
             % gamma calibration
             hdr1 = hdr(:,:,1);
@@ -53,25 +55,22 @@ if trial_mode == 0
 elseif trial_mode == 1
     if started
         % Load Images
-        string_holder{length(trial_params)} = [];
-        switch trial_params{1}
-            case 1
-                alg_name = 'optimization';
-            case 2
-                alg_name = 'blending';
-            case 3
-                alg_name = 'single';
-            case 4
-                alg_name = 'pinhole';
+        for a = 1:2
+            switch trial_params{1}(a)
+                case 1
+                    alg_name{a} = 'optimization';
+                case 2
+                    alg_name{a} = 'blending';
+                case 3
+                    alg_name{a} = 'single';
+                case 4
+                    alg_name{a} = 'pinhole';
+            end
         end
-        string_holder{1} = alg_name; %algorithm
-        for i = 2:length(trial_params)
-            string_holder{i} = num2str(trial_params{i});
-        end
-        param_string = strjoin(string_holder, '_');
-        file_name = strcat(param_string, '.mat');
-        file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), alg_name, file_name}, '/');
-        load(file_path);
+        fName1 = strcat(alg_name{1}, num2str(trial_params{2}), '.mat');
+        fName2 = strcat(alg_name{2}, num2str(trial_params{2}), '.mat');
+        imageSet1 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName1, '.mat'));
+        imageSet2 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName2, '.mat'));
 
         for plane = (1:4)
             for eye = (0:1)
@@ -79,8 +78,12 @@ elseif trial_mode == 1
 
                 hdr = uint8(zeros(800,800,3));
 
-                %upside down compensation
-                hdr(550:-1:51,101:700,:) = uint8(double(layers{eye*4+plane}).*generateAperture(18,3.2,1.5,eye));
+                % image placement and upside down compensation
+                hdr(600:-1:001, 101:400, :) = uint8(1*double(imageSet1.layers{eye*4+plane}(:, 1:end/2, :)));
+                hdr(600:-1:001, 401:700, :) = uint8(1*double(imageSet2.layers{eye*4+plane}(:, end/2+1:end, :)));
+
+                % divide the two halves
+                hdr(600:-1:001, 400, :) = 0;
 
                 % gamma calibration
                 hdr1 = hdr(:,:,1);
