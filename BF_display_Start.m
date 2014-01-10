@@ -1159,7 +1159,7 @@ eval([exp_num]);
             fprintf(fp, 'Subject Name:\t%s\n', observer_initials);
             fprintf(fp, 'Date and Time:\t%2d/%2d/%4d\t%2d:%2d:%2.0f\n', da, mo, ye, ho, mi, se);
             fprintf(fp, '*** **************************** ***\n');
-            fprintf(fp, ' ss\t alg_combo\t question\t scene\t response\n');
+            fprintf(fp, ' ss\t scene\t question\t alg_left\t alg_right\t response\n');
             % MARINA''S ADDITION %%
             
             stop_flag=0;
@@ -1171,8 +1171,9 @@ eval([exp_num]);
                 % Get parameters for this trial
                 trial_params{1} = alg_combo;
                 trial_params{2} = get(scellThisRound{s_i}, 'currentValue'); % scene
-                trial_params{3} = param.question_names(get(scellThisRound{s_i}, 'question'));
-                questionText = trial_params{3}{1};
+                trial_params{3} = get(scellThisRound{s_i}, 'question');
+                question = param.question_names(trial_params{3});
+                questionText = question{1};
                 message = 'displayquestion';
                 BF_disp_message;
                 BF_build_textures_optimizer;
@@ -1192,8 +1193,8 @@ eval([exp_num]);
                 end
                 
                 %Write Trial Data
-                fprintf(fp, '%d\t%d\t%d\t%d\t%d\t%d\t%d\n', ...
-                trial_counter, trial_params{1}, trial_params{2}, trial_params{3}, trial_params{4}, trial_params{5}, f_print_response);
+                fprintf(fp, '%d\t%d\t%d\t%d\t%d\t%d\n', ...
+                trial_counter, trial_params{2}, trial_params{3}, trial_params{1}(1), trial_params{1}(2), f_print_response);
                 if trial_counter == param.max_trials
                     stop_flag = 1;
                 end
