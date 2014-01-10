@@ -15,7 +15,7 @@ cg3{2} = correctedGamma{2}(:,3);
     
 if trial_mode == 0
     demo_comparison = {'optimized', 'blending'};
-    demo_objects = {'armadillo', 'dragon'};
+    demo_objects = {'igea', 'bunny'};
     fName1 = strjoin({demo_objects{1}, demo_objects{2}, 'concave', demo_comparison{1}}, '-');
     fName2 = strjoin({demo_objects{1}, demo_objects{2}, 'concave', demo_comparison{2}}, '-');
     imageSet1 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName1,  '.mat'));
