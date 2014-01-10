@@ -52,11 +52,11 @@ while(displaymessage==1)
                 Screen('DrawText', windowPtr, [num2str(block_counter) 'blocks completed'], 300, 400, [255, 255, 255, 255]);
                 Screen('Flip', windowPtr, [], 2, 1);
                 WaitSecs(1);
-            if strcmp(message, 'displayquestion')
+            elseif strcmp(message, 'displayquestion')
                 Screen('TextSize', windowPtr, 25);
-                Screen('DrawText', windowPtr, [questionText], 300, 100, [255, 255, 255, 255]); 
+                Screen('DrawText', windowPtr, [questionText], 400, 300, [255, 255, 255, 255]); 
                 Screen('Flip', windowPtr, [], 2, 1);
-                WaitSecs(2);
+                WaitSecs(param.question_duration);
             elseif strcmp(message, 'takeabreak')
                 Screen('TextSize',windowPtr, 25);
                 Screen('DrawText', windowPtr, ['Take a break'], 300, 200, [255, 255, 255, 255]); 
@@ -224,8 +224,9 @@ while(displaymessage==1)
     end
     onset=Screen('Flip', windowPtr, [], 2, 1);
     
-    
-    [strInputName2, x, y] = BFWaitForInput(0.000001);
+    if strcmp(message, 'displayquestion') ~= 1
+        [strInputName2, x, y] = BFWaitForInput(0.000001);
+    end
 
     for whichEye=[0 1]
         Screen('SelectStereoDrawBuffer', windowPtr, whichEye);
