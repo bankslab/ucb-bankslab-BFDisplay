@@ -21,13 +21,14 @@ else
     param.disparity_dist   = 1.7;
     param.accom_dist       = 1.7;
     param.alg_names        = {'optimization', 'blending', 'single', 'pinhole'};
-    param.question_names   = {'Which half conveys a stronger impression of depth?',
-                              'Which half has more realistic occlusion boundaries?',
-                              'On which half do the objects appear further apart?',
-                              'Which half appears more saturated in color?'};
+    param.question_names   = {'Stronger impression of depth?',
+                              'Realistic occlusion boundaries?',
+                              'Objects appear further apart?',
+                              'More saturated in color?'};
     
     % Experiment parameters
-    param.stim_duration    =  5;     % seconds
+    param.stim_duration    =  4;     % seconds
+    param.question_duration=  2;     % seconds
     param.trials_per_block = 72;
     param.max_responses    =  1;     % per stimulus
     param.max_trials       = 1000;

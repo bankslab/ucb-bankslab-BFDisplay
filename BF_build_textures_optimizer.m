@@ -67,10 +67,10 @@ elseif trial_mode == 1
                     alg_name{a} = 'pinhole';
             end
         end
-        fName1 = strcat(alg_name{1}, num2str(trial_params{2}), '.mat');
-        fName2 = strcat(alg_name{2}, num2str(trial_params{2}), '.mat');
-        imageSet1 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName1, '.mat'));
-        imageSet2 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName2, '.mat'));
+        fName1 = strcat(alg_name{1}, '_', num2str(trial_params{2}), '.mat');
+        fName2 = strcat(alg_name{2}, '_', num2str(trial_params{2}), '.mat');
+        imageSet1 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName1));
+        imageSet2 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName2));
 
         for plane = (1:4)
             for eye = (0:1)
