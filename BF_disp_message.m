@@ -54,7 +54,7 @@ while(displaymessage==1)
                 WaitSecs(1);
             elseif strcmp(message, 'displayquestion')
                 Screen('TextSize', windowPtr, 25);
-                Screen('DrawText', windowPtr, [questionText], 400, 300, [255, 255, 255, 255]); 
+                Screen('DrawText', windowPtr, [questionText], 150, 300, [255, 255, 255, 255]); 
                 Screen('Flip', windowPtr, [], 2, 1);
                 WaitSecs(param.question_duration);
             elseif strcmp(message, 'takeabreak')
