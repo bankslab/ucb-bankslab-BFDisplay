@@ -21,9 +21,10 @@ else
     param.disparity_dist   = 1.7;
     param.accom_dist       = 1.7;
     param.alg_names        = {'optimization', 'blending', 'single', 'pinhole'};
-    param.question_names   = {'Which side conveys a stronger impression of depth?',
-                              'Which side has more realistic occlusion boundaries?',
-                              'Which side appears more saturated in color?'};
+    param.question_names   = {'Which half conveys a stronger impression of depth?',
+                              'Which half has more realistic occlusion boundaries?',
+                              'On which half do the objects appear further apart?',
+                              'Which half appears more saturated in color?'};
     
     % Experiment parameters
     param.stim_duration    =  5;     % seconds
@@ -34,7 +35,7 @@ else
     % Variables
     param.algorithms       = 1:4;
     param.combinations     = nchoosek(param.algorithms, 2);
-    param.questions        = 1:3; 
+    param.questions        = 1:4; 
     param.num_scenes       = 20;
     param.MCS_stimuli      = 1:param.num_scenes;
 
