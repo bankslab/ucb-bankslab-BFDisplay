@@ -66,10 +66,12 @@ elseif trial_mode == 1
                     alg_name{a} = 'pinhole';
             end
         end
-        fName1 = strcat(alg_name{1}, '_', num2str(trial_params{2}), '.mat');
-        fName2 = strcat(alg_name{2}, '_', num2str(trial_params{2}), '.mat');
-        imageSet1 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName1));
-        imageSet2 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName2));
+        if show_image == 1
+            fName = strcat(alg_name{show_image}, '_', num2str(trial_params{2}), '.mat');
+        elseif show_image == 2
+            fName = strcat(alg_name{show_image}, '_', num2str(trial_params{2}), '.mat');
+        end
+        imageSet = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName));
 
         for plane = (1:4)
             for eye = (0:1)
@@ -78,11 +80,7 @@ elseif trial_mode == 1
                 hdr = uint8(zeros(800,800,3));
 
                 % image placement and upside down compensation
-                hdr(600:-1:001, 101:400, :) = uint8(1*double(imageSet1.layers{eye*4+plane}(:, 1:end/2, :)));
-                hdr(600:-1:001, 401:700, :) = uint8(1*double(imageSet2.layers{eye*4+plane}(:, end/2+1:end, :)));
-
-                % divide the two halves
-                hdr(600:-1:001, 400, :) = 0;
+                hdr(600:-1:001, 101:700, :) = uint8(1*double(imageSet.layers{eye*4+plane}));
 
                 % gamma calibration
                 hdr1 = hdr(:,:,1);
