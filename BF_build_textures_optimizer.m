@@ -14,26 +14,25 @@ cg2{2} = correctedGamma{2}(:,2);
 cg3{2} = correctedGamma{2}(:,3);
     
 if trial_mode == 0
-    demo_comparison = {'optimized', 'blending'};
-    demo_objects = {'igea', 'bunny'};
-    fName1 = strjoin({demo_objects{1}, demo_objects{2}, 'concave', demo_comparison{1}}, '-');
-    fName2 = strjoin({demo_objects{1}, demo_objects{2}, 'concave', demo_comparison{2}}, '-');
-    imageSet1 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName1,  '.mat'));
+    demo_comparison = {'optimization', 'pinhole'};
+    fName1 = strcat(demo_comparison{1}, '_', '2');
+    fName2 = strcat(demo_comparison{2}, '_', '2');
+    imageSet1 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName1, '.mat'));
     imageSet2 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName2, '.mat'));
-    
+ 
     
     for plane = (1:4)
        for eye = (0:1)
             img_index = plane + eye*4;
             
-            hdr = uint8(zeros(800,800,3));
+            hdr = uint8(zeros(800,800,3)+25);
             
             % image placement and upside down compensation
             hdr(600:-1:001, 101:400, :) = uint8(1*double(imageSet1.layers{eye*4+plane}(:, 1:end/2, :)));
             hdr(600:-1:001, 401:700, :) = uint8(1*double(imageSet2.layers{eye*4+plane}(:, end/2+1:end, :)));
             
             % divide the two halves
-            hdr(600:-1:001, 400, :) = 0;
+            %hdr(600:-1:001, 400:401, :) = 40;
             
             % gamma calibration
             hdr1 = hdr(:,:,1);
