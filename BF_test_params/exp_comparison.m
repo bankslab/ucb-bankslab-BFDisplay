@@ -27,7 +27,7 @@ else
                               'More saturated in color?'};
     
     % Experiment parameters
-    param.stim_duration    =  5;     % seconds
+    param.stim_duration    = 0.2;     % seconds
     param.question_duration=  2;     % seconds
     param.trials_per_block = 72;
     param.max_responses    =  1;     % per stimulus
