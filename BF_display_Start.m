@@ -1176,10 +1176,37 @@ eval([exp_num]);
                 questionText = question{1};
                 message = 'displayquestion';
                 BF_disp_message;
-                BF_build_textures_optimizer;
-                BF_initialize_trial; % calls RenderSceneStatic
-                BF_run_trial; % calls actual GL commands
-                process_response; % gets keyboard input and updates staircase
+                while response_given == 0
+                    BF_build_textures_optimizer;
+                    BF_initialize_trial; % calls RenderSceneStatic
+                    BF_run_trial; % calls actual GL commands
+                    [a b c d] = KbCheck(-1);
+                    if a == 1
+                        iKeyIndex = find(c);
+                        strInputName = KbName(iKeyIndex(1));
+                        if strcmp(strInputName,'LeftArrow')
+                            show_image = 1;
+                        elseif strcmp(strInputName,'RightArrow')
+                            show_image = 2;
+                        elseif strcmp(strInputName,'Return')
+                            response_given = 1;
+                                Screen('SelectStereoDrawBuffer',windowPtr,0);
+                                Screen('FillRect',windowPtr,[0 0 0]);
+                                Screen('SelectStereoDrawBuffer',windowPtr,1);
+                                Screen('FillRect',windowPtr,[0 0 0]);
+                                Screen('Flip',windowPtr);
+                            break;    
+                        elseif strcmp(strInputName,'ESCAPE')||strcmp(strInputName,'esc')
+                            stop_flag = 1;
+                            break;
+                        end
+                    end
+                end
+
+                % Save Response
+                scellThisRound{s_i} = processResponse(scellThisRound{s_i}, show_image);
+                f_print_response = show_image;
+                process_response; % updates staircase
 
                 trial_counter = trial_counter + 1;
 
