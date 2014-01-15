@@ -42,6 +42,9 @@ function [] = BF_display_Start(viewMode, observer_initials, exp_num)
          global vertFOVoffset;
          global horizFOVoffset; 
          global GL;
+         global show_image;
+         
+         show_image = 1;
 
 if ~exist('viewMode', 'var')
     viewMode = 9;
@@ -1176,12 +1179,18 @@ eval([exp_num]);
                 questionText = question{1};
                 message = 'displayquestion';
                 BF_disp_message;
+                BF_build_textures_optimizer;
+                BF_initialize_trial; % calls RenderSceneStatic
+                response_given = 0;
                 while response_given == 0
-                    BF_build_textures_optimizer;
-                    BF_initialize_trial; % calls RenderSceneStatic
                     BF_run_trial; % calls actual GL commands
-                    [a b c d] = KbCheck(-1);
                     if a == 1
+                        Screen('SelectStereoDrawBuffer',windowPtr,0);
+                        Screen('FillRect',windowPtr,[0 0 0]);
+                        Screen('SelectStereoDrawBuffer',windowPtr,1);
+                        Screen('FillRect',windowPtr,[0 0 0]);
+                        Screen('Flip',windowPtr);
+                        
                         iKeyIndex = find(c);
                         strInputName = KbName(iKeyIndex(1));
                         if strcmp(strInputName,'LeftArrow')
@@ -1190,16 +1199,13 @@ eval([exp_num]);
                             show_image = 2;
                         elseif strcmp(strInputName,'Return')
                             response_given = 1;
-                                Screen('SelectStereoDrawBuffer',windowPtr,0);
-                                Screen('FillRect',windowPtr,[0 0 0]);
-                                Screen('SelectStereoDrawBuffer',windowPtr,1);
-                                Screen('FillRect',windowPtr,[0 0 0]);
-                                Screen('Flip',windowPtr);
                             break;    
                         elseif strcmp(strInputName,'ESCAPE')||strcmp(strInputName,'esc')
                             stop_flag = 1;
                             break;
                         end
+                        BF_build_textures_optimizer;
+                        BF_initialize_trial; % calls RenderSceneStatic
                     end
                 end
 
