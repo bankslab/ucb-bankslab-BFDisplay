@@ -1,7 +1,9 @@
 
 if strcmp(experiment_type, 'comparison')
     tic
-    while toc < param.stim_duration
+    a = 0;
+    while a == 0
+        [a b c d] = KbCheck(-1);
         depthplane = depthplane + 1;
         if depthplane > 4
             depthplane = 1;
