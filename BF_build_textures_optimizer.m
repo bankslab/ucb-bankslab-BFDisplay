@@ -28,8 +28,7 @@ if trial_mode == 0
             hdr = uint8(zeros(800,800,3)+25);
             
             % image placement and upside down compensation
-            hdr(600:-1:001, 101:400, :) = uint8(1*double(imageSet1.layers{eye*4+plane}(:, 1:end/2, :)));
-            hdr(600:-1:001, 401:700, :) = uint8(1*double(imageSet2.layers{eye*4+plane}(:, end/2+1:end, :)));
+            hdr(600:-1:001, 101:700, :) = uint8(1*double(imageSet2.layers{eye*4+plane}));
             
             % divide the two halves
             %hdr(600:-1:001, 400:401, :) = 40;

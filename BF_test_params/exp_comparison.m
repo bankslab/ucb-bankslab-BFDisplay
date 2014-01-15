@@ -1,6 +1,6 @@
 % optimizer experiment template file
 experiment_type = 'comparison';
-trial_mode = 0;
+trial_mode = 1;
 dynamic_mode = 0;
 static_mode = 1;
 renderviews = [0, 1]; %0 is the left eye
@@ -37,7 +37,7 @@ else
     param.algorithms       = 1:4;
     param.combinations     = nchoosek(param.algorithms, 2);
     param.questions        = 1:4; 
-    param.num_scenes       = 20;
+    param.num_scenes       = 1;
     param.MCS_stimuli      = 1:param.num_scenes;
 
 
