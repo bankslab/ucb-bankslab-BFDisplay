@@ -1193,10 +1193,14 @@ eval([exp_num]);
                         
                         iKeyIndex = find(c);
                         strInputName = KbName(iKeyIndex(1));
-                        if strcmp(strInputName,'LeftArrow')
+                        if strcmp(strInputName,'1!')
                             show_image = 1;
-                        elseif strcmp(strInputName,'RightArrow')
+                        elseif strcmp(strInputName,'2@')
                             show_image = 2;
+                        elseif strcmp(strInputName,'3#')
+                            show_image = 3;
+                        elseif strcmp(strInputName,'4$')
+                            show_image = 4;
                         elseif strcmp(strInputName,'Return')
                             response_given = 1;
                             break;    
