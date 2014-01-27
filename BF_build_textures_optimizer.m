@@ -14,11 +14,15 @@ cg2{2} = correctedGamma{2}(:,2);
 cg3{2} = correctedGamma{2}(:,3);
     
 if trial_mode == 0
-    demo_comparison = {'optimization', 'pinhole'};
-    fName1 = strcat(demo_comparison{1}, '_', '2');
-    fName2 = strcat(demo_comparison{2}, '_', '2');
-    imageSet1 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName1, '.mat'));
-    imageSet2 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName2, '.mat'));
+    % FOR LYTRO IMAGES
+    demo_comparison = {};
+    %fName1 = 'flower_optimization';
+    %fName1 = 'bridge_optimization';
+    %fName1 = 'flower2_optimization';
+
+    %fName2 = strcat(demo_comparison{2}, '_', '2');
+    imageSet1 = load(strcat('BF_texture_files/optimizer/camera/', num2str(IPD), '/', fName1, '.mat'));
+    %imageSet2 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName2, '.mat'));
  
     
     for plane = (1:4)
@@ -28,7 +32,7 @@ if trial_mode == 0
             hdr = uint8(zeros(800,800,3)+25);
             
             % image placement and upside down compensation
-            hdr(600:-1:001, 101:700, :) = uint8(1*double(imageSet2.layers{eye*4+plane}));
+            hdr(600:-1:1, 1:800, :) = uint8(2*double(imageSet1.layers{eye*4+plane}));
             
             % divide the two halves
             %hdr(600:-1:001, 400:401, :) = 40;
@@ -53,25 +57,49 @@ if trial_mode == 0
 elseif trial_mode == 1
     if started
         % Load Images
-        for a = 1:2
-            switch trial_params{1}(a)
-                case 1
-                    alg_name{a} = 'optimization';
-                case 2
-                    alg_name{a} = 'blending';
-                case 3
-                    alg_name{a} = 'single';
-                case 4
-                    alg_name{a} = 'pinhole';
-            end
-        end
+        
+        %{
+        % FOR PLAID SCENE
         if show_image == 1
-            fName = strcat(alg_name{show_image}, '_', num2str(trial_params{2}), '.mat');
+            fName = 'single_trial3.mat';
         elseif show_image == 2
-            fName = strcat(alg_name{show_image}, '_', num2str(trial_params{2}), '.mat');
+            fName = 'pinhole_trial3.mat';
+        elseif show_image == 3
+            fName = 'blending_trial3.mat';
+        elseif show_image == 4
+            fName = 'optimization_trial3.mat';
         end
-        imageSet = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName));
-
+        gammaValue = 2;
+        imageSet = load(strcat('BF_texture_files/optimizer/camera/0.061/', fName));
+        %}
+        
+        %{
+        % FOR Mitsuba SCENE
+        if show_image == 1
+            fName = 'synthetic_pinhole.mat';
+        elseif show_image == 2
+            fName = 'synthetic_single.mat';
+        elseif show_image == 3
+            fName = 'synthetic_blending.mat';
+        elseif show_image == 4
+            fName = 'synthetic_optimization.mat';
+        end
+        gammaValue = 2;
+        imageSet = load(strcat('BF_texture_files/optimizer/camera/0.061/', fName));
+        %}
+        
+        
+        % FOR OCTOPUS SCENE
+        if show_image == 1
+            fName = 'octopus_single.mat';
+            gammaValue = 1;
+        elseif show_image == 2
+            fName = 'octopus_optimization.mat';
+            gammaValue = .91;
+        end
+        imageSet = load(strcat('BF_texture_files/optimizer/camera/0.061/', fName));
+        
+        
         for plane = (1:4)
             for eye = (0:1)
                 img_index = plane + eye*4;
@@ -79,8 +107,25 @@ elseif trial_mode == 1
                 hdr = uint8(zeros(800,800,3));
 
                 % image placement and upside down compensation
-                hdr(600:-1:001, 101:700, :) = uint8(1*double(imageSet.layers{eye*4+plane}));
+                
+                % FOR OCTOPUS SCENE
+                hdr(474:-1:127, 220:740, :) = imresize(uint8(255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))),0.5);
 
+                
+                % FOR OLD STUFF
+                %hdr(600:-1:001, 101:700, :) = imresize(uint8(1*double(imageSet.layers{eye*4+plane})),0.5);
+                %hdr(600:-1:1, 1:800, :) = uint8(255*((double(imageSet.layers{eye*4+plane})/255).^(2)));
+                
+                %{
+                % FOR PLAID SCENE
+                hdr(600:-1:1, 1:800, :) = uint8(255*((double(imageSet.layers{eye*4+plane})/255)));
+                hdr(:, 101:800, :) = hdr(:, 1:700, :);
+                hdr(:, 701:800, :) = 0;
+                %}
+                
+                % FOR Mitsuba SCENE
+                %hdr(600:-1:1, 1:800, :) = uint8(255*((2*double(imageSet.layers{eye*4+plane})/255)));
+                
                 % gamma calibration
                 hdr1 = hdr(:,:,1);
                 hdr2 = hdr(:,:,2);
