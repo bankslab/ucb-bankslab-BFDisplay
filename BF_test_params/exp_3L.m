@@ -3,7 +3,7 @@
 
 experiment_type='alignmode';   %This will show vernier lines distributed across depth
 %stim_type='demomode';
-cameraCalibration=0; % Setting this to 1 will make the stimuli stay on the monitor until the subject responds
+cameraCalibration=1; % Setting this to 1 will make the stimuli stay on the monitor until the subject responds
 % set the above (cameraCalibration) to 0 for human subjects
 trial_mode=1;   %Enter the presentation, and respond flavor of the program
 
