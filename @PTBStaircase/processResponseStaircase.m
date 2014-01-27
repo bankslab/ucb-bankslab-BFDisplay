@@ -9,7 +9,7 @@
 % in the case of slant nulling, that the stimulus appeared to have
 % negative slant), and 2 means 'more'
 
-function [ms] = processResponse(ms,response)
+function [ms] = processResponseStaircase(ms,response)
 
 if ms.MCS == 1
     % Method of constant stimuli
@@ -19,7 +19,7 @@ if ms.MCS == 1
     it = find(ms.MCS_stimuli == ms.currentValue);
     ms.MCS_num_responses(it) = ms.MCS_num_responses(it) + 1;
     
-    display(['For  pedestal ' num2str(ms.pedestal) ' : ' num2str(sum(ms.MCS_num_responses)) ' trials completed out of ' num2str(ms.MCS_max_responses * ms.MCS_num_stimuli)]);
+    %display(['For  pedestal ' num2str(ms.pedestal) ' : ' num2str(sum(ms.MCS_num_responses)) ' trials completed out of ' num2str(ms.MCS_max_responses * ms.MCS_num_stimuli)]);
     
     if length(ms.responses) == 1
         % This is the first response, so make sure it is recorded
