@@ -104,13 +104,31 @@ elseif trial_mode == 1
             for eye = (0:1)
                 img_index = plane + eye*4;
 
+                % Blank image holder (must be square)
                 hdr = uint8(zeros(800,800,3));
 
-                % image placement and upside down compensation
+                % Displayed image is placed into image holder
+                % Blank areas outside [600, 800] are not visible
+                % Image must also be flipped upside down
+                % Example1: Display a full-screen white square
+                % hdr(600:-1:1, 1:800, :) = 255*ones(600, 800, 3);
+                % Example2: Display HDR or double values w/ GammaCorrection
+                % hdr(600:-1:1, 1:800, :) = uint8(255*(double(file/255).^(GammaValue)));
+
+                layerImg = imresize(uint8(255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))),0.5);
+                
+                % Find size of loaded image
+                [h, w, z] = size(layerImg);
+                
+                assert((h < 600 && w < 800), 'Image is too large')
+                
+                hBuffer = (600 - h)/2;
+                wBuffer = (800 - w)/2;
+                
+                hdr((600-hBuffer):-1:(hBuffer+1), (wBuffer+1):(800-wBuffer), :) = layerImg;
                 
                 % FOR OCTOPUS SCENE
-                hdr(474:-1:127, 220:740, :) = imresize(uint8(255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))),0.5);
-
+                %hdr(474:-1:127, 220:740, :) = imresize(uint8(255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))),0.5);
                 
                 % FOR OLD STUFF
                 %hdr(600:-1:001, 101:700, :) = imresize(uint8(1*double(imageSet.layers{eye*4+plane})),0.5);
