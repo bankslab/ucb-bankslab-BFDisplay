@@ -13,6 +13,12 @@
 %     break;
 % end % Now it will continue to the next trial
 
+% Draw blank screen
+Screen('SelectStereoDrawBuffer',windowPtr,0);
+Screen('FillRect',windowPtr,[0 0 0]);
+Screen('SelectStereoDrawBuffer',windowPtr,1);
+Screen('FillRect',windowPtr,[0 0 0]);
+Screen('Flip',windowPtr);
 
 iKeyIndex = find(c);
 strInputName = KbName(iKeyIndex(1));
@@ -32,5 +38,6 @@ elseif strcmp(strInputName, 'Return')
     break;
 elseif strcmp(strInputName,'ESCAPE')||strcmp(strInputName,'esc')
     stop_flag = 1;
+    response_given = 1;
     break;
 end

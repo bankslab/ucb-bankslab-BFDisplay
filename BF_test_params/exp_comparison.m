@@ -7,14 +7,23 @@ renderviews = [0, 1]; %0 is the left eye
 projection_type = 1;
 
 s = PTBStaircase;
-dumpworkspace=1;
 
-record_filename = [pwd '/BF_data_files/optimizer/' observer_initials '_' exp_num '_record.mat'];
+% Reload old filenames and keep writing into same file
+scell_filename = [pwd '/BF_data_files/optimizer/' observer_initials '_' exp_num '_record.mat'];
+text_fileName = sprintf('data_comparison/%s.data', observer_initials);
 
-if (exist(record_filename, 'file') == 2)
+% Create text file for data saving
+mkdir('data_comparison');
+text_fp = fopen(text_fileName, 'a');
+fprintf(text_fp, '\n*** comparison experiment ***\n');
+fprintf(text_fp, 'Subject Name:\t%s\n', observer_initials);
+fprintf(text_fp, '*** **************************** ***\n');
+% CHANGE THESE NAMES FOR EACH EXPERIMENT
+fprintf(text_fp, ' ss\t scene\t question\t alg_left\t alg_right\t response\n');
+    
+if (exist(scell_filename, 'file') == 2)
 % Check if a data file exists, and if so open it
-    load(record_filename);
-
+    load(scell_filename);     
 else
     %% INITSCELL
     % Reference Parameters
