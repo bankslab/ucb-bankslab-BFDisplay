@@ -1172,6 +1172,7 @@ if trial_mode==1
             while response_given == 0
                 BF_run_trial; % calls actual GL commands
                 if a == 1
+                    takeKeyboardInput
                     BF_build_textures_optimizer;
                     BF_initialize_trial; % calls RenderSceneStatic
                 end
@@ -1191,8 +1192,8 @@ if trial_mode==1
             Screen('Close', static_scene_disp_list1);
             
         end
-        save(record_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound', 'trial_counter', 'block_counter');
-        fclose(fp);
+        save(scell_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound', 'trial_counter', 'block_counter');
+        fclose(text_fp);
     end
 end
 
