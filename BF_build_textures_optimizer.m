@@ -16,7 +16,7 @@ cg3{2} = correctedGamma{2}(:,3);
 if trial_mode == 0
     % FOR LYTRO IMAGES
     demo_comparison = {};
-    %fName1 = 'flower_optimization';
+    fName1 = 'flower_optimization';
     %fName1 = 'bridge_optimization';
     %fName1 = 'flower2_optimization';
 
