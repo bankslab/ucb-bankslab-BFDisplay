@@ -12,7 +12,9 @@
     materialDiff    = [1 1 1 1];
     materialSpec    = [1.0 0.2 0.0 1];
     materialShin    = 50.0;
-
+    
+    
+    
     % Sphere colors
     matSphereAmb    = builtin('single',materialAmb);
     matSphereDiff   = builtin('single',materialDiff);
