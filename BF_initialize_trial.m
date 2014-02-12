@@ -3,7 +3,6 @@
 %Also, opportunity to recompute the projection matrices to produce
 %vergence-accommodation cue conflicts
 
-
 Screen('BeginOpenGL', windowPtr);
 
 glDisable(GL.DEPTH_TEST);

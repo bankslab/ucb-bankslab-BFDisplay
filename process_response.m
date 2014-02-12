@@ -15,8 +15,10 @@ end
 
 % Write response to file
 % CHANGE THESE VARIABLES FOR EACH EXPERIMENT
-fprintf(text_fp, '%d\t%d\t%d\t%d\t%d\t%d\n', ...
+if trial_mode==1
+    fprintf(text_fp, '%d\t%d\t%d\t%d\t%d\t%d\n', ...
     trial_counter, trial_params{2}, trial_params{3}, trial_params{1}(1), trial_params{1}(2), show_image);
+end
 if trial_counter == param.max_trials
     stop_flag = 1;
 end

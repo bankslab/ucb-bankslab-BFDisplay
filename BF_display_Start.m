@@ -77,26 +77,6 @@ Screen('Preference', 'SkipSyncTests', 0);
 % Find the screen to use for display:
 screenid=max(Screen('Screens'));
 
-if viewMode == 10
-    % Yes. Do we have at least two separate displays for both views?
-    if length(Screen('Screens')) < 2
-        error('Sorry, for stereoMode 10 you''ll need at least 2 separate display screens in non-mirrored mode.');
-    end
-    
-    if ~IsWin
-        % Assign left-eye view (the master window) to main display:
-        screenid = 0;
-    else
-        % Assign left-eye view (the master window) to main display:
-        screenid = 1;
-    end
-    
-    %Change the screen resolutions
-    current_resolution=Screen('Resolution',1);
-    
-end
-
-
 %Load the special params for a specific user
 eval([observer_initials]);
 %The observer_initials must contain the IPD, parameter_setting, and
@@ -190,32 +170,11 @@ PsychImaging('AddTask', 'AllViews','FlipHorizontal');
 % (aka 0). This will enable the image processing operations - display
 % undistortion for both views:
 
-if strcmp(experiment_type,'demomode2')
-    PsychImaging('AddTask','General','FloatikngPoint16Bit');
-    PsychImaging('AddTask','General','UseFastOffscreenWindows');
-end
-if strcmp(experiment_type,'specularity')
-    PsychImaging('AddTask','General','FloatingPoint16Bit');
-    PsychImaging('AddTask','General','UseFastOffscreenWindows');
-end
 [windowPtr, winRect] = PsychImaging('OpenWindow', screenid, 0, [], [], [], viewMode, []);
-if strcmp(experiment_type,'demomode2')
-    Screen('Blendfunction',windowPtr,GL_SRC_ALPHA,GL_ONE);
-    woff=Screen('OpenOffscreenWindow',windowPtr,BlackIndex(windowPtr));
-    w_1l=Screen('OpenOffscreenWindow',windowPtr,BlackIndex(windowPtr));
-    w_1r=Screen('OpenOffscreenWindow',windowPtr,BlackIndex(windowPtr));
-    w_2l=Screen('OpenOffscreenWindow',windowPtr,BlackIndex(windowPtr));
-    w_2r=Screen('OpenOffscreenWindow',windowPtr,BlackIndex(windowPtr));
-    w_3l=Screen('OpenOffscreenWindow',windowPtr,BlackIndex(windowPtr));
-    w_3r=Screen('OpenOffscreenWindow',windowPtr,BlackIndex(windowPtr));
-    w_4l=Screen('OpenOffscreenWindow',windowPtr,BlackIndex(windowPtr));
-    w_4r=Screen('OpenOffscreenWindow',windowPtr,BlackIndex(windowPtr));
-end
+
 
 if viewMode==9 % probably desktop or laptop
-    % skip gamma adjustment
-    %         load('BF_params/BF_CLUTlookuptables.mat');
-    %         origGamma=Screen('LoadNormalizedGammaTable', windowPtr, BF_CLUT_L);
+    % MAKE LAPTOP DEMO BLAHBLAH
 elseif viewMode==4 % BF display with DATAPixx
     load('BF_params/correctedLinearGamma_256steps_zeroOffset.mat');
     
@@ -311,42 +270,18 @@ numframes = 1;
 texname_static=BF_build_textures;
 %Generate textures for specularity project. It needs many textures, so
 %make it only when we are in specularity project.
-if strcmp(experiment_type,'specularity')
-    %         BF_build_textures_for_specularity_project;
-    BF_build_textures_for_specularity_project3;
-end
 
-if strcmp(experiment_type, 'comparison')
-    glDisable(GL.DEPTH_TEST);
-    trial_params=[];
-    fix_params=[];
-    started=0;
-    BF_build_textures_optimizer;
-end
 
+glDisable(GL.DEPTH_TEST);
+trial_params=[];
+fix_params=[];
+started=0;
 
 Screen('EndOpenGL', windowPtr);
-
-if strcmp(experiment_type,'demomode2')
-    Screen('BeginOpenGL', windowPtr);
-    lightPos    = [0 0 2 5];
-    lightAmb    = [0.1 0.1 0.1 1.0];
-    lightDiff   = [1.0 1.0 1.0 1.0];
-    lightSpec   = [0.2 0.2 0.2 1.0];
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-    glEnable(GL.DEPTH_TEST);
-    glEnable(GL.CULL_FACE);
-    glDisable(GL.LIGHTING);
-    % 		texname_static_woff=BF_build_textures; % might be non-mandatory?
-    Screen('EndOpenGL', windowPtr);
-end
-
 
 activelensmode=1;
 depthplane=1;
 depthtex_handle=1;
-
-
 
 spatialundistort=1;   %Enables and disables the spatial undistortion
 
@@ -398,38 +333,6 @@ end
 %Best chances of not dropping frames
 
 %write and call display lists in same sequence as the init setting vectors
-Screen('BeginOpenGL', windowPtr);
-
-
-if trial_mode==0
-        glDisable(GL.DEPTH_TEST);
-        genlist_start=glGenLists(17);  %Returns integer of first set of free display lists
-        genlist_projection1=[0 1 2 3 4 5 6 7]+genlist_start;  %Set of indices
-        static_scene_disp_list=[0 1 2 3 4 5 6 7]+genlist_start+8;
-        wrap_texture_on_square=16+genlist_start;
-        
-        for depthplane= 4: -1: 1
-            depthtex_handle=depthplane;
-            for whichEye=0:1
-                glNewList(genlist_projection1(depthplane+whichEye*4), GL.COMPILE);
-                BF_viewport_specific_GL_commands;
-                glEndList();
-                
-                glNewList(static_scene_disp_list(depthplane+whichEye*4), GL.COMPILE);
-                BFRenderScene_static;
-                glEndList();
-            end
-        end
-else
-    
-    %open a data file
-    resultfilenameout = [pwd '/BF_data_files/BF_' observer_initials '_' exp_num '_' datestr(clock, 30) '.txt'];
-    file_1 = fopen(resultfilenameout,'a');
-    dumpworkspacefilename=[pwd '/BF_data_files/BF_WORKSPACE_' observer_initials '_' exp_num '_' datestr(clock, 30)];
-    
-end
-
-Screen('EndOpenGL', windowPtr);
 
 list_rendering=1;
 recompute_projection_list=1;
@@ -439,154 +342,33 @@ recompute_static_scene_list=1;
 tic;
 frameNum=0;
 strInputName='';
-while (trial_mode==0)
-    timeOffset=toc;
-    kinetic_dist= 0.8657+ .4637*sin(numframes/100);
-    cyl_rotation=numframes/3;
-    % BFWaitForInput (actually KbCheck) takes about 1.8msec.
-    % Let's do that once every 8 frames,
-    % which still is sampling at every 44msec.
-    frameNum=frameNum+1;
-    if mod(frameNum,18)==0
-        [strInputName, x, y] = BFWaitForInput(0.000001); % takes 0.0017 sec
-        BF_keyboard_handling;    %handle the responses
-    end
-    if list_rendering==1 && 0==strcmp(strInputName, '')
-        %Only rebuild the display lists if they pressed a button and they are in list_rendering,
-        %Also only rebuild if we have made a viewport specific change, like in
-        %otherwise, proceed
-        
-        %glDeleteLists(genlist_start,8);  %Clear the old display lists
-        depthplaneinit=depthplane;
-        depthtexinit=depthtex_handle;
-        if activelensmode==1
-            if recompute_projection_list==1
-                
-                for depthplane= 1: 4
-                    depthtex_handle=depthplane ;
-                    for whichEye=renderviews
-                        glNewList(genlist_projection1(depthplane+whichEye*4), GL.COMPILE);
-                        BF_viewport_specific_GL_commands;
-                        glEndList();
-                    end
-                end
-                recompute_projection_list=0;
-            end
-            
-            if recompute_static_scene_list==1
-                
-                for depthplane= 4: -1: 1
-                    depthtex_handle=depthplane ;
-                    for whichEye=renderviews
-                        glNewList(static_scene_disp_list(depthplane+whichEye*4), GL.COMPILE);
-                        BFRenderScene_static;
-                        glEndList();
-                    end
-                end
-                recompute_static_scene_list=0;
-            end
-    
-        else
-            
-            for whichEye=renderviews
-                glNewList(genlist_projection1(depthplane+whichEye*4), GL.COMPILE);
-                BF_viewport_specific_GL_commands;
-                glEndList();
-            end
-        end
-        
-        depthplane=depthplaneinit;
-        depthtex_handle=depthtexinit;
-        			depthtex_handle=depthtexinit;
-        
-    elseif list_rendering==1 && 0==strcmp(strInputName, '')
-        genlist_start=glGenLists(16);  %Returns integer of first set of free display lists
-        genlist_projection1=[0 1 2 3 4 5 6 7]+genlist_start;  %Set of indices
-        static_scene_disp_list=[0 1 2 3 4 5 6 7]+genlist_start+8;
-        
-        for depthplane= 4: -1: 1
-            depthtex_handle=depthplane;
-            for whichEye=0:1
-                glNewList(genlist_projection1(depthplane+whichEye*4), GL.COMPILE);
-                BF_viewport_specific_GL_commands;
-                glEndList();
-                glNewList(static_surface_scene_disp_list(depthplane+whichEye*4), GL.COMPILE);
-                BFRenderScene_static;
-                glEndList();
-                
-            end
-        end
-        
-    end
-    
-    if activelensmode
-        
-        depthplane=depthplane+1;
-        if depthplane>4
-            
-            depthplane=1;
-        end
-        depthtex_handle=depthplane;
-    end
-    
-   
-        timeStamp=zeros(1,8);
-        for whichEye=renderviews
-            Screen('SelectStereoDrawBuffer', windowPtr, whichEye);
-            Screen('BeginOpenGL', windowPtr);
-            timeStamp(whichEye*3+1)=toc;
-            timeStampDescription{whichEye*3+1}='Began OpenGL';
-            
-            glCallList(genlist_projection1(depthplane+whichEye*4));    %mandatory projection setup
-            
-            if static_mode  %optional mode for staic imagery
-                glCallList(static_scene_disp_list(depthplane+whichEye*4));
-            end
-            if dynamic_mode  %optional mode for moving imagery
-                glTranslatef(-0.06,.060, -kinetic_dist);
-                glCallList(wrap_texture_on_square);
-            end
-            timeStamp(whichEye*3+2)=toc;
-            timeStampDescription{whichEye*3+2}='Called list';
-            
-            Screen('EndOpenGL', windowPtr);
-           
-            if depthplane==3
-                if whichEye==1
-                    Screen('FillRect', windowPtr, [255 255 255], [winRect(3)*.85, winRect(4)*.85, winRect(3) , winRect(4)]);
-                    % 						Screen('FillRect', windowPtr, [255 255 255], [winRect(3)*.5, winRect(4)*.85, winRect(3) , winRect(4)]);
-                else
-                    Screen('FillRect', windowPtr, [255 255 255], [0, winRect(4)*.85, winRect(3)*.15 , winRect(4)]);
-                    % 						Screen('FillRect', windowPtr, [255 255 255], [0, winRect(4)*.85, winRect(3)*.5 , winRect(4)]);
-                end
-            end
-            
-            timeStamp(whichEye*3+3)=toc;
-            timeStampDescription{whichEye*3+3}='Drew rectangles';
-        end
-        
-        timeStamp(whichEye*3+4)=toc;
-        timeStampDescription{whichEye*3+4}='Ready to flip';
-        
-        %Screen('Flip', windowPtr [, when] [, dontclear] [, dontsync] [, multiflip]);
-        onset=Screen('Flip', windowPtr, [], 2, 1);
-        timeStamp(whichEye*3+5)=toc;
-        timeStampDescription{whichEye*3+5}='Flipped';
 
-    timecounter(numframes)=toc;
-    timecounter1(numframes)=timeStamp(1);
-    timecounter2(numframes)=timeStamp(2);
-    timecounter3(numframes)=timeStamp(3);
-    timecounter4(numframes)=timeStamp(4);
-    timecounter5(numframes)=timeStamp(5);
-    timecounter6(numframes)=timeStamp(6);
-    timecounter7(numframes)=timeStamp(7);
-    timecounter8(numframes)=timeStamp(8);
+if trial_mode==0
     
-    numframes = numframes + 1;
+    BF_build_textures_optimizer;
+    BF_initialize_trial;
     
-end  %while trial mode==0
-
+    stop_flag=0;
+    
+    % Trial starts here
+    while stop_flag==0
+        
+        BF_build_textures_optimizer;
+        BF_initialize_trial; % calls RenderSceneStatic
+        response_given = 0;
+        
+        % this loop checks for keyboard input
+        while response_given == 0
+            BF_run_trial; % calls actual GL commands
+            if a == 1 % a is output from KbCheck in BF_run_trial
+                takeKeyboardInput
+                BF_build_textures_optimizer;
+                BF_initialize_trial; % calls RenderSceneStatic
+            end
+        end
+        process_response;
+    end
+end
 
 if ~exist('trial_counter')
     trial_counter=0;
@@ -596,57 +378,60 @@ if ~exist('block_counter')
 end
 
 if trial_mode==1
+    
     BF_initialize_trial;    %Just to build projections for splash screen
     BF_display_initial_message;
     
-        stop_flag=0;
-        started=1;
+    stop_flag=0;
+    started=1;
+    
+    % Trial starts here
+    while stop_flag==0
+        % CHANGE THESE VARIABLES FOR EACH EXPERIMENT
         
-        % Trial starts here
-        while stop_flag==0
-            % CHANGE THESE VARIABLES FOR EACH EXPERIMENT
-            
-            % Randomize algorithm side
-            alg_combo = Shuffle(get(scellThisRound{s_i}, 'combination'));
-            
-            % Get parameters for this trial
-            trial_params{1} = alg_combo;
-            trial_params{2} = get(scellThisRound{s_i}, 'currentValue'); % scene
-            trial_params{3} = get(scellThisRound{s_i}, 'question');
-            
-            question = param.question_names(trial_params{3});
-            questionText = question{1};
-            message = 'displayquestion';
-            BF_disp_message;
-            
-            BF_build_textures_optimizer;
-            BF_initialize_trial; % calls RenderSceneStatic
-            response_given = 0;
-            while response_given == 0
-                BF_run_trial; % calls actual GL commands
-                if a == 1
-                    takeKeyboardInput
-                    BF_build_textures_optimizer;
-                    BF_initialize_trial; % calls RenderSceneStatic
-                end
+        % Randomize algorithm side
+        alg_combo = Shuffle(get(scellThisRound{s_i}, 'combination'));
+        
+        % Get parameters for this trial
+        trial_params{1} = alg_combo;
+        trial_params{2} = get(scellThisRound{s_i}, 'currentValue'); % scene
+        trial_params{3} = get(scellThisRound{s_i}, 'question');
+        
+        question = param.question_names(trial_params{3});
+        questionText = question{1};
+        message = 'displayquestion';
+        BF_disp_message;
+        
+        BF_build_textures_optimizer;
+        BF_initialize_trial; % calls RenderSceneStatic
+        response_given = 0;
+        
+        % this loop checks for keyboard input
+        while response_given == 0
+            BF_run_trial; % calls actual GL commands
+            if a == 1 % a is output from KbCheck in BF_run_trial
+                takeKeyboardInput
+                BF_build_textures_optimizer;
+                BF_initialize_trial; % calls RenderSceneStatic
             end
-            process_response;
-            
-            
-            % Trying to solve inter-trial delay
-            size = uint32(zeros(length(texname_static),1));
-            glDeleteTextures(size, texname_static);
-            size = uint32(zeros(length(genlist_projection1),1));
-            glDeleteTextures(size, genlist_projection1);
-            size = uint32(zeros(length(static_scene_disp_list1),1));
-            glDeleteTextures(size, static_scene_disp_list1);
-            Screen('Close', texname_static);
-            Screen('Close', genlist_projection1);
-            Screen('Close', static_scene_disp_list1);
-            
         end
-        save(scell_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound', 'trial_counter', 'block_counter');
-        fclose(text_fp);
+        process_response;
+        
+        
+        % Trying to solve inter-trial delay
+        size = uint32(zeros(length(texname_static),1));
+        glDeleteTextures(size, texname_static);
+        size = uint32(zeros(length(genlist_projection1),1));
+        glDeleteTextures(size, genlist_projection1);
+        size = uint32(zeros(length(static_scene_disp_list1),1));
+        glDeleteTextures(size, static_scene_disp_list1);
+        Screen('Close', texname_static);
+        Screen('Close', genlist_projection1);
+        Screen('Close', static_scene_disp_list1);
+        
+    end
+    save(scell_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound', 'trial_counter', 'block_counter');
+    fclose(text_fp);
 end
 
 message='experimentcomplete';
