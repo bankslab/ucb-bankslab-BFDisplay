@@ -352,30 +352,6 @@ spatialundistort=1;   %Enables and disables the spatial undistortion
 
 adjustEye=0;  %Which eye is being adjusted during alignment
 
-% %for randomdot stimuli, need a random dot seed array
-% %or else it will randomize the dots between each view
-% %eventually make this vector the right length, or don't exceed the 400.
-% 
-% 
-% %make a sample RDS
-% RDS_list_index=glGenLists(1);
-% glNewList(RDS_list_index, GL.COMPILE)
-% %BF_make_rds_grating(distance, numdots, grating_orientation,
-% %cyclesperdegree, diameter_size_degrees, arcmindisp, IPD, dotradius_arcmin, texname_static)
-% 
-% %         BF_make_rds_grating(MidNearDist, 300, 90, 1.35, 4, 10, IPD, 1.5,
-% %         texname_static);
-% BF_make_rds_grating(MidNearDist, 30, 90, 1.35, 1.5, 0, IPD, 1.5, texname_static);
-% glEndList();
-% 
-% CYLDOTS_list_index=glGenLists(1);
-% glNewList(CYLDOTS_list_index, GL.COMPILE)
-% BF_make_cylinder_dots(200, .1, .15, .001);
-% glEndList();
-% 
-% 
-
-
 if ~exist('depthoffset', 'var')
     depthoffset=0;  % how many meters should the focus cues be set backwards
     % from the specified object distance
@@ -509,8 +485,7 @@ while (trial_mode==0)
                 end
                 recompute_static_scene_list=0;
             end
-            
-            
+    
         else
             
             for whichEye=renderviews
@@ -535,14 +510,10 @@ while (trial_mode==0)
                 glNewList(genlist_projection1(depthplane+whichEye*4), GL.COMPILE);
                 BF_viewport_specific_GL_commands;
                 glEndList();
-                %                     stim_layer='surface';
                 glNewList(static_surface_scene_disp_list(depthplane+whichEye*4), GL.COMPILE);
                 BFRenderScene_static;
                 glEndList();
-                %                     stim_layer='reflection';
-                % 				    glNewList(static_reflection_scene_disp_list(depthplane+whichEye*4), GL.COMPILE);
-                % 				    BFRenderScene_static;
-                % 				    glEndList();
+                
             end
         end
         
@@ -568,8 +539,6 @@ while (trial_mode==0)
             
             glCallList(genlist_projection1(depthplane+whichEye*4));    %mandatory projection setup
             
-            %                 glCallList(static_scene_disp_list(depthplane+whichEye*4));
-            %                 BFRenderScene_dynamic;
             if static_mode  %optional mode for staic imagery
                 glCallList(static_scene_disp_list(depthplane+whichEye*4));
             end
@@ -580,20 +549,8 @@ while (trial_mode==0)
             timeStamp(whichEye*3+2)=toc;
             timeStampDescription{whichEye*3+2}='Called list';
             
-            %                 glTranslatef(0.03,.030, -kinetic_dist);
-            %                 glutWireSphere(0.04, 25, 25);
-            %
-            %                 glTranslatef(-0.06,-.06, +(kinetic_dist)-(.8+1.2-kinetic_dist));
-            %                 glutWireSphere(0.05, 20, 20);
-            
             Screen('EndOpenGL', windowPtr);
-            % 				if show_verg_ref_dist  % print out the lens specified depth
-            %
-            % 					Screen('TextSize',windowPtr, 50);
-            %
-            % 					Screen('DrawText', windowPtr, ['Depthplane is = ' num2str(depthplane)], 100, 100, [0, 0, 255, 255]);
-            % 					Screen('DrawText', windowPtr, ['WhichEye is = ' num2str(whichEye)], 100, 200, [0, 0, 255, 255]);
-            % 				end
+           
             if depthplane==3
                 if whichEye==1
                     Screen('FillRect', windowPtr, [255 255 255], [winRect(3)*.85, winRect(4)*.85, winRect(3) , winRect(4)]);
