@@ -18,7 +18,7 @@ end
 if trial_mode == 0
     % Demo Parameters
     fix_side   = 0; %Left
-    fix_depth  = 2; %2 Diopters
+    fix_depth  = 0; %Near Plane
     algorithm  = 4; %Optimization
     tex1_side  = 0; %Left
     front_plane_depth = 2.6; %2.6 Diopters
@@ -43,6 +43,7 @@ else
     string_holder{3} = num2str(front_plane_depth);
 end
 
+% TODO: the paths below need to be changed for the new experiment
 file_name = strcat(strjoin(string_holder, '_'), '.mat');
 file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), string_holder{1}, file_name}, '/');
 imageSet1 = load(strcat('BF_texture_files/optimizer/camera/', num2str(IPD), '/', file_path, '.mat'));

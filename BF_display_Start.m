@@ -353,44 +353,21 @@ if trial_mode==0
     stop_flag=0;
     while stop_flag==0
         makeFix = 1;
-        
-        scellThisRound{s_i} = set(scellThisRound{s_i}, 'fix_side', (randi(2)-1)); % Choose random side for fixation cross
-        fix_params{1} = get(scellThisRound{s_i}, 'fix_plane');
-        fix_params{2} = get(scellThisRound{s_i}, 'fix_side');
-        
-        trial_params{1} = get(scellThisRound{s_i}, 'algorithm');
-        scellThisRound{s_i} = set(scellThisRound{s_i}, 'tex_side', param.tex_side(randi(2)));
-        trial_params{2} = get(scellThisRound{s_i}, 'tex_side');
-        trial_params{3} = get(scellThisRound{s_i}, 'front_plane');
-        trial_params{4} = get(scellThisRound{s_i}, 'currentValue'); % side in front
-        
-        
         BF_build_textures_optimizer;
         BF_initialize_trial; % calls RenderSceneStatic
         BF_run_trial; % calls actual GL commands
         makeFix = 0;
+        
+        % TODO: Perhaps we can leave the cross up while making the new textures
+        % instead of flipping to a black screen.
+        % This may require making sure the last frame doesn't have a white box
         
         Screen('SelectStereoDrawBuffer',windowPtr,0);
         Screen('FillRect',windowPtr,[0 0 0]);
         Screen('SelectStereoDrawBuffer',windowPtr,1);
         Screen('FillRect',windowPtr,[0 0 0]);
         Screen('Flip',windowPtr);
-        
-        trial_params{1} = get(scellThisRound{s_i}, 'algorithm');
-        scellThisRound{s_i} = set(scellThisRound{s_i}, 'tex_side', param.tex_side(randi(2)));
-        trial_params{2} = get(scellThisRound{s_i}, 'tex_side');
-        trial_params{3} = get(scellThisRound{s_i}, 'front_plane');
-        trial_params{4} = get(scellThisRound{s_i}, 'currentValue'); % side in front
-        BF_build_textures_optimizer;
-        
-        BF_initialize_trial; % calls RenderSceneStatic
-        BF_run_trial; % calls actual GL commands
-        
-        
-        
-        
-        
-        
+
         BF_build_textures_optimizer;
         BF_initialize_trial; % calls RenderSceneStatic
         response_given = 0;
@@ -404,6 +381,8 @@ if trial_mode==0
                 BF_initialize_trial; % calls RenderSceneStatic
             end
         end
+        % TODO: the response keys for takeKeyboardInput and process_response 
+        % need to be set for the new experiment
         process_response;
     end
 end
@@ -416,6 +395,9 @@ if ~exist('block_counter')
 end
 
 if trial_mode==1
+    
+    % TODO: Trial mode does not work at all. All of this code needs to be
+    % changed to match the new variables.
     
     BF_initialize_trial;    %Just to build projections for splash screen
     BF_display_initial_message;

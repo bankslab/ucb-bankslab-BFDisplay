@@ -18,36 +18,30 @@ text_fp = fopen(text_fileName, 'a');
 fprintf(text_fp, '\n*** comparison experiment ***\n');
 fprintf(text_fp, 'Subject Name:\t%s\n', observer_initials);
 fprintf(text_fp, '*** **************************** ***\n');
-% CHANGE THESE NAMES FOR EACH EXPERIMENT
+% TODO: CHANGE THESE NAMES FOR EACH EXPERIMENT
 fprintf(text_fp, ' ss\t scene\t question\t alg_left\t alg_right\t response\n');
-    
-if (exist(scell_filename, 'file') == 2)
+
 % Check if a data file exists, and if so open it
+if (exist(scell_filename, 'file') == 2)
     load(scell_filename);     
+
 else
-    %% INITSCELL
-    % Reference Parameters
-    param.disparity_dist   = 1.7;
-    param.accom_dist       = 1.7;
-    param.alg_names        = {'optimization', 'blending', 'single', 'pinhole'};
-    param.question_names   = {'Stronger impression of depth?',
-                              'Realistic occlusion boundaries?',
-                              'Objects appear further apart?',
-                              'More saturated in color?'};
+    % INITSCELL
     
     % Experiment parameters
-    param.stim_duration    = 0.2;     % seconds
-    param.question_duration=  2;     % seconds
-    param.trials_per_block = 72;
-    param.max_responses    =  1;     % per stimulus
-    param.max_trials       = 1000;
+    param.fix_duration     = 0.5; % seconds
+    param.stim_duration    = 0.2; % seconds
+    param.trials_per_block = 80;
+    param.max_responses    =  6;  % per stimulus
+    param.max_trials       = 800; % to make sure it doesn't go forever
     
     % Variables
-    param.algorithms       = 1:4;
-    param.combinations     = nchoosek(param.algorithms, 2);
-    param.questions        = 1:4; 
-    param.num_scenes       = 1;
-    param.MCS_stimuli      = 1:param.num_scenes;
+    param.fix_side   = [0, 1]; % Left or Right
+    param.fix_depth  = [0, 1]; % Near or Far
+    param.algorithm  = [1, 2, 3, 4]; % Pinhole, Single, Blending, Optimization
+    param.tex1_side  = [0, 1]; % Left or Right
+    param.front_plane_depth = [2.6, 3.2]; % Diopters
+    %param.MCS_stimuli      = ; %TODO: This should be one of the above parameters
 
 
     % count how many staircases we want
@@ -56,6 +50,10 @@ else
         'MCS',1,...
         'initialized','no');
 
+    %TODO: nothing below this line has been changed yet
+    % These loops should go through each of the parameters above
+    % For parameters that will be randomized, don't include a loop
+    % Randomization happens in the BF_display_Start file (see old code)
     
     for combo_index = 1:length(param.combinations)
         for question_index = 1:length(param.questions)
@@ -71,7 +69,7 @@ else
         end
     end
 
-    %% SCELL ORDER
+    % SCELL ORDER
     scellSize=size(scell);
     scellLength=prod(scellSize(:));
     scellArray=reshape(scell,scellLength,1);
