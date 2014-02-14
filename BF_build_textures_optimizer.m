@@ -1,165 +1,94 @@
 % Load images and build textures for optimizer experiments
 
-if ~exist('image_list', 'var')
+if first_run == 0
+    % initialize variables
     image_list{8} = [];
+    
+    % gamma calibration
+    gammaValue = 1;
+    load('BF_params/correctedLinearGamma_256steps_zeroOffset.mat');
+    cg1{1} = correctedGamma{1}(:,1);
+    cg2{1} = correctedGamma{1}(:,2);
+    cg3{1} = correctedGamma{1}(:,3);
+    cg1{2} = correctedGamma{2}(:,1);
+    cg2{2} = correctedGamma{2}(:,2);
+    cg3{2} = correctedGamma{2}(:,3);
 end
 
-% gamma calibration
-load('BF_params/correctedLinearGamma_256steps_zeroOffset.mat');
-cg1{1} = correctedGamma{1}(:,1);
-cg2{1} = correctedGamma{1}(:,2);
-cg3{1} = correctedGamma{1}(:,3);
-cg1{2} = correctedGamma{2}(:,1);
-cg2{2} = correctedGamma{2}(:,2);
-cg3{2} = correctedGamma{2}(:,3);
-    
 if trial_mode == 0
-    % FOR LYTRO IMAGES
-    demo_comparison = {};
-    fName1 = 'flower_optimization';
-    %fName1 = 'bridge_optimization';
-    %fName1 = 'flower2_optimization';
-
-    %fName2 = strcat(demo_comparison{2}, '_', '2');
-    imageSet1 = load(strcat('BF_texture_files/optimizer/camera/', num2str(IPD), '/', fName1, '.mat'));
-    %imageSet2 = load(strcat('BF_texture_files/optimizer/', exp_num, '/', num2str(IPD), '/', fName2, '.mat'));
- 
-    
-    for plane = (1:4)
-       for eye = (0:1)
-            img_index = plane + eye*4;
-            
-            hdr = uint8(zeros(800,800,3)+25);
-            
-            % image placement and upside down compensation
-            hdr(600:-1:1, 1:800, :) = uint8(2*double(imageSet1.layers{eye*4+plane}));
-            
-            % divide the two halves
-            %hdr(600:-1:001, 400:401, :) = 40;
-            
-            % gamma calibration
-            hdr1 = hdr(:,:,1);
-            hdr2 = hdr(:,:,2);
-            hdr3 = hdr(:,:,3);
-            
-            hdr1 = uint8(255*cg1{eye+1}(hdr1+1));
-            hdr2 = uint8(255*cg2{eye+1}(hdr2+1));
-            hdr3 = uint8(255*cg3{eye+1}(hdr3+1));
-            
-            hdr(:,:,1) = hdr1;
-            hdr(:,:,2) = hdr2;
-            hdr(:,:,3) = hdr3;
-            
-            image_list{img_index} = hdr;
-        end
-    end   
+    % Demo Parameters
+    fix_side   = 0; %Left
+    fix_depth  = 2; %2 Diopters
+    algorithm  = 4; %Optimization
+    tex1_side  = 0; %Left
+    front_plane_depth = 2.6; %2.6 Diopters
     
 elseif trial_mode == 1
-    if started
-        % Load Images
-        
-        %{
-        % FOR PLAID SCENE
-        if show_image == 1
-            fName = 'single_trial3.mat';
-        elseif show_image == 2
-            fName = 'pinhole_trial3.mat';
-        elseif show_image == 3
-            fName = 'blending_trial3.mat';
-        elseif show_image == 4
-            fName = 'optimization_trial3.mat';
-        end
-        gammaValue = 2;
-        imageSet = load(strcat('BF_texture_files/optimizer/camera/0.061/', fName));
-        %}
-        
-        %{
-        % FOR Mitsuba SCENE
-        if show_image == 1
-            fName = 'synthetic_pinhole.mat';
-        elseif show_image == 2
-            fName = 'synthetic_single.mat';
-        elseif show_image == 3
-            fName = 'synthetic_blending.mat';
-        elseif show_image == 4
-            fName = 'synthetic_optimization.mat';
-        end
-        gammaValue = 2;
-        imageSet = load(strcat('BF_texture_files/optimizer/camera/0.061/', fName));
-        %}
-        
-        
-        % FOR OCTOPUS SCENE
-        if show_image == 1
-            fName = 'octopus_single.mat';
-            gammaValue = 1;
-        elseif show_image == 2
-            fName = 'octopus_optimization.mat';
-            gammaValue = .91;
-        end
-        imageSet = load(strcat('BF_texture_files/optimizer/camera/0.061/', fName));
-        
-        
-        for plane = (1:4)
-            for eye = (0:1)
-                img_index = plane + eye*4;
+    % Trial Parameters
+    % TODO: Call parameters from scell
+    imageSet = load(strcat('BF_texture_files/optimizer/camera/0.061/', fName));
+end
 
-                % Blank image holder (must be square)
-                hdr = uint8(zeros(800,800,3));
+if makeFix
+    % Load the fixation cross
+    string_holder = [];
+    string_holder{1} = 'nonius';
+    string_holder{2} = num2str(fix_side);
+    string_holder{3} = num2str(fix_depth);
+else
+    % Load the occlusion stimulus
+    string_holder{length(trial_params)} = [];
+    string_holder{1} = num2str(algorithm);
+    string_holder{2} = num2str(tex1_side);
+    string_holder{3} = num2str(front_plane_depth);
+end
 
-                % Displayed image is placed into image holder
-                % Blank areas outside [600, 800] are not visible
-                % Image must also be flipped upside down
-                % Example1: Display a full-screen white square
-                % hdr(600:-1:1, 1:800, :) = 255*ones(600, 800, 3);
-                % Example2: Display HDR or double values w/ GammaCorrection
-                % hdr(600:-1:1, 1:800, :) = uint8(255*(double(file/255).^(GammaValue)));
+file_name = strcat(strjoin(string_holder, '_'), '.mat');
+file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), string_holder{1}, file_name}, '/');
+imageSet1 = load(strcat('BF_texture_files/optimizer/camera/', num2str(IPD), '/', file_path, '.mat'));
 
-                layerImg = imresize(uint8(255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))),0.5);
-                
-                % Find size of loaded image
-                [h, w, z] = size(layerImg);
-                
-                assert((h < 600 && w < 800), 'Image is too large')
-                
-                hBuffer = (600 - h)/2;
-                wBuffer = (800 - w)/2;
-                
-                hdr((600-hBuffer):-1:(hBuffer+1), (wBuffer+1):(800-wBuffer), :) = layerImg;
-                
-                % FOR OCTOPUS SCENE
-                %hdr(474:-1:127, 220:740, :) = imresize(uint8(255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))),0.5);
-                
-                % FOR OLD STUFF
-                %hdr(600:-1:001, 101:700, :) = imresize(uint8(1*double(imageSet.layers{eye*4+plane})),0.5);
-                %hdr(600:-1:1, 1:800, :) = uint8(255*((double(imageSet.layers{eye*4+plane})/255).^(2)));
-                
-                %{
-                % FOR PLAID SCENE
-                hdr(600:-1:1, 1:800, :) = uint8(255*((double(imageSet.layers{eye*4+plane})/255)));
-                hdr(:, 101:800, :) = hdr(:, 1:700, :);
-                hdr(:, 701:800, :) = 0;
-                %}
-                
-                % FOR Mitsuba SCENE
-                %hdr(600:-1:1, 1:800, :) = uint8(255*((2*double(imageSet.layers{eye*4+plane})/255)));
-                
-                % gamma calibration
-                hdr1 = hdr(:,:,1);
-                hdr2 = hdr(:,:,2);
-                hdr3 = hdr(:,:,3);
 
-                hdr1 = uint8(255*cg1{eye+1}(hdr1+1));
-                hdr2 = uint8(255*cg2{eye+1}(hdr2+1));
-                hdr3 = uint8(255*cg3{eye+1}(hdr3+1));
+for plane = (1:4)
+    for eye = (0:1)
+        img_index = plane + eye*4;
 
-                hdr(:,:,1) = hdr1;
-                hdr(:,:,2) = hdr2;
-                hdr(:,:,3) = hdr3;
-
-                image_list{img_index} = hdr;
-            end
-        end
+        % Blank image holder (must be square)
+        hdr = uint8(zeros(800,800,3));
+        
+        % Displayed image is placed into image holder
+        % Blank areas outside [600, 800] are not visible
+        % Image must also be flipped upside down
+        % Example1: Display a full-screen white square
+        % hdr(600:-1:1, 1:800, :) = 255*ones(600, 800, 3);
+        % Example2: Display HDR or double values w/ GammaCorrection
+        % hdr(600:-1:1, 1:800, :) = uint8(255*(double(file/255).^(GammaValue)));
+        
+        layerImg = imresize(uint8(255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))),0.5);
+        
+        % Find size of loaded image
+        [h, w, z] = size(layerImg);
+        
+        assert((h < 600 && w < 800), 'Image is too large')
+        
+        hBuffer = (600 - h)/2;
+        wBuffer = (800 - w)/2;
+        
+        hdr((600-hBuffer):-1:(hBuffer+1), (wBuffer+1):(800-wBuffer), :) = layerImg;
+        
+        % gamma calibration
+        hdr1 = hdr(:,:,1);
+        hdr2 = hdr(:,:,2);
+        hdr3 = hdr(:,:,3);
+        
+        hdr1 = uint8(255*cg1{eye+1}(hdr1+1));
+        hdr2 = uint8(255*cg2{eye+1}(hdr2+1));
+        hdr3 = uint8(255*cg3{eye+1}(hdr3+1));
+        
+        hdr(:,:,1) = hdr1;
+        hdr(:,:,2) = hdr2;
+        hdr(:,:,3) = hdr3;
+        
+        image_list{img_index} = hdr;
     end
 end
 

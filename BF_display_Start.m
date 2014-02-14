@@ -344,14 +344,52 @@ frameNum=0;
 strInputName='';
 
 if trial_mode==0
-    
+    first_run = 0;
     BF_build_textures_optimizer;
     BF_initialize_trial;
-    
-    stop_flag=0;
+    first_run = 1;
     
     % Trial starts here
+    stop_flag=0;
     while stop_flag==0
+        makeFix = 1;
+        
+        scellThisRound{s_i} = set(scellThisRound{s_i}, 'fix_side', (randi(2)-1)); % Choose random side for fixation cross
+        fix_params{1} = get(scellThisRound{s_i}, 'fix_plane');
+        fix_params{2} = get(scellThisRound{s_i}, 'fix_side');
+        
+        trial_params{1} = get(scellThisRound{s_i}, 'algorithm');
+        scellThisRound{s_i} = set(scellThisRound{s_i}, 'tex_side', param.tex_side(randi(2)));
+        trial_params{2} = get(scellThisRound{s_i}, 'tex_side');
+        trial_params{3} = get(scellThisRound{s_i}, 'front_plane');
+        trial_params{4} = get(scellThisRound{s_i}, 'currentValue'); % side in front
+        
+        
+        BF_build_textures_optimizer;
+        BF_initialize_trial; % calls RenderSceneStatic
+        BF_run_trial; % calls actual GL commands
+        makeFix = 0;
+        
+        Screen('SelectStereoDrawBuffer',windowPtr,0);
+        Screen('FillRect',windowPtr,[0 0 0]);
+        Screen('SelectStereoDrawBuffer',windowPtr,1);
+        Screen('FillRect',windowPtr,[0 0 0]);
+        Screen('Flip',windowPtr);
+        
+        trial_params{1} = get(scellThisRound{s_i}, 'algorithm');
+        scellThisRound{s_i} = set(scellThisRound{s_i}, 'tex_side', param.tex_side(randi(2)));
+        trial_params{2} = get(scellThisRound{s_i}, 'tex_side');
+        trial_params{3} = get(scellThisRound{s_i}, 'front_plane');
+        trial_params{4} = get(scellThisRound{s_i}, 'currentValue'); % side in front
+        BF_build_textures_optimizer;
+        
+        BF_initialize_trial; % calls RenderSceneStatic
+        BF_run_trial; % calls actual GL commands
+        
+        
+        
+        
+        
         
         BF_build_textures_optimizer;
         BF_initialize_trial; % calls RenderSceneStatic
@@ -383,7 +421,7 @@ if trial_mode==1
     BF_display_initial_message;
     
     stop_flag=0;
-    started=1;
+    started=1; %TODO: check where this is used
     
     % Trial starts here
     while stop_flag==0
