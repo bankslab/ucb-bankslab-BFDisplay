@@ -379,7 +379,7 @@ if trial_mode==0
             end
         end
         % TODO: the response keys for takeKeyboardInput and process_response 
-        % need to be set for the new experiment
+        % need to be set for the new experiment - DONE
         process_response;
     end
 end
@@ -400,7 +400,7 @@ if trial_mode==1
     BF_display_initial_message;
     
     stop_flag=0;
-    started=1; %TODO: check where this is used
+    started=1; %TODO: check where this is used - not in BF_initialize_trial or BF_build_textures_optimizer
     
     % Trial starts here
     while stop_flag==0
