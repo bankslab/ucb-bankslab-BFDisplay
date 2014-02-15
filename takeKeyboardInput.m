@@ -29,7 +29,11 @@ elseif strcmp(strInputName,'2@')
 elseif strcmp(strInputName,'3#')
 elseif strcmp(strInputName,'4$')
 elseif strcmp(strInputName, 'RightArrow')
+        response_given = 0;
+    break;
 elseif strcmp(strInputName, 'LeftArrow')
+        response_given = 1;
+    break;
 elseif strcmp(strInputName, 'UpArrow')
 elseif strcmp(strInputName, 'DownArrow')
 elseif strcmp(strInputName, 'SPACE')
