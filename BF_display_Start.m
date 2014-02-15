@@ -178,7 +178,7 @@ if viewMode==9 % probably desktop or laptop
 elseif viewMode==4 % BF display with DATAPixx
     load('BF_params/correctedLinearGamma_256steps_zeroOffset.mat');
     
-    if strcmp(experiment_type, 'comparison')
+    if strcmp(experiment_type, 'marina_occlusions')
         correctedGamma{2} = transpose(repmat(0:1/255:1, [3 1]));
     end
     origGamma=Screen('LoadNormalizedGammaTable', windowPtr, correctedGamma{2});
