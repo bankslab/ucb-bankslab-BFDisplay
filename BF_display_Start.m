@@ -382,7 +382,13 @@ if trial_mode==0
             BF_run_trial; % calls actual GL commands
             break
         end
-        
+
+        Screen('SelectStereoDrawBuffer',windowPtr,0);
+        Screen('FillRect',windowPtr,[0 0 0]);
+        Screen('SelectStereoDrawBuffer',windowPtr,1);
+        Screen('FillRect',windowPtr,[0 0 0]);
+        Screen('Flip',windowPtr);        
+
         response = 0;
         responded = 0;
         while responded == 0

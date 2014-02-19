@@ -1,6 +1,6 @@
 % optimizer experiment template file
 experiment_type = 'marina_occlusions';
-trial_mode = 1;
+trial_mode = 0;
 dynamic_mode = 0;
 static_mode = 1;
 renderviews = [0, 1]; %0 is the left eye
@@ -30,7 +30,7 @@ else
     
     % Experiment parameters
     param.fix_duration     = 0.5; % seconds
-    param.stim_duration    = 1; % seconds
+    param.stim_duration    = 3; % seconds
     param.trials_per_block = 80;
     param.max_responses    =  6;  % per stimulus
     param.max_trials       = 800; % to make sure it doesn't go forever
