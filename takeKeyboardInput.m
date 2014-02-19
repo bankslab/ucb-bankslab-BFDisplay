@@ -29,10 +29,10 @@ switch strInputName
     case '3#'
     case '4$'
     case 'RightArrow'
-        response = 0;
+        response = 1;
         responded = 1;
     case 'LeftArrow'
-        response = 1;
+        response = 0;
         responded = 1;
     case 'UpArrow'
     case 'DownArrow'

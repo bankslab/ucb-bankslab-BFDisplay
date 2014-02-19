@@ -394,61 +394,66 @@ if trial_mode==0
 end
 
 if trial_mode==1
-    
-    % TODO: Trial mode does not work at all. All of this code needs to be
-    % changed to match the new variables.
-    
-    BF_initialize_trial;    %Just to build projections for splash screen
-    BF_display_initial_message;
-    
-    stop_flag=0;
-    started=1; %TODO: check where this is used - not in BF_initialize_trial or BF_build_textures_optimizer
+    BF_load_textures;
+    BF_build_textures_optimizer;
+    BF_initialize_trial; % calls RenderSceneStatic
     
     % Trial starts here
-    while stop_flag==0
-        % CHANGE THESE VARIABLES FOR EACH EXPERIMENT
+    stop_flag=0;
+    while stop_flag == 0
+        makeFix = 1;
+        BF_load_textures;
+        BF_build_textures_optimizer;        
+        BF_initialize_trial; % calls RenderSceneStatic
         
-        % Randomize algorithm side
-        alg_combo = Shuffle(get(scellThisRound{s_i}, 'combination'));
+        makeFix = 0;
+        BF_load_textures;
         
-        % Get parameters for this trial
-        trial_params{1} = alg_combo;
-        trial_params{2} = get(scellThisRound{s_i}, 'currentValue'); % scene
-        trial_params{3} = get(scellThisRound{s_i}, 'question');
-        
-        question = param.question_names(trial_params{3});
-        questionText = question{1};
-        message = 'displayquestion';
-        BF_disp_message;
+        makeFix = 1;
+        BF_run_trial; % calls actual GL commands
+        makeFix = 0;
+
+        Screen('SelectStereoDrawBuffer',windowPtr,0);
+        Screen('FillRect',windowPtr,[0 0 0]);
+        Screen('SelectStereoDrawBuffer',windowPtr,1);
+        Screen('FillRect',windowPtr,[0 0 0]);
+        Screen('Flip',windowPtr);
         
         BF_build_textures_optimizer;
         BF_initialize_trial; % calls RenderSceneStatic
-        response_given = 0;
         
         % this loop checks for keyboard input
-        while response_given == 0
+        while 1
             BF_run_trial; % calls actual GL commands
-            if a == 1 % a is output from KbCheck in BF_run_trial
-                takeKeyboardInput
-                BF_build_textures_optimizer;
-                BF_initialize_trial; % calls RenderSceneStatic
-            end
+            break
         end
+
+        Screen('SelectStereoDrawBuffer',windowPtr,0);
+        Screen('FillRect',windowPtr,[0 0 0]);
+        Screen('SelectStereoDrawBuffer',windowPtr,1);
+        Screen('FillRect',windowPtr,[0 0 0]);
+        Screen('Flip',windowPtr);        
+
+        response = 0;
+        responded = 0;
+        while responded == 0
+            [b c d] = KbWait;
+            takeKeyboardInput;
+        end 
         process_response;
-        
-        
-        % Trying to solve inter-trial delay
-        size = uint32(zeros(length(texname_static),1));
-        glDeleteTextures(size, texname_static);
-        size = uint32(zeros(length(genlist_projection1),1));
-        glDeleteTextures(size, genlist_projection1);
-        size = uint32(zeros(length(static_scene_disp_list1),1));
-        glDeleteTextures(size, static_scene_disp_list1);
-        Screen('Close', texname_static);
-        Screen('Close', genlist_projection1);
-        Screen('Close', static_scene_disp_list1);
-        
     end
+        
+    % Trying to solve inter-trial delay
+    size = uint32(zeros(length(texname_static),1));
+    glDeleteTextures(size, texname_static);
+    size = uint32(zeros(length(genlist_projection1),1));
+    glDeleteTextures(size, genlist_projection1);
+    size = uint32(zeros(length(static_scene_disp_list1),1));
+    glDeleteTextures(size, static_scene_disp_list1);
+    Screen('Close', texname_static);
+    Screen('Close', genlist_projection1);
+    Screen('Close', static_scene_disp_list1);
+        
     save(scell_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound', 'trial_counter', 'block_counter');
     fclose(text_fp);
 end

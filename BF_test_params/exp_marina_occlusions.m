@@ -1,6 +1,6 @@
 % optimizer experiment template file
 experiment_type = 'marina_occlusions';
-trial_mode = 0;
+trial_mode = 1;
 dynamic_mode = 0;
 static_mode = 1;
 renderviews = [0, 1]; %0 is the left eye
@@ -19,7 +19,7 @@ fprintf(text_fp, '\n*** occlusion experiment ***\n');
 fprintf(text_fp, 'Subject Name:\t%s\n', observer_initials);
 fprintf(text_fp, '*** **************************** ***\n');
 % TODO: CHANGE THESE NAMES FOR EACH EXPERIMENT - DONE
-fprintf(text_fp, ' ss\t fix side\t fix depth\t algorithm\t text1 side\t front plane depth\t response\n');
+fprintf(text_fp, ' trial_counter\t algorithm\t fix depth\t occl_side\t occl_depth\t occl_tex\t response\n');
 
 % Check if a data file exists, and if so open it
 if (exist(scell_filename, 'file') == 2)
@@ -30,16 +30,16 @@ else
     
     % Experiment parameters
     param.fix_duration     = 0.5; % seconds
-    param.stim_duration    = 0.2; % seconds
+    param.stim_duration    = 1; % seconds
     param.trials_per_block = 80;
     param.max_responses    =  6;  % per stimulus
     param.max_trials       = 800; % to make sure it doesn't go forever
     
     % Variables
-    param.algorithm   = [1, 2, 3, 4]; % Pinhole, Single, Blending, Optimization
+    param.algorithm   = [2, 4]; % Pinhole, Single, Blending, Optimization
     param.occl_tex    = [0, 1];       % Left or Right - tex1 is voronoi
     
-    param.fix_depth   = [0, 1];       % Near or Far 
+    param.fix_depth   = 20;       % Near or Far 
     
     param.occl_side   = [0, 1];       % Left or Right
     param.MCS_stimuli = [26, 32];     % Diopters - occluder depth

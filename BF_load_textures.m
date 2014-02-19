@@ -28,20 +28,18 @@ if trial_mode == 0
     
 elseif trial_mode == 1
     % Trial Parameters
-    % TODO: Call parameters from scell
-    imageSet = load(strcat('BF_texture_files/optimizer/camera/0.061/', fName));
+    algorithm  = get(scellThisRound{s_i}, 'algorithm');
+    fix_depth  = get(scellThisRound{s_i}, 'fix_depth');
+    occl_side  = get(scellThisRound{s_i}, 'occl_side');
+    occl_depth = get(scellThisRound{s_i}, 'currentValue');
+    occl_tex   = get(scellThisRound{s_i}, 'occl_tex');
 end
 
 if makeFix
     % Load the fixation cross
     string_holder = [];
     string_holder{1} = 'nonius';
-    switch fix_depth
-        case 1, % far
-            string_holder{2} = num2str(20);
-        case 0, % close
-            string_holder{2} = num2str(occl_depth);
-    end
+    string_holder{2} = num2str(fix_depth);
     string_holder{3} = num2str(1); % rename files and delete this line
     
 else
@@ -58,10 +56,12 @@ else
     string_holder{4} = num2str(occl_tex);
     
     switch fix_depth
-        case 1, % far
-            string_holder{5} = num2str(0);
-        case 0, % close
+        case 20, % far
             string_holder{5} = num2str(1);
+        case 26, % near
+            string_holder{5} = num2str(0);
+        case 32, % near
+            string_holder{5} = num2str(0);
     end
 end
 
