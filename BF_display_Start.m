@@ -323,6 +323,12 @@ if ~exist('use3planeonly', 'var')
     use3planeonly=0;  %with the demo, only do 3 squares if flag is set to 1
 end
 
+if ~exist('trial_counter')
+    trial_counter=0;
+end
+if ~exist('block_counter')
+    block_counter=0;
+end
 
 %Build the display lists
 %This is the precomputation of the openGL stuff
@@ -339,56 +345,44 @@ recompute_static_scene_list=1;
 tic;
 frameNum=0;
 strInputName='';
+first_run = 0;
+makeFix = 1;
 
 if trial_mode==0
-    first_run = 0;
+    BF_load_textures;
     BF_build_textures_optimizer;
-    BF_initialize_trial;
-    first_run = 1;
+    BF_initialize_trial; % calls RenderSceneStatic
     
     % Trial starts here
     stop_flag=0;
-    while stop_flag==0
+    while stop_flag == 0
         makeFix = 1;
-        BF_build_textures_optimizer;
+        BF_load_textures;
+        BF_build_textures_optimizer;        
         BF_initialize_trial; % calls RenderSceneStatic
-        BF_run_trial; % calls actual GL commands
+        
         makeFix = 0;
-        
-        % TODO: Perhaps we can leave the cross up while making the new textures
-        % instead of flipping to a black screen.
-        % This may require making sure the last frame doesn't have a white box
-        
+        BF_load_textures;
+                  
+        BF_run_trial; % calls actual GL commands
+
         Screen('SelectStereoDrawBuffer',windowPtr,0);
         Screen('FillRect',windowPtr,[0 0 0]);
         Screen('SelectStereoDrawBuffer',windowPtr,1);
         Screen('FillRect',windowPtr,[0 0 0]);
         Screen('Flip',windowPtr);
-
+        
         BF_build_textures_optimizer;
         BF_initialize_trial; % calls RenderSceneStatic
-        response_given = 0;
         
         % this loop checks for keyboard input
-        while response_given == 0
+        responded = 0;
+        while responded == 0
             BF_run_trial; % calls actual GL commands
-            if a == 1 % a is output from KbCheck in BF_run_trial
-                takeKeyboardInput
-                BF_build_textures_optimizer;
-                BF_initialize_trial; % calls RenderSceneStatic
-            end
+            takeKeyboardInput
         end
-        % TODO: the response keys for takeKeyboardInput and process_response 
-        % need to be set for the new experiment - DONE
         process_response;
     end
-end
-
-if ~exist('trial_counter')
-    trial_counter=0;
-end
-if ~exist('block_counter')
-    block_counter=0;
 end
 
 if trial_mode==1
