@@ -112,10 +112,14 @@ while length(property_argin) >= 2,
             a.MCS_num_responses=val; 
         case 'MCS_max_responses'
             a.MCS_max_responses=val;
-        case 'combination'
-            a.combination=val;
-        case 'question'
-            a.question=val;
+        case 'fix_depth'
+            a.fix_depth=val;
+        case 'algorithm'
+            a.algorithm=val;
+        case 'occl_tex'
+            a.occl_tex=val;
+        case 'occl_side'
+            a.occl_side=val;
         case 'initialized'
             a.initialized = val;
         otherwise

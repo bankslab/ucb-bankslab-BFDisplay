@@ -23,8 +23,8 @@ fprintf(text_fp, ' ss\t fix side\t fix depth\t algorithm\t text1 side\t front pl
 
 % Check if a data file exists, and if so open it
 if (exist(scell_filename, 'file') == 2)
-    load(scell_filename);     
-
+    load(scell_filename);
+    
 else
     % INITSCELL
     
@@ -36,55 +36,45 @@ else
     param.max_trials       = 800; % to make sure it doesn't go forever
     
     % Variables
-    param.fix_side   = [0, 1]; % Left or Right
-    param.fix_depth  = [0, 1]; % Near or Far
-    param.algorithm  = [1, 2, 3, 4]; % Pinhole, Single, Blending, Optimization
-    param.tex1_side  = [0, 1]; % Left or Right
-    param.front_plane_depth = [2.6, 3.2]; % Diopters
-    %param.MCS_stimuli      = ; %TODO: This should be one of the above parameters
-
-
+    param.algorithm   = [1, 2, 3, 4]; % Pinhole, Single, Blending, Optimization
+    param.occl_tex    = [0, 1];       % Left or Right - tex1 is voronoi
+    
+    param.fix_depth   = [0, 1];       % Near or Far 
+    
+    param.occl_side   = [0, 1];       % Left or Right
+    param.MCS_stimuli = [26, 32];     % Diopters - occluder depth
+    
     % count how many staircases we want
-
-    scell{1} = set(s,...
-        'MCS',1,...
-        'initialized','no');
+    
+    scell{1} = set(s, 'MCS',1, 'initialized', 'no');
 
     %TODO: nothing below this line has been changed yet - DONE
     % These loops should go through each of the parameters above
     % For parameters that will be randomized, don't include a loop
     % Randomization happens in the BF_display_Start file (see old code)
+
     
-    for fix_side_index = 1:length(param.fix_side)
-        for fix_depth_index = 1:length(param.fix_depth)
-            for algorithm_index = 1:length(param.algorithm)
-                for fix_side_index = 1:length(param.tex1_side)
-                    for tex1_side_index = 1:length(param.questions)
-                        for front_plane_depth_index = 1:length(param.front_plane_depth)
-                            scell{fix_side_index, fix_depth_index, algorithm_index, tex1_side_index, tex1_side_index} = set(scell{1},...
-                                'fix_side', param.fix_side(fix_side_index),...
-                                'fix_depth', param.fix_depth(fix_depth_index),...
-                                'algorithm', param.algorithm(algorithm_index, :),...
-                                'tex1_side', param.tex1_side(tex1_side_index, :),...
-                                'front_plane_depth', param.front_plane_depth(front_plane_depth_index, :),...
-                                 'fix_duration', param.fix_duration,...
-                                'stim_duration', param.stim_duration,...
-                                'trials_per_block', param.trials_per_block,...
-                                'max_trials', param.max_trials,...
-                                'MCS_stimuli', param.MCS_stimuli,...
-                                'MCS_num_responses', zeros(1,length(param.MCS_stimuli)),...
-                                'MCS_num_stimuli', length(param.MCS_stimuli),...
-                                'MCS_max_responses', param.max_responses);
-                            
-                            scell{fix_side_index, fix_depth_index, algorithm_index, tex1_side_index, tex1_side_index}=...
-                                initializeStaircase(scell{fix_side_index, fix_depth_index, algorithm_index, tex1_side_index, tex1_side_index});
-                        end
-                    end
+    for algorithm_index = 1:length(param.algorithm)
+        for occl_tex_index = 1:length(param.occl_tex)
+            for fix_depth_index = 1:length(param.fix_depth)
+                for occl_side_index = 1:length(param.occl_side)
+                    scell{algorithm_index, occl_tex_index, fix_depth_index, occl_side_index} = set(scell{1},...
+                        'algorithm', param.algorithm(algorithm_index),...
+                        'occl_tex', param.occl_tex(occl_tex_index),...
+                        'fix_depth', param.fix_depth(fix_depth_index),...
+                        'occl_side', param.occl_side(occl_side_index),...
+                        'MCS_stimuli', param.MCS_stimuli,...
+                        'MCS_num_responses', zeros(1,length(param.MCS_stimuli)),...
+                        'MCS_num_stimuli', length(param.MCS_stimuli),...
+                        'MCS_max_responses', param.max_responses);
+
+                        scell{algorithm_index, occl_tex_index, fix_depth_index, occl_side_index}=...
+                            initializeStaircase(scell{algorithm_index, occl_tex_index, fix_depth_index, occl_side_index});
                 end
             end
         end
     end
-
+    
     % SCELL ORDER
     scellSize=size(scell);
     scellLength=prod(scellSize(:));
@@ -92,7 +82,7 @@ else
     scellCompleted=[];
     scellThisRound=[];
     scellNextRound=[];
-
+    
     for scellID=randperm(scellLength)
         if get(scellArray{scellID},'complete')==1
             scellCompleted{end+1}=scellArray{scellID};

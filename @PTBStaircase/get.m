@@ -97,15 +97,19 @@ while length(propertyArgIn) >= 1,
         case 'MCS_stimuli'
             uit = s.MCS_stimuli;    
         case 'MCS_num_responses'
-            uit = s.MCS_num_responses; 
-        case 'MCS_max_responses'
-            uit = s.MCS_max_responses;
-        case 'combination'
-            uit = s.combination;
-        case 'question'
-            uit = s.question;
+            uit = s.MCS_num_responses;
+       case 'MCS_max_responses'
+           uit = s.MCS_max_responses;
+       case 'fix_depth'
+           uit = s.fix_depth;
+       case 'algorithm'
+           uit = s.algorithm;
+       case 'occl_tex'
+           uit = s.occl_tex;
+       case 'occl_side'
+           uit = s.occl_side;
        case 'initialized'
-            uit = s.initialized;
+           uit = s.initialized;
         case 'responses'
             uit = s.responses;
    otherwise

@@ -68,15 +68,17 @@ ms.stim_order = [];
 ms.monocular = [];
 
 % Variables for method of constant stimuli
-ms.MCS = [];                    % Set to true for method of constant stimuli
-ms.MCS_num_stimuli = [];        % Number of stimuli to be presented
-ms.MCS_stimuli = [];            % Vector containin actual stimuli
-ms.MCS_num_responses = [];      % Vector of the number of responses for each stimulus
-ms.MCS_max_responses = [];      % Number of responses desired for each stimulus
+ms.MCS               = [];     % Set to true for method of constant stimuli
+ms.MCS_num_stimuli   = [];     % Number of stimuli to be presented
+ms.MCS_stimuli       = [];     % Vector containin actual stimuli
+ms.MCS_num_responses = [];     % Vector of the number of responses for each stimulus
+ms.MCS_max_responses = [];     % Number of responses desired for each stimulus
 
 % Variables for comparison experiment
-ms.combination    = [];
-ms.question       = [];
+ms.fix_depth      = [];
+ms.algorithm      = [];
+ms.occl_tex       = [];
+ms.occl_side      = [];
 ms.initialized    = [];
 
 ms = class(ms,'PTBStaircase');
