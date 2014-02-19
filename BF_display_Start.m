@@ -363,8 +363,10 @@ if trial_mode==0
         
         makeFix = 0;
         BF_load_textures;
-                  
+        
+        makeFix = 1;
         BF_run_trial; % calls actual GL commands
+        makeFix = 0;
 
         Screen('SelectStereoDrawBuffer',windowPtr,0);
         Screen('FillRect',windowPtr,[0 0 0]);
@@ -376,11 +378,17 @@ if trial_mode==0
         BF_initialize_trial; % calls RenderSceneStatic
         
         % this loop checks for keyboard input
+        while 1
+            BF_run_trial; % calls actual GL commands
+            break
+        end
+        
+        response = 0;
         responded = 0;
         while responded == 0
-            BF_run_trial; % calls actual GL commands
-            takeKeyboardInput
-        end
+            [b c d] = KbWait;
+            takeKeyboardInput;
+        end 
         process_response;
     end
 end

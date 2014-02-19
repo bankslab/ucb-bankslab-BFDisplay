@@ -1,7 +1,12 @@
 % This script displays the pre-loaded GL commands and waits for input
 
+tic
 a = 0;
 while a == 0
+    elapsedTime = toc;
+    if (makeFix == 0) && (elapsedTime >= param.stim_duration)
+        break
+    end
     [a b c d] = KbCheck(-1);
     depthplane = depthplane + 1;
     if depthplane > 4

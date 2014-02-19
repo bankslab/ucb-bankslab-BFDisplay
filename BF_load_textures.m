@@ -20,9 +20,9 @@ end
 
 if trial_mode == 0
     % Demo Parameters
-    algorithm  = 3;        % Pinhole, Single, Blending, Optimization
+    algorithm  = 4;        % Pinhole, Single, Blending, Optimization
     fix_depth  = 0;        % Near, Far
-    occl_side  = 1;        % Left, Right
+    occl_side  = 0;        % Left, Right
     occl_depth = 32;       % 2.6, 3.2 Diopters
     occl_tex   = 1;        % Noise, Voronoi
     
@@ -59,9 +59,9 @@ else
     
     switch fix_depth
         case 1, % far
-            string_holder{5} = 'far';
+            string_holder{5} = num2str(0);
         case 0, % close
-            string_holder{5} = 'near';
+            string_holder{5} = num2str(1);
     end
 end
 
