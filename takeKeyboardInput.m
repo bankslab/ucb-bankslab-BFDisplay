@@ -14,6 +14,7 @@
 % end % Now it will continue to the next trial
 
 % Draw blank screen
+
 Screen('SelectStereoDrawBuffer',windowPtr,0);
 Screen('FillRect',windowPtr,[0 0 0]);
 Screen('SelectStereoDrawBuffer',windowPtr,1);
@@ -22,26 +23,23 @@ Screen('Flip',windowPtr);
 
 iKeyIndex = find(c);
 strInputName = KbName(iKeyIndex(1));
-if strcmp(strInputName,'1!')
-    show_image = 1;
-elseif strcmp(strInputName,'2@')
-    show_image = 2;
-elseif strcmp(strInputName,'3#')
-elseif strcmp(strInputName,'4$')
-elseif strcmp(strInputName, 'RightArrow')
-        response_given = 0;
-    break;
-elseif strcmp(strInputName, 'LeftArrow')
-        response_given = 1;
-    break;
-elseif strcmp(strInputName, 'UpArrow')
-elseif strcmp(strInputName, 'DownArrow')
-elseif strcmp(strInputName, 'SPACE')
-elseif strcmp(strInputName, 'Return')
-    response_given = 1;
-    break;
-elseif strcmp(strInputName,'ESCAPE')||strcmp(strInputName,'esc')
-    stop_flag = 1;
-    response_given = 1;
-    break;
+switch strInputName
+    case '1!'
+    case '2@'
+    case '3#'
+    case '4$'
+    case 'RightArrow'
+        response = 0;
+        responded = 1;
+    case 'LeftArrow'
+        response = 1;
+        responded = 1;
+    case 'UpArrow'
+    case 'DownArrow'
+    case 'space'
+    case 'Return'
+    case 'ESCAPE'
+        stop_flag = 1;
+        responded = 1;
+        break;
 end

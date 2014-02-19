@@ -17,14 +17,14 @@ end
 % CHANGE THESE VARIABLES FOR EACH EXPERIMENT
 if trial_mode==1
     fprintf(text_fp, '%d\t%d\t%d\t%d\t%d\t%d\n', ...
-    trial_counter, trial_params{2}, trial_params{3}, trial_params{1}(1), trial_params{1}(2), response_given);
+    trial_counter, trial_params{2}, trial_params{3}, trial_params{1}(1), trial_params{1}(2), response);
 end
 if trial_counter == param.max_trials
     stop_flag = 1;
 end
 
 % Prepare for next trial
-scellThisRound{s_i} = processResponseStaircase(scellThisRound{s_i}, response_given);
+scellThisRound{s_i} = processResponseStaircase(scellThisRound{s_i}, response);
 
 % If not MCS, then use staircasing code here
 if isempty(get(scellThisRound{s_i},'MCS'))
