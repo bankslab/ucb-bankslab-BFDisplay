@@ -15,12 +15,6 @@
 
 % Draw blank screen
 
-Screen('SelectStereoDrawBuffer',windowPtr,0);
-Screen('FillRect',windowPtr,[0 0 0]);
-Screen('SelectStereoDrawBuffer',windowPtr,1);
-Screen('FillRect',windowPtr,[0 0 0]);
-Screen('Flip',windowPtr);
-
 iKeyIndex = find(c);
 strInputName = KbName(iKeyIndex(1));
 switch strInputName

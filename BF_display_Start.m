@@ -365,7 +365,10 @@ if trial_mode==0
         BF_load_textures;
         
         makeFix = 1;
-        BF_run_trial; % calls actual GL commands
+        a = 0;
+        while a == 0
+            BF_run_trial; % calls actual GL commands
+        end
         makeFix = 0;
 
         Screen('SelectStereoDrawBuffer',windowPtr,0);
@@ -378,9 +381,9 @@ if trial_mode==0
         BF_initialize_trial; % calls RenderSceneStatic
         
         % this loop checks for keyboard input
-        while 1
+        tic;
+        while toc < param.stim_duration
             BF_run_trial; % calls actual GL commands
-            break
         end
 
         Screen('SelectStereoDrawBuffer',windowPtr,0);
@@ -416,9 +419,13 @@ if trial_mode==1
         BF_load_textures;
         
         makeFix = 1;
-        BF_run_trial; % calls actual GL commands
+        a = 0;
+        while a == 0
+            BF_run_trial; % calls actual GL commands
+        end
         makeFix = 0;
-
+        
+        onset=Screen('Flip', windowPtr, [], []);
         Screen('SelectStereoDrawBuffer',windowPtr,0);
         Screen('FillRect',windowPtr,[0 0 0]);
         Screen('SelectStereoDrawBuffer',windowPtr,1);
@@ -429,9 +436,9 @@ if trial_mode==1
         BF_initialize_trial; % calls RenderSceneStatic
         
         % this loop checks for keyboard input
-        while 1
+        tic;
+        while toc < param.stim_duration
             BF_run_trial; % calls actual GL commands
-            break
         end
 
         Screen('SelectStereoDrawBuffer',windowPtr,0);
@@ -448,7 +455,8 @@ if trial_mode==1
         end 
         process_response;
     end
-        
+    
+    %{    
     % Trying to solve inter-trial delay
     size = uint32(zeros(length(texname_static),1));
     glDeleteTextures(size, texname_static);
@@ -459,7 +467,8 @@ if trial_mode==1
     Screen('Close', texname_static);
     Screen('Close', genlist_projection1);
     Screen('Close', static_scene_disp_list1);
-        
+    %}
+    
     save(scell_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound', 'trial_counter', 'block_counter');
     fclose(text_fp);
 end
