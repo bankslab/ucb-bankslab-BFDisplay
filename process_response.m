@@ -16,8 +16,8 @@ end
 % Write response to file
 % CHANGE THESE VARIABLES FOR EACH EXPERIMENT
 if trial_mode==1
-    fprintf(text_fp, '%d\t %d\t %d\t %d\t %d\t %d\t %d\n', ...
-    trial_counter, algorithm, fix_depth, occl_side, occl_depth, occl_tex, response);
+    fprintf(text_fp, '%d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\n', ...
+    trial_counter, algorithm, near_plane, far_plane, occl_tex, occl_side, fix_plane, response);
 end
 if trial_counter == param.max_trials
     stop_flag = 1;

@@ -112,10 +112,12 @@ while length(property_argin) >= 2,
             a.MCS_num_responses=val; 
         case 'MCS_max_responses'
             a.MCS_max_responses=val;
-        case 'fix_depth'
-            a.fix_depth=val;
-        case 'algorithm'
-            a.algorithm=val;
+        case 'fix_plane'
+            a.fix_plane=val;
+        case 'near_plane'
+            a.near_plane=val;
+        case 'far_plane'
+            a.far_plane=val;
         case 'occl_tex'
             a.occl_tex=val;
         case 'occl_side'

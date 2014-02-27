@@ -20,26 +20,29 @@ end
 
 if trial_mode == 0
     % Demo Parameters
-    algorithm  = 4;        % Pinhole, Single, Blending, Optimization
-    fix_depth  = 26;       % Near, Far
+    algorithm  = 1;        % Pinhole, Single, Blending, Optimization
+    near_plane = 26;       % Near, Far
+    far_plane  = 14;       % Near, Far
     occl_side  = 0;        % Left, Right
-    occl_depth = 32;       % 2.6, 3.2 Diopters
-    occl_tex   = 1;        % Noise, Voronoi
+    occl_tex   = 0;        % Noise, Voronoi
+    fix_plane  = 14;       % Near, Far
     
 elseif trial_mode == 1
     % Trial Parameters
-    algorithm  = get(scellThisRound{s_i}, 'algorithm');
-    fix_depth  = get(scellThisRound{s_i}, 'fix_depth');
+    algorithm  = get(scellThisRound{s_i}, 'currentValue');
+    fix_plane  = get(scellThisRound{s_i}, 'fix_plane');
+    near_plane  = get(scellThisRound{s_i}, 'near_plane');
+    far_plane  = get(scellThisRound{s_i}, 'far_plane');
     occl_side  = get(scellThisRound{s_i}, 'occl_side');
-    occl_depth = get(scellThisRound{s_i}, 'currentValue');
     occl_tex   = get(scellThisRound{s_i}, 'occl_tex');
 end
 
 if makeFix
     % Load the fixation cross
     string_holder = [];
-    string_holder{1} = 'nonius';
-    string_holder{2} = num2str(fix_depth);
+    string_holder{1} = 'fixation';
+    string_holder{2} = num2str(20);
+    %string_holder{2} = num2str(fix_plane);
     string_holder{3} = num2str(1); % rename files and delete this line
     
 else
@@ -51,18 +54,12 @@ else
     
     string_holder = [];
     string_holder{1} = num2str(algorithm);
-    string_holder{2} = num2str(occl_depth);
-    string_holder{3} = num2str(occl_side);
+    string_holder{2} = num2str(near_plane);
+    string_holder{3} = num2str(far_plane);
     string_holder{4} = num2str(occl_tex);
-    
-    switch fix_depth
-        case 20, % far
-            string_holder{5} = num2str(1);
-        case 26, % near
-            string_holder{5} = num2str(0);
-        case 32, % near
-            string_holder{5} = num2str(0);
-    end
+    string_holder{5} = num2str(occl_side);
+    string_holder{6} = num2str(fix_plane);
+
 end
 
 
@@ -86,7 +83,7 @@ for plane = (1:4)
         % Example2: Display HDR or double values w/ GammaCorrection
         % hdr(600:-1:1, 1:800, :) = uint8(255*(double(file/255).^(GammaValue)));
         
-        layerImg = uint8(255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue)));
+        layerImg = uint8((255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))).*generateAperture(15,2.4,1.0,eye));
         
         % Find size of loaded image
         [h, w, z] = size(layerImg);

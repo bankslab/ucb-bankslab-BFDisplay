@@ -19,7 +19,7 @@ fprintf(text_fp, '\n*** occlusion experiment ***\n');
 fprintf(text_fp, 'Subject Name:\t%s\n', observer_initials);
 fprintf(text_fp, '*** **************************** ***\n');
 % TODO: CHANGE THESE NAMES FOR EACH EXPERIMENT - DONE
-fprintf(text_fp, ' trial_counter\t algorithm\t fix depth\t occl_side\t occl_depth\t occl_tex\t response\n');
+fprintf(text_fp, ' trial_counter\t algorithm\t near plane\t far plane\t occluder tex\t occluder side\t fixation plane\t response\n');
 
 % Check if a data file exists, and if so open it
 if (exist(scell_filename, 'file') == 2)
@@ -30,19 +30,29 @@ else
     
     % Experiment parameters
     param.fix_duration     = 0.5; % seconds
-    param.stim_duration    = 2; % seconds
+    param.stim_duration    = 20; % seconds
     param.trials_per_block = 80;
-    param.max_responses    =  6;  % per stimulus
+    param.max_responses    = 12;  % per stimulus
     param.max_trials       = 800; % to make sure it doesn't go forever
     
     % Variables
-    param.algorithm   = [2, 4]; % Pinhole, Single, Blending, Optimization
-    param.occl_tex    = [0, 1];       % Left or Right - tex1 is voronoi
+    param.occl_tex    = [0, 1];       % Left or Right - 0 is voronoi
+    % NOTE: THIS IS DIFFERENT FROM EVERYTHING ELSE
+    param.occl_side   = [1, 0];       % Left or Right
+
+    % Four possible combinations of 
+    % fixation plane, near plane and far plane
+    param.conditions = [1, 2, 3, 4]; 
     
-    param.fix_depth   = 20;       % Near or Far 
+    % Depth of fixation plane in diopters
+    % near plane (occluder), and far plane (occluded)
+    param.fix_near_far = [26, 26, 20;...
+                          26, 26, 14;...
+                          20, 26, 20;...
+                          20, 32, 20];
     
-    param.occl_side   = [0, 1];       % Left or Right
-    param.MCS_stimuli = [26, 32];     % Diopters - occluder depth
+    % Algorithm: Pinhole, Single, Blending, Optimization
+    param.MCS_stimuli = [1, 2, 3, 4];     
     
     % count how many staircases we want
     
@@ -54,25 +64,24 @@ else
     % Randomization happens in the BF_display_Start file (see old code)
 
     
-    for algorithm_index = 1:length(param.algorithm)
+    for conditions_index = 1:length(param.conditions)
         for occl_tex_index = 1:length(param.occl_tex)
-            for fix_depth_index = 1:length(param.fix_depth)
                 for occl_side_index = 1:length(param.occl_side)
-                    scell{algorithm_index, occl_tex_index, fix_depth_index, occl_side_index} = set(scell{1},...
-                        'algorithm', param.algorithm(algorithm_index),...
+                    scell{conditions_index, occl_tex_index, occl_side_index} = set(scell{1},...
                         'occl_tex', param.occl_tex(occl_tex_index),...
-                        'fix_depth', param.fix_depth(fix_depth_index),...
+                        'fix_plane', param.fix_near_far(conditions_index, 1),...
+                        'near_plane', param.fix_near_far(conditions_index, 2),...
+                        'far_plane', param.fix_near_far(conditions_index, 3),...
                         'occl_side', param.occl_side(occl_side_index),...
                         'MCS_stimuli', param.MCS_stimuli,...
                         'MCS_num_responses', zeros(1,length(param.MCS_stimuli)),...
                         'MCS_num_stimuli', length(param.MCS_stimuli),...
                         'MCS_max_responses', param.max_responses);
 
-                        scell{algorithm_index, occl_tex_index, fix_depth_index, occl_side_index}=...
-                            initializeStaircase(scell{algorithm_index, occl_tex_index, fix_depth_index, occl_side_index});
+                        scell{conditions_index, occl_tex_index, occl_side_index}=...
+                            initializeStaircase(scell{conditions_index, occl_tex_index, occl_side_index});
                 end
             end
-        end
     end
     
     % SCELL ORDER

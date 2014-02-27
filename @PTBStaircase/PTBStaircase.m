@@ -75,8 +75,9 @@ ms.MCS_num_responses = [];     % Vector of the number of responses for each stim
 ms.MCS_max_responses = [];     % Number of responses desired for each stimulus
 
 % Variables for comparison experiment
-ms.fix_depth      = [];
-ms.algorithm      = [];
+ms.fix_plane      = [];
+ms.near_plane     = [];
+ms.far_plane      = [];
 ms.occl_tex       = [];
 ms.occl_side      = [];
 ms.initialized    = [];

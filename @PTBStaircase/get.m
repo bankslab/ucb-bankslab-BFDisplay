@@ -100,10 +100,12 @@ while length(propertyArgIn) >= 1,
             uit = s.MCS_num_responses;
        case 'MCS_max_responses'
            uit = s.MCS_max_responses;
-       case 'fix_depth'
-           uit = s.fix_depth;
-       case 'algorithm'
-           uit = s.algorithm;
+       case 'fix_plane'
+           uit = s.fix_plane;
+       case 'near_plane'
+           uit = s.near_plane;
+       case 'far_plane'
+           uit = s.far_plane;
        case 'occl_tex'
            uit = s.occl_tex;
        case 'occl_side'
