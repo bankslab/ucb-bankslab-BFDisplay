@@ -30,7 +30,7 @@ else
     
     % Experiment parameters
     param.fix_duration     = 0.5; % seconds
-    param.stim_duration    = 20; % seconds
+    param.stim_duration    = 5; % seconds
     param.trials_per_block = 80;
     param.max_responses    = 12;  % per stimulus
     param.max_trials       = 800; % to make sure it doesn't go forever
@@ -52,7 +52,7 @@ else
                           20, 32, 20];
     
     % Algorithm: Pinhole, Single, Blending, Optimization
-    param.MCS_stimuli = [1, 2, 3, 4];     
+    param.MCS_stimuli = [2, 3, 4];     
     
     % count how many staircases we want
     

@@ -21,10 +21,10 @@ end
 if trial_mode == 0
     % Demo Parameters
     algorithm  = 1;        % Pinhole, Single, Blending, Optimization
-    near_plane = 26;       % Near, Far
+    near_plane = 20;       % Near, Far
     far_plane  = 14;       % Near, Far
     occl_side  = 0;        % Left, Right
-    occl_tex   = 0;        % Noise, Voronoi
+    occl_tex   = 1;        % Noise, Voronoi
     fix_plane  = 14;       % Near, Far
     
 elseif trial_mode == 1
@@ -40,9 +40,8 @@ end
 if makeFix
     % Load the fixation cross
     string_holder = [];
-    string_holder{1} = 'fixation';
-    string_holder{2} = num2str(20);
-    %string_holder{2} = num2str(fix_plane);
+    string_holder{1} = 'siemens_star';
+    string_holder{2} = num2str(fix_plane);
     string_holder{3} = num2str(1); % rename files and delete this line
     
 else
@@ -83,7 +82,8 @@ for plane = (1:4)
         % Example2: Display HDR or double values w/ GammaCorrection
         % hdr(600:-1:1, 1:800, :) = uint8(255*(double(file/255).^(GammaValue)));
         
-        layerImg = uint8((255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))).*generateAperture(15,2.4,1.0,eye));
+%         layerImg = uint8((255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))).*generateAperture(5,2.4,1.0,eye));
+        layerImg = uint8((255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))));
         
         % Find size of loaded image
         [h, w, z] = size(layerImg);

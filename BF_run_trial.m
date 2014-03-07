@@ -1,6 +1,7 @@
 % This script displays the pre-loaded GL commands and waits for input
-
-[a b c d] = KbCheck(-1);
+if makeFix == 1
+    [a b c d] = KbCheck(-1);
+end
 
 depthplane = depthplane + 1;
 if depthplane > 4
