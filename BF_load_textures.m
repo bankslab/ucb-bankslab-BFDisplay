@@ -20,12 +20,12 @@ end
 
 if trial_mode == 0
     % Demo Parameters
-    algorithm  = 1;        % Pinhole, Single, Blending, Optimization
-    near_plane = 20;       % Near, Far
-    far_plane  = 14;       % Near, Far
+    algorithm  = 4;        % Pinhole, Single, Blending, Optimization
+    near_plane = 32;       % Near, Far
+    far_plane  = 20;       % Near, Far
     occl_side  = 0;        % Left, Right
     occl_tex   = 1;        % Noise, Voronoi
-    fix_plane  = 14;       % Near, Far
+    fix_plane  = 32;       % Near, Far
     
 elseif trial_mode == 1
     % Trial Parameters
@@ -40,7 +40,7 @@ end
 if makeFix
     % Load the fixation cross
     string_holder = [];
-    string_holder{1} = 'siemens_star';
+    string_holder{1} = 'fixation';
     string_holder{2} = num2str(fix_plane);
     string_holder{3} = num2str(1); % rename files and delete this line
     
@@ -66,6 +66,23 @@ end
 file_name = strcat(strjoin(string_holder, '_'), '.mat');
 file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), string_holder{1}, file_name}, '/');
 imageSet = load(file_path);
+
+% %********* Abdullah's modification to involve more crosstalk starts
+% inducedCrossTalk = 2;%10 means intensity distribution: 70 10 10 10, 10 70 10 10 etc
+% layers2 = imageSet.layers;
+%     
+% for i = 1:4
+%     layers{i} = double(layers2{i})*((100.0-inducedCrossTalk*4.0)/100.0);
+%     layers{i+4} = double(layers2{i+4})*((100.0-inducedCrossTalk*4.0)/100.0);
+%     for j = 1:4
+%         layers{i} = layers{i} + double(layers2{j})*(inducedCrossTalk/100.0);
+%         layers{i+4} = layers{i+4} + double(layers2{j+4})*(inducedCrossTalk/100.0);
+%     end
+%     layers{i} = uint8(layers{i});
+%     layers{i+4} = uint8(layers{i+4});
+% end
+% imageSet.layers = layers;
+% %********* Abdullah's modification to involve more crosstalk ends
 
 for plane = (1:4)
     for eye = (0:1)
