@@ -99,8 +99,8 @@ for plane = (1:4)
         % Example2: Display HDR or double values w/ GammaCorrection
         % hdr(600:-1:1, 1:800, :) = uint8(255*(double(file/255).^(GammaValue)));
         
-%         layerImg = uint8((255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))).*generateAperture(5,2.4,1.0,eye));
-        layerImg = uint8((255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))));
+        layerImg = uint8((255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))).*generateAperture(10,2.5,1.0,eye));
+%         layerImg = uint8((255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))));
         
         % Find size of loaded image
         [h, w, z] = size(layerImg);

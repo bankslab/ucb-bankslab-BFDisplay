@@ -1,6 +1,6 @@
 % optimizer experiment template file
 experiment_type = 'marina_occlusions';
-trial_mode = 0;
+trial_mode = 1;
 dynamic_mode = 0;
 static_mode = 1;
 renderviews = [0, 1]; %0 is the left eye
@@ -30,29 +30,26 @@ else
     
     % Experiment parameters
     param.fix_duration     = 0.5; % seconds
-    param.stim_duration    = 5; % seconds
+    param.stim_duration    = 0.3; % seconds
     param.trials_per_block = 80;
-    param.max_responses    = 12;  % per stimulus
+    param.max_responses    = 10;  % per stimulus
     param.max_trials       = 800; % to make sure it doesn't go forever
     
     % Variables
-    param.occl_tex    = [0, 1];       % Left or Right - 0 is voronoi
+    param.occl_tex    = [0, 1];       % 0 is noise
     % NOTE: THIS IS DIFFERENT FROM EVERYTHING ELSE
-    param.occl_side   = [1, 0];       % Left or Right
-
+    param.occl_side   = [0, 1];       % 0 is left
     % Four possible combinations of 
     % fixation plane, near plane and far plane
-    param.conditions = [1, 2, 3, 4]; 
+    param.conditions = [1, 2]; 
     
     % Depth of fixation plane in diopters
     % near plane (occluder), and far plane (occluded)
-    param.fix_near_far = [26, 26, 20;...
-                          26, 26, 14;...
-                          20, 26, 20;...
-                          20, 32, 20];
+    param.fix_near_far = [20, 32, 20;...
+                          32, 32, 20];
     
     % Algorithm: Pinhole, Single, Blending, Optimization
-    param.MCS_stimuli = [2, 3, 4];     
+    param.MCS_stimuli = [2, 4];     
     
     % count how many staircases we want
     
