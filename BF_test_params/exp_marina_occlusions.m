@@ -37,9 +37,8 @@ else
     
     % Variables
     param.occl_tex    = [0, 1];       % 0 is noise
-    % NOTE: THIS IS DIFFERENT FROM EVERYTHING ELSE
     param.occl_side   = [0, 1];       % 0 is left
-    % Four possible combinations of 
+    % Two possible combinations of 
     % fixation plane, near plane and far plane
     param.conditions = [1, 2]; 
     
