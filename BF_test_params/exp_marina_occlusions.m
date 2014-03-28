@@ -30,9 +30,9 @@ else
     
     % Experiment parameters
     param.fix_duration     = 0.5; % seconds
-    param.stim_duration    = 0.3; % seconds
-    param.trials_per_block = 80;
-    param.max_responses    = 10;  % per stimulus
+    param.stim_duration    = 2; % seconds
+    param.trials_per_block = 40;
+    param.max_responses    = 5;  % per stimulus
     param.max_trials       = 800; % to make sure it doesn't go forever
     
     % Variables

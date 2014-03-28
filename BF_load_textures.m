@@ -40,9 +40,14 @@ end
 if makeFix
     % Load the fixation cross
     string_holder = [];
-    string_holder{1} = 'fixation';
-    string_holder{2} = num2str(fix_plane);
-    string_holder{3} = num2str(1); % rename files and delete this line
+%     string_holder{1} = 'fixation';
+    % make string holder for E fixation
+    e_rand_dir = randi(4);
+    e_folder = 'e_stim';
+    string_holder{1} = 'e_stim';
+    string_holder{2} = sprintf('%d', e_rand_dir);
+    string_holder{3} = num2str(fix_plane);
+    string_holder{4} = num2str(1); % rename files and delete this line
     
 else
     % Load the occlusion stimulus
