@@ -29,30 +29,32 @@ else
     % INITSCELL
     
     % Experiment parameters
-    param.fix_duration     = 0.5; % seconds
-    param.stim_duration    = 5; % seconds
-    param.trials_per_block = 80;
-    param.max_responses    = 12;  % per stimulus
-    param.max_trials       = 800; % to make sure it doesn't go forever
+    param.demo_stim_dur = 2;          % seconds
+    param.fix_duration  = 0.5;        % seconds
+    param.stim_duration = [0.3, 2];   % seconds
     
-    % Variables
-    param.occl_tex    = [0, 1];       % Left or Right - 0 is voronoi
-    % NOTE: THIS IS DIFFERENT FROM EVERYTHING ELSE
-    param.occl_side   = [1, 0];       % Left or Right
+    param.occl_tex      = [0, 1];      % Left or Right - 0 is voronoi
+    param.occl_side     = [0, 1];      % Left or Right - 0 is left
+    
+    % Algorithm: 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
+    param.MCS_stimuli   = [2, 3, 4];  % algorithm
+    param.max_responses = 12;         % per stimulus
 
-    % Four possible combinations of 
-    % fixation plane, near plane and far plane
-    param.conditions = [1, 2, 3, 4]; 
-    
-    % Depth of fixation plane in diopters
-    % near plane (occluder), and far plane (occluded)
+    % Depth of stimuli in diopters
+    % 1st Column: fixation plane
+    % 2nd Column: near plane (occluder)
+    % 3rd Column: far plane (occluded)
     param.fix_near_far = [26, 26, 20;...
                           26, 26, 14;...
                           20, 26, 20;...
                           20, 32, 20];
+    param.conditions = 1:size(param.fix_near_far, 1); % possible combinations (rows)
     
-    % Algorithm: Pinhole, Single, Blending, Optimization
-    param.MCS_stimuli = [2, 3, 4];     
+    
+    
+    
+    
+param.trials_per_block = 80;
     
     % count how many staircases we want
     
