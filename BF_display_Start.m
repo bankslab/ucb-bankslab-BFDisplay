@@ -324,10 +324,10 @@ if ~exist('use3planeonly', 'var')
 end
 
 if ~exist('trial_counter')
-    trial_counter=0;
+    trial_counter=1;
 end
 if ~exist('block_counter')
-    block_counter=0;
+    block_counter=1;
 end
 
 %Build the display lists
@@ -352,6 +352,9 @@ if trial_mode==0
     BF_load_textures;
     BF_build_textures_optimizer;
     BF_initialize_trial; % calls RenderSceneStatic
+    
+    message='turnlenson';
+    BF_disp_message
     
     % Trial starts here
     stop_flag=0;
@@ -382,7 +385,7 @@ if trial_mode==0
         
         % this loop checks for keyboard input
         tic;
-        while toc < param.stim_duration
+        while toc < stim_dur
             BF_run_trial; % calls actual GL commands
         end
 
@@ -406,6 +409,9 @@ if trial_mode==1
     BF_load_textures;
     BF_build_textures_optimizer;
     BF_initialize_trial; % calls RenderSceneStatic
+    
+    message='turnlenson';
+    BF_disp_message
     
     % Trial starts here
     stop_flag=0;
@@ -437,7 +443,7 @@ if trial_mode==1
         
         % this loop checks for keyboard input
         tic;
-        while toc < param.stim_duration
+        while toc < stim_dur
             BF_run_trial; % calls actual GL commands
         end
 
@@ -469,7 +475,7 @@ if trial_mode==1
     Screen('Close', static_scene_disp_list1);
     %}
     
-    save(scell_filename,'scell','param','scellCompleted','scellThisRound','scellNextRound', 'trial_counter', 'block_counter');
+    save(expFileName, 'param', 'trialOrder', 'block_counter', 'trial_counter');
     fclose(text_fp);
 end
 

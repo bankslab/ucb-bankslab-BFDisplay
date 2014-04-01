@@ -20,21 +20,23 @@ end
 
 if trial_mode == 0
     % Demo Parameters
-    algorithm  = 4;        % Pinhole, Single, Blending, Optimization
-    near_plane = 32;       % Near, Far
-    far_plane  = 20;       % Near, Far
-    occl_side  = 0;        % Left, Right
-    occl_tex   = 1;        % Noise, Voronoi
-    fix_plane  = 32;       % Near, Far
-    
+    stim_dur   = 2;        % Seconds
+    occl_side  = 0;        % 0:Left,  1:Right
+    occl_tex   = 1;        % 0:Noise, 1:Voronoi
+    algorithm  = 4;        % 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
+    fix_plane  = 32;       % Diopters
+    near_plane = 32;       % Diopters
+    far_plane  = 20;       % Diopters
+
 elseif trial_mode == 1
-    % Trial Parameters
-    algorithm  = get(scellThisRound{s_i}, 'currentValue');
-    fix_plane  = get(scellThisRound{s_i}, 'fix_plane');
-    near_plane  = get(scellThisRound{s_i}, 'near_plane');
-    far_plane  = get(scellThisRound{s_i}, 'far_plane');
-    occl_side  = get(scellThisRound{s_i}, 'occl_side');
-    occl_tex   = get(scellThisRound{s_i}, 'occl_tex');
+    % Extract Trial Parameters
+    stim_dur   = trialOrder(trial_counter, 1);
+    occl_side  = trialOrder(trial_counter, 2);
+    occl_tex   = trialOrder(trial_counter, 3);
+    algorithm  = trialOrder(trial_counter, 4);
+    fix_plane  = trialOrder(trial_counter, 5);
+    near_plane = trialOrder(trial_counter, 6);
+    far_plane  = trialOrder(trial_counter, 7);
 end
 
 if makeFix
@@ -51,11 +53,7 @@ if makeFix
     
 else
     % Load the occlusion stimulus
-    %     string_holder{length(trial_params)} = [];
-    %     string_holder{1} = num2str(algorithm);
-    %     string_holder{2} = num2str(tex1_side);
-    %     string_holder{3} = num2str(front_plane_depth);
-    
+    % Order here is agreed upon with Abdullah
     string_holder = [];
     string_holder{1} = num2str(algorithm);
     string_holder{2} = num2str(near_plane);

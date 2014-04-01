@@ -6,95 +6,69 @@ static_mode = 1;
 renderviews = [0, 1]; %0 is the left eye
 projection_type = 1;
 
-s = PTBStaircase;
-
-% Reload old filenames and keep writing into same file
-scell_filename = [pwd '/BF_data_files/optimizer/' observer_initials '_' exp_num '_record.mat'];
-text_fileName = sprintf('data_marina_occlusions/%s.data', observer_initials);
-
 % Create text file for data saving
-mkdir('data_marina_occlusions');
-text_fp = fopen(text_fileName, 'a');
+folderName = 'data_marina_occlusions';
+mkdir(folderName);
+fileName = sprintf([folderName '/%s.data'], observer_initials);
+text_fp = fopen(fileName, 'a');
 fprintf(text_fp, '\n*** occlusion experiment ***\n');
 fprintf(text_fp, 'Subject Name:\t%s\n', observer_initials);
 fprintf(text_fp, '*** **************************** ***\n');
-% TODO: CHANGE THESE NAMES FOR EACH EXPERIMENT - DONE
-fprintf(text_fp, ' trial_counter\t algorithm\t near plane\t far plane\t occluder tex\t occluder side\t fixation plane\t response\n');
+fprintf(text_fp, 'block num\t trial num\t stim dur\t occl side\t occl tex\t algorithm\t fix plane\t near plane\t far plane\t  response\n');
 
-% Check if a data file exists, and if so open it
-if (exist(scell_filename, 'file') == 2)
-    load(scell_filename);
-    
+% Check if an experiment file exists, and if so open it
+% This file contains relevant variables to continue the experiment
+expFileName = [fileName(1:end-4) 'mat'];
+if (exist(expFileName, 'file') == 2)
+     load(expFileName);
 else
-    % INITSCELL
+    % Create new experiment matrix
     
-    % Experiment parameters
-    param.fix_duration     = 0.5; % seconds
-    param.stim_duration    = 2; % seconds
-    param.trials_per_block = 40;
-    param.max_responses    = 5;  % per stimulus
-    param.max_trials       = 800; % to make sure it doesn't go forever
+    % Set parameters
+    param.fix_duration  = 0.5;        % seconds
+    param.stim_duration = [0.3, 2];   % seconds
     
-    % Variables
-    param.occl_tex    = [0, 1];       % 0 is noise
-    param.occl_side   = [0, 1];       % 0 is left
-    % Two possible combinations of 
-    % fixation plane, near plane and far plane
-    param.conditions = [1, 2]; 
+    param.occl_side     = [0, 1];     % 0:Left,  1:Right
+    param.occl_tex      = [0, 1];     % 0:Noise, 1:Voronoi
     
-    % Depth of fixation plane in diopters
-    % near plane (occluder), and far plane (occluded)
-    param.fix_near_far = [20, 32, 20;...
-                          32, 32, 20];
-    
-    % Algorithm: Pinhole, Single, Blending, Optimization
-    param.MCS_stimuli = [2, 4];     
-    
-    % count how many staircases we want
-    
-    scell{1} = set(s, 'MCS',1, 'initialized', 'no');
+    % Algorithm: 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
+    param.MCS_stimuli   = [2, 3, 4];  % algorithm
+    param.max_responses = 3;          % per stimulus
 
-    %TODO: nothing below this line has been changed yet - DONE
-    % These loops should go through each of the parameters above
-    % For parameters that will be randomized, don't include a loop
-    % Randomization happens in the BF_display_Start file (see old code)
+    % Depth of stimuli in diopters
+    % 1st Column: fixation plane
+    % 2nd Column: near plane (occluder)
+    % 3rd Column: far plane (occluded)
+    param.fix_near_far = [26, 26, 20;...
+                          26, 26, 14;...
+                          20, 26, 20;...
+                          20, 32, 20];
+    param.conditions = 1:size(param.fix_near_far, 1); % possible combinations (rows)
 
-    
-    for conditions_index = 1:length(param.conditions)
-        for occl_tex_index = 1:length(param.occl_tex)
-                for occl_side_index = 1:length(param.occl_side)
-                    scell{conditions_index, occl_tex_index, occl_side_index} = set(scell{1},...
-                        'occl_tex', param.occl_tex(occl_tex_index),...
-                        'fix_plane', param.fix_near_far(conditions_index, 1),...
-                        'near_plane', param.fix_near_far(conditions_index, 2),...
-                        'far_plane', param.fix_near_far(conditions_index, 3),...
-                        'occl_side', param.occl_side(occl_side_index),...
-                        'MCS_stimuli', param.MCS_stimuli,...
-                        'MCS_num_responses', zeros(1,length(param.MCS_stimuli)),...
-                        'MCS_num_stimuli', length(param.MCS_stimuli),...
-                        'MCS_max_responses', param.max_responses);
-
-                        scell{conditions_index, occl_tex_index, occl_side_index}=...
-                            initializeStaircase(scell{conditions_index, occl_tex_index, occl_side_index});
-                end
-            end
+    % Combine all parameters into a giant matrix
+    % Order is the same as header text above
+    trialList = allcomb(param.occl_side, param.occl_tex, repmat(param.MCS_stimuli, param.max_responses, 1), param.conditions);
+    trialList = [trialList(:,1:3) param.fix_near_far(trialList(:, 4), :)];
+        
+    % Repeat and shuffle for each stim duration
+    trialOrder = [];
+    for st = param.stim_duration
+        trialOrder = [trialOrder; repmat(st, size(trialList, 1), 1), trialList(randperm(size(trialList, 1)), :)];
     end
     
-    % SCELL ORDER
-    scellSize=size(scell);
-    scellLength=prod(scellSize(:));
-    scellArray=reshape(scell,scellLength,1);
-    scellCompleted=[];
-    scellThisRound=[];
-    scellNextRound=[];
+    % Randomly shuffle the blocks
+    % Scalar in num_blocks is the number of blocks per stim duration
+    param.num_blocks = 2 * length(param.stim_duration);
+    param.trials_per_block = size(trialOrder, 1) / param.num_blocks;
     
-    for scellID=randperm(scellLength)
-        if get(scellArray{scellID},'complete')==1
-            scellCompleted{end+1}=scellArray{scellID};
-        elseif strcmp(get(scellArray{scellID},'initialized'),'yes')
-            scellThisRound{end+1}=scellArray{scellID};
-        end
-    end
+    block_order_col = repmat(randperm(param.num_blocks), param.trials_per_block, 1);
+    block_order_col = reshape(block_order_col, numel(block_order_col), 1);
+    trialOrder = [block_order_col, trialOrder];
+    
+    % Shuffle and sort by stim duration
+    trialOrder = trialOrder(randperm(size(trialOrder, 1)), :);
+    [Y, I] = sort(trialOrder(:, 1));
+    trialOrder = trialOrder(I, 2:end);
+    
+    param.max_trials = size(trialOrder, 1);
 end
-
-s_i = ceil(rand(1) * length(scellThisRound));
