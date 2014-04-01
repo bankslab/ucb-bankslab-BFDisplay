@@ -382,7 +382,7 @@ if trial_mode==0
         
         % this loop checks for keyboard input
         tic;
-        while toc < param.stim_duration
+        while toc < param.demo_stim_duration
             BF_run_trial; % calls actual GL commands
         end
 
