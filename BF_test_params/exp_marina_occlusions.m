@@ -32,17 +32,15 @@ else
     param.occl_tex      = [0, 1];     % 0:Noise, 1:Voronoi
     
     % Algorithm: 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
-    param.MCS_stimuli   = [2, 3, 4];  % algorithm
+    param.MCS_stimuli   = [2, 4];  % algorithm
     param.max_responses = 3;          % per stimulus
 
     % Depth of stimuli in diopters
     % 1st Column: fixation plane
     % 2nd Column: near plane (occluder)
     % 3rd Column: far plane (occluded)
-    param.fix_near_far = [26, 26, 20;...
-                          26, 26, 14;...
-                          20, 26, 20;...
-                          20, 32, 20];
+    param.fix_near_far = [20, 32, 20;...
+                          32, 32, 20];
     param.conditions = 1:size(param.fix_near_far, 1); % possible combinations (rows)
 
     % Combine all parameters into a giant matrix
