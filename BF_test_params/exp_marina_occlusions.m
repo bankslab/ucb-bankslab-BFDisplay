@@ -14,7 +14,7 @@ text_fp = fopen(fileName, 'a');
 fprintf(text_fp, '\n*** occlusion experiment ***\n');
 fprintf(text_fp, 'Subject Name:\t%s\n', observer_initials);
 fprintf(text_fp, '*** **************************** ***\n');
-fprintf(text_fp, ' trial_counter\t algorithm\t near plane\t far plane\t occluder tex\t occluder side\t fixation plane\t response\n');
+fprintf(text_fp, 'block num\t trial num\t stim dur\t occl side\t occl tex\t algorithm\t fix plane\t near plane\t far plane\t  response\n');
 
 % Check if an experiment file exists, and if so open it
 % This file contains relevant variables to continue the experiment
@@ -25,12 +25,11 @@ else
     % Create new experiment matrix
     
     % Set parameters
-    param.demo_stim_dur = 2;          % seconds
     param.fix_duration  = 0.5;        % seconds
     param.stim_duration = [0.3, 2];   % seconds
-
-    param.occl_tex      = [0, 1];      % Left or Right - 0 is voronoi
-    param.occl_side     = [0, 1];      % Left or Right - 0 is left
+    
+    param.occl_side     = [0, 1];     % 0:Left,  1:Right
+    param.occl_tex      = [0, 1];     % 0:Noise, 1:Voronoi
     
     % Algorithm: 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
     param.MCS_stimuli   = [2, 3, 4];  % algorithm
@@ -47,8 +46,9 @@ else
     param.conditions = 1:size(param.fix_near_far, 1); % possible combinations (rows)
 
     % Combine all parameters into a giant matrix
-    trialList = allcomb(param.occl_tex, param.occl_side, param.conditions, repmat(param.MCS_stimuli, param.max_responses, 1));
-    trialList = [trialList(:,1:3) param.fix_near_far(trialList(:, 4), :) trialList(:, 5:end)];
+    % Order is the same as header text above
+    trialList = allcomb(param.occl_side, param.occl_tex, repmat(param.MCS_stimuli, param.max_responses, 1), param.conditions);
+    trialList = [trialList(:,1:3) param.fix_near_far(trialList(:, 4), :)];
         
     % Repeat and shuffle for each stim duration
     trialOrder = [];
@@ -68,5 +68,7 @@ else
     % Shuffle and sort by stim duration
     trialOrder = trialOrder(randperm(size(trialOrder, 1)), :);
     [Y, I] = sort(trialOrder(:, 1));
-    trialOrder = trialOrder(I, :);
+    trialOrder = trialOrder(I, 2:end);
+    
+    param.max_trials = size(trialOrder, 1);
 end
