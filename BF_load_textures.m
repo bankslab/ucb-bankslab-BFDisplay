@@ -20,10 +20,10 @@ end
 
 if trial_mode == 0
     % Demo Parameters
-    stim_dur   = 2;        % Seconds
+    stim_dur   = 15;        % Seconds
     occl_side  = 0;        % 0:Left,  1:Right
     occl_tex   = 1;        % 0:Noise, 1:Voronoi
-    algorithm  = 4;        % 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
+    algorithm  = 2;        % 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
     fix_plane  = 32;       % Diopters
     near_plane = 32;       % Diopters
     far_plane  = 20;       % Diopters
