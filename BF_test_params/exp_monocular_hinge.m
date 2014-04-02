@@ -1,73 +1,61 @@
 % optimizer experiment template file
 experiment_type = 'monocular_hinge';
-trial_mode = 1;
-dynamic_mode = 0;
-static_mode = 1;
-renderviews = [0, 1]; %0 is the left eye
+trial_mode      = 1;
+dynamic_mode    = 0;
+static_mode     = 1;
+renderviews     = [0, 1]; %0 is left eye
 projection_type = 1;
 
-s = PTBStaircase;
-dumpworkspace=1;
+% Create text file for data saving
+folderName = 'data_monocular_hinge';
+mkdir(folderName);
+fileName = sprintf([folderName '/%s.data'], observer_initials);
+text_fp = fopen(fileName, 'a');
+fprintf(text_fp, '\n*** monocular_hinge experiment ***\n');
+fprintf(text_fp, 'Subject Name:\t%s\n', observer_initials);
+fprintf(text_fp, '*** **************************** ***\n');
+fprintf(text_fp, 'block num\t trial num\t stim dur\t algorithm\t texture\t hinge angle\t hinge direction\t response\n');
 
-record_filename = [pwd '/BF_data_files/optimizer/' observer_initials '_' exp_num '_record.mat'];
-
-if (exist(record_filename, 'file') == 2)
-% Check if a data file exists, and if so open it
-    load(record_filename);
-
+% Check if an experiment file exists, and if so open it
+% This file contains relevant variables to continue the experiment
+expFileName = [fileName(1:end-4) 'mat'];
+if (exist(expFileName, 'file') == 2)
+     load(expFileName);
 else
-    %% INITSCELL
-    % Experiment parameters
-    param.stim_duration = 8; % seconds
-    param.trials_per_block = 60;
+    % Create new experiment matrix
+    % Set parameters
+    param.vertex_dist   = 2.7;          % diopters
+    param.stim_duration = [0.3, 2, 5];  % seconds
+    % Algorithm: 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
+    param.algorithm     = [2, 4];    
+    param.texture       = [1, 2, 3];    % 1:, 2:, 3:
+    param.angle         = [70, 90];     % degrees
+    param.MCS_stimuli   = [0, 180];     % hinge direction
+    param.max_responses = 3;            % per stimulus
 
-    % MCS monocular_hinge values
-    %param.algorithm      = {'optimization', 'blending', 'single', 'pinhole'};
-    param.algorithm      = [1, 2, 3, 4];
-    param.disparity_dist = 2.6;
-    param.accom_dist     = 2.6;
-    param.angle          = [70, 90, 110]; 
-    param.MCS_stimuli    = [0, 180, 360, 540]; % direction of hinge
-    param.max_responses  = 10;
-    param.max_trials     = 1000;
-
-    % count how many staircases we want
-
-    scell{1} = set(s,...
-        'MCS',1,...
-        'initialized','no');
-
-    for alg_index = 1:length(param.algorithm)
-        for angle_index = 1:length(param.angle)
-            scell{alg_index, angle_index} = set(scell{1},...
-                'algorithm', param.algorithm(alg_index),...
-                'angle', param.angle(angle_index),...
-                'disparity_dist', param.disparity_dist,...
-                'accom_dist', param.accom_dist,...
-                'MCS_stimuli', param.MCS_stimuli,...
-                'MCS_num_responses', zeros(1,length(param.MCS_stimuli)),...
-                'MCS_num_stimuli', length(param.MCS_stimuli),...
-                'MCS_max_responses', param.max_responses);
-            scell{alg_index, angle_index}=... 
-                initializeStaircase(scell{alg_index, angle_index});
-        end
+    % Combine all parameters into a giant matrix
+    % Order is the same as header text above
+    trialList = allcomb(param.algorithm, param.texture, param.angle, repmat(param.MCS_stimuli, param.max_responses, 1));
+        
+    % Repeat and shuffle for each stim duration
+    trialOrder = [];
+    for st = param.stim_duration
+        trialOrder = [trialOrder; repmat(st, size(trialList, 1), 1), trialList(randperm(size(trialList, 1)), :)];
     end
-
-    %% SCELL ORDER
-    scellSize=size(scell);
-    scellLength=prod(scellSize(:));
-    scellArray=reshape(scell,scellLength,1);
-    scellCompleted=[];
-    scellThisRound=[];
-    scellNextRound=[];
-
-    for scellID=randperm(scellLength)
-        if get(scellArray{scellID},'complete')==1
-            scellCompleted{end+1}=scellArray{scellID};
-        elseif strcmp(get(scellArray{scellID},'initialized'),'yes')
-            scellThisRound{end+1}=scellArray{scellID};
-        end
-    end
+    
+    % Randomly shuffle the blocks
+    % Scalar in num_blocks is the number of blocks per stim duration
+    param.num_blocks = 2 * length(param.stim_duration);
+    param.trials_per_block = size(trialOrder, 1) / param.num_blocks;
+    
+    block_order_col = repmat(randperm(param.num_blocks), param.trials_per_block, 1);
+    block_order_col = reshape(block_order_col, numel(block_order_col), 1);
+    trialOrder = [block_order_col, trialOrder];
+    
+    % Shuffle and sort by stim duration
+    trialOrder = trialOrder(randperm(size(trialOrder, 1)), :);
+    [Y, I] = sort(trialOrder(:, 1));
+    trialOrder = trialOrder(I, 2:end);
+    
+    param.max_trials = size(trialOrder, 1);
 end
-
-s_i = ceil(rand(1) * length(scellThisRound));

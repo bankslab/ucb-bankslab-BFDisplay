@@ -21,22 +21,18 @@ end
 if trial_mode == 0
     % Demo Parameters
     stim_dur   = 2;        % Seconds
-    occl_side  = 0;        % 0:Left,  1:Right
-    occl_tex   = 1;        % 0:Noise, 1:Voronoi
     algorithm  = 4;        % 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
-    fix_plane  = 32;       % Diopters
-    near_plane = 32;       % Diopters
-    far_plane  = 20;       % Diopters
+    texture    = ;         % 1:, 2:, 3:
+    angle      = 70;       % Degrees
+    direction  = 0;        % Degrees
 
 elseif trial_mode == 1
     % Extract Trial Parameters
     stim_dur   = trialOrder(trial_counter, 1);
-    occl_side  = trialOrder(trial_counter, 2);
-    occl_tex   = trialOrder(trial_counter, 3);
-    algorithm  = trialOrder(trial_counter, 4);
-    fix_plane  = trialOrder(trial_counter, 5);
-    near_plane = trialOrder(trial_counter, 6);
-    far_plane  = trialOrder(trial_counter, 7);
+    algorithm  = trialOrder(trial_counter, 2);
+    texture    = trialOrder(trial_counter, 3);
+    angle      = trialOrder(trial_counter, 4);
+    direction  = trialOrder(trial_counter, 5);
 end
 
 if makeFix
@@ -48,7 +44,7 @@ if makeFix
     e_folder = 'e_stim';
     string_holder{1} = 'e_stim';
     string_holder{2} = sprintf('%d', e_rand_dir);
-    string_holder{3} = num2str(fix_plane);
+    string_holder{3} = num2str(param.vertex_dist);
     string_holder{4} = num2str(1); % rename files and delete this line
     
 else
@@ -56,12 +52,9 @@ else
     % Order here is agreed upon with Abdullah
     string_holder = [];
     string_holder{1} = num2str(algorithm);
-    string_holder{2} = num2str(near_plane);
-    string_holder{3} = num2str(far_plane);
-    string_holder{4} = num2str(occl_tex);
-    string_holder{5} = num2str(occl_side);
-    string_holder{6} = num2str(fix_plane);
-
+    string_holder{2} = num2str(texture);
+    string_holder{3} = num2str(angle);
+    string_holder{4} = num2str(direction);
 end
 
 

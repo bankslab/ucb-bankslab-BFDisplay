@@ -23,13 +23,13 @@ switch strInputName
     case '3#'
     case '4$'
     case 'RightArrow'
-        response = 1;
-        responded = 1;
     case 'LeftArrow'
-        response = 0;
-        responded = 1;
     case 'UpArrow'
+        response  = 0;
+        responded = 1;
     case 'DownArrow'
+        response  = 1;
+        responded = 1;
     case 'space'
     case 'Return'
     case 'ESCAPE'
