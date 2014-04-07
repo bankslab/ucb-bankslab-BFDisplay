@@ -5,6 +5,7 @@ dynamic_mode = 0;
 static_mode = 1;
 renderviews = [0, 1]; %0 is the left eye
 projection_type = 1;
+keyCode_mat = [1 2 3 4; 82 79 81 80];  % for fixation
 
 % Create text file for data saving
 folderName = 'data_marina_occlusions';
@@ -26,13 +27,13 @@ else
     
     % Set parameters
     param.fix_duration  = 0.5;        % seconds
-    param.stim_duration = [0.3, 2];   % seconds
+    param.stim_duration = [10];   % seconds
     
     param.occl_side     = [0, 1];     % 0:Left,  1:Right
     param.occl_tex      = [0, 1];     % 0:Noise, 1:Voronoi
     
     % Algorithm: 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
-    param.MCS_stimuli   = [2, 4];  % algorithm
+    param.MCS_stimuli   = [2, 4];     % algorithm
     param.max_responses = 3;          % per stimulus
 
     % Depth of stimuli in diopters

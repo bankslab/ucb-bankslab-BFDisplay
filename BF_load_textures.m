@@ -20,7 +20,8 @@ end
 
 if trial_mode == 0
     % Demo Parameters
-    stim_dur   = 15;        % Seconds
+    fix_dur    = param.fix_duration;
+    stim_dur   = 2;       % Seconds
     occl_side  = 0;        % 0:Left,  1:Right
     occl_tex   = 1;        % 0:Noise, 1:Voronoi
     algorithm  = 2;        % 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
@@ -30,6 +31,7 @@ if trial_mode == 0
 
 elseif trial_mode == 1
     % Extract Trial Parameters
+    fix_dur    = param.fix_duration;
     stim_dur   = trialOrder(trial_counter, 1);
     occl_side  = trialOrder(trial_counter, 2);
     occl_tex   = trialOrder(trial_counter, 3);
@@ -45,8 +47,9 @@ if makeFix
 %     string_holder{1} = 'fixation';
     % make string holder for E fixation
     e_rand_dir = randi(4);
-    e_folder = 'e_stim';
-    string_holder{1} = 'e_stim';
+    e_dir_code = keyCode_mat(2, e_rand_dir);
+    e_folder = 'e_stim_slim';
+    string_holder{1} = 'e_stim_slim';
     string_holder{2} = sprintf('%d', e_rand_dir);
     string_holder{3} = num2str(fix_plane);
     string_holder{4} = num2str(1); % rename files and delete this line

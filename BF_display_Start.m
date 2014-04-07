@@ -372,6 +372,26 @@ if trial_mode==0
         while a == 0
             BF_run_trial; % calls actual GL commands
         end
+        
+        % Compare keycode to E direction
+        fix_resp = find(c);
+        if e_dir_code ~= fix_resp
+        makeFix = 1;
+        BF_load_textures;
+        BF_build_textures_optimizer;        
+        BF_initialize_trial; % calls RenderSceneStatic
+        
+        makeFix = 0;
+        BF_load_textures;
+        
+        makeFix = 1;
+        a = 0;
+        while a == 0
+            BF_run_trial; % calls actual GL commands
+        end  
+        end
+            
+        
         makeFix = 0;
 
         Screen('SelectStereoDrawBuffer',windowPtr,0);
@@ -406,6 +426,7 @@ if trial_mode==0
 end
 
 if trial_mode==1
+
     BF_load_textures;
     BF_build_textures_optimizer;
     BF_initialize_trial; % calls RenderSceneStatic
