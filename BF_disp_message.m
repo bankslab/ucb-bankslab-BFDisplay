@@ -21,7 +21,7 @@ while(displaymessage==1)
     end
     depthtex_handle=depthplane;  
                 
-    for whichEye=0
+    for whichEye=1
 
         Screen('SelectStereoDrawBuffer', windowPtr, whichEye);
         glClear;

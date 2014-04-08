@@ -22,29 +22,46 @@ if trial_mode == 0
     % Demo Parameters
     fix_dur    = param.fix_duration;
     stim_dur   = 2;       % Seconds
+    algorithm  = 4;        % 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
+    aperture_size = 4;
     occl_side  = 0;        % 0:Left,  1:Right
-    occl_tex   = 1;        % 0:Noise, 1:Voronoi
-    algorithm  = 2;        % 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
     fix_plane  = 32;       % Diopters
     near_plane = 32;       % Diopters
     far_plane  = 20;       % Diopters
-
+    
+    % define random textures for near and far textures
+    near_tex = 4;
+    far_tex  = 2;
+%     near_tex = randi(4);
+%     far_tex  = randi(4);
+%     while far_tex == near_tex,
+%         far_tex = randi(4);
+%     end
+    
 elseif trial_mode == 1
     % Extract Trial Parameters
     fix_dur    = param.fix_duration;
     stim_dur   = trialOrder(trial_counter, 1);
-    occl_side  = trialOrder(trial_counter, 2);
-    occl_tex   = trialOrder(trial_counter, 3);
     algorithm  = trialOrder(trial_counter, 4);
+    aperture_size = trialOrder(trial_counter, 3)
+    occl_side  = trialOrder(trial_counter, 2);
     fix_plane  = trialOrder(trial_counter, 5);
     near_plane = trialOrder(trial_counter, 6);
     far_plane  = trialOrder(trial_counter, 7);
+    
+    % define random textures for near and far textures
+    near_tex = randi(4);
+    far_tex  = randi(4);
+    while far_tex == near_tex,
+        far_tex = randi(4);
+    end
+    
 end
 
 if makeFix
     % Load the fixation cross
     string_holder = [];
-%     string_holder{1} = 'fixation';
+    %     string_holder{1} = 'fixation';
     % make string holder for E fixation
     e_rand_dir = randi(4);
     e_dir_code = keyCode_mat(2, e_rand_dir);
@@ -53,30 +70,34 @@ if makeFix
     string_holder{2} = sprintf('%d', e_rand_dir);
     string_holder{3} = num2str(fix_plane);
     string_holder{4} = num2str(1); % rename files and delete this line
-    
+   
+    file_name = strcat(strjoin(string_holder, '_'), '.mat');
+    file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), string_holder{1}, file_name}, '/');
+
 else
     % Load the occlusion stimulus
     % Order here is agreed upon with Abdullah
     string_holder = [];
     string_holder{1} = num2str(algorithm);
-    string_holder{2} = num2str(near_plane);
-    string_holder{3} = num2str(far_plane);
-    string_holder{4} = num2str(occl_tex);
-    string_holder{5} = num2str(occl_side);
+    string_holder{2} = num2str(aperture_size);
+    string_holder{3} = num2str(occl_side);
+    string_holder{4} = num2str(near_tex);
+    string_holder{5} = num2str(far_tex);
     string_holder{6} = num2str(fix_plane);
+    string_holder{7} = num2str(near_plane);
+    string_holder{8} = num2str(far_plane);
+    
+    file_name = strcat(strjoin(string_holder, '_'), '.mat');
+    file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), 'all', file_name}, '/')
 
 end
 
-
-% TODO: the paths below need to be changed for the new experiment
-file_name = strcat(strjoin(string_holder, '_'), '.mat');
-file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), string_holder{1}, file_name}, '/');
 imageSet = load(file_path);
 
 % %********* Abdullah's modification to involve more crosstalk starts
 % inducedCrossTalk = 2;%10 means intensity distribution: 70 10 10 10, 10 70 10 10 etc
 % layers2 = imageSet.layers;
-%     
+%
 % for i = 1:4
 %     layers{i} = double(layers2{i})*((100.0-inducedCrossTalk*4.0)/100.0);
 %     layers{i+4} = double(layers2{i+4})*((100.0-inducedCrossTalk*4.0)/100.0);
@@ -106,7 +127,7 @@ for plane = (1:4)
         % hdr(600:-1:1, 1:800, :) = uint8(255*(double(file/255).^(GammaValue)));
         
         layerImg = uint8((255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))).*generateAperture(10,2.5,1.0,eye));
-%         layerImg = uint8((255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))));
+        %         layerImg = uint8((255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))));
         
         % Find size of loaded image
         [h, w, z] = size(layerImg);

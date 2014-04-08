@@ -1,11 +1,11 @@
 % optimizer experiment template file
 experiment_type = 'marina_occlusions';
-trial_mode = 0;
+trial_mode = 1;
 dynamic_mode = 0;
 static_mode = 1;
 renderviews = [0, 1]; %0 is the left eye
 projection_type = 1;
-keyCode_mat = [1 2 3 4; 82 79 81 80];  % for fixation
+keyCode_mat = [1 2 3 4; 82 80 81 79];  % for fixation
 
 % Create text file for data saving
 folderName = 'data_marina_occlusions';
@@ -15,7 +15,7 @@ text_fp = fopen(fileName, 'a');
 fprintf(text_fp, '\n*** occlusion experiment ***\n');
 fprintf(text_fp, 'Subject Name:\t%s\n', observer_initials);
 fprintf(text_fp, '*** **************************** ***\n');
-fprintf(text_fp, 'block num\t trial num\t stim dur\t occl side\t occl tex\t algorithm\t fix plane\t near plane\t far plane\t  response\n');
+fprintf(text_fp, 'block num\t trial num\t stim dur\t occl side\t near tex\t far tex\t algorithm\t fix plane\t near plane\t far plane\t  response\n');
 
 % Check if an experiment file exists, and if so open it
 % This file contains relevant variables to continue the experiment
@@ -27,14 +27,14 @@ else
     
     % Set parameters
     param.fix_duration  = 0.5;        % seconds
-    param.stim_duration = [10];   % seconds
+    param.stim_duration = [0.2, 3];   % seconds
     
-    param.occl_side     = [0, 1];     % 0:Left,  1:Right
-    param.occl_tex      = [0, 1];     % 0:Noise, 1:Voronoi
+    param.occl_side     = [0, 1];     % 0:Left,  1:Right    
+    param.aperture_size = [4, 5, 6, 7];
     
     % Algorithm: 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
     param.MCS_stimuli   = [2, 4];     % algorithm
-    param.max_responses = 3;          % per stimulus
+    param.max_responses = 5;          % per stimulus
 
     % Depth of stimuli in diopters
     % 1st Column: fixation plane
@@ -46,7 +46,7 @@ else
 
     % Combine all parameters into a giant matrix
     % Order is the same as header text above
-    trialList = allcomb(param.occl_side, param.occl_tex, repmat(param.MCS_stimuli, param.max_responses, 1), param.conditions);
+    trialList = allcomb(param.occl_side, param.aperture_size, repmat(param.MCS_stimuli, param.max_responses, 1), param.conditions);
     trialList = [trialList(:,1:3) param.fix_near_far(trialList(:, 4), :)];
         
     % Repeat and shuffle for each stim duration
