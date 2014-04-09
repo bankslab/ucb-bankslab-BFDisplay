@@ -43,7 +43,7 @@ elseif trial_mode == 1
     fix_dur    = param.fix_duration;
     stim_dur   = trialOrder(trial_counter, 1);
     algorithm  = trialOrder(trial_counter, 4);
-    aperture_size = trialOrder(trial_counter, 3)
+    aperture_size = trialOrder(trial_counter, 3);
     occl_side  = trialOrder(trial_counter, 2);
     fix_plane  = trialOrder(trial_counter, 5);
     near_plane = trialOrder(trial_counter, 6);
@@ -88,7 +88,7 @@ else
     string_holder{8} = num2str(far_plane);
     
     file_name = strcat(strjoin(string_holder, '_'), '.mat');
-    file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), 'all', file_name}, '/')
+    file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), 'all', file_name}, '/');
 
 end
 
