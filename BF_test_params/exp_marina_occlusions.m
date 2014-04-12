@@ -26,34 +26,42 @@ else
     % Create new experiment matrix
     
     % Set parameters
-    param.fix_duration  = 0.5;        % seconds
-    param.stim_duration = [0.3, 3];   % seconds
-%     param.stim_duration = [3];   % seconds
-    
     param.occl_side     = [0, 1];     % 0:Left,  1:Right    
     param.aperture_size = [4, 5, 6, 7];
-    
-    % Algorithm: 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
-    param.MCS_stimuli   = [2, 4];     % algorithm
-%     param.MCS_stimuli   = [2];     % algorithm
     param.max_responses = 10;          % per stimulus
+    param.fix_duration  = 0.5;        % seconds
+    
+%     % FIRST EXPERIMENT  
+%     param.stim_duration = [0.3, 3];   % seconds
+%     % Algorithm: 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
+%     param.MCS_stimuli   = [2, 4];     % algorithm
+%     % Depth of stimuli in diopters
+%     % 1st Column: fixation plane
+%     % 2nd Column: near plane (occluder)
+%     % 3rd Column: far plane (occluded)
+%     % Single-plane vs Optimization
+%     param.fix_near_far = [20, 32, 20;...
+%                           32, 32, 20];
 
+                      
+                      
+    % Single-plane experiment
+    param.stim_duration = [1.5];   % seconds
+    % Algorithm: 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
+    param.MCS_stimuli   = [2];     % algorithm
     % Depth of stimuli in diopters
     % 1st Column: fixation plane
     % 2nd Column: near plane (occluder)
     % 3rd Column: far plane (occluded)
     % Single-plane vs Optimization
-    param.fix_near_far = [20, 32, 20;...
+    param.fix_near_far = [15, 27, 15;...
+                          15, 15, 3;...
+                          20, 32, 20;...
+                          20, 20, 8;...
+                          27, 39, 27;...
+                          27, 27, 15;...
+                          32, 44, 32;...
                           32, 32, 20];
-%     % Single-plane experiment
-%     param.fix_near_far = [15, 27, 15;...
-%                           15, 15, 3;...
-%                           20, 32, 20;...
-%                           20, 20, 8;...
-%                           27, 39, 27;...
-%                           27, 27, 15;...
-%                           32, 44, 32;...
-%                           32, 32, 20];
                       
                       param.conditions = 1:size(param.fix_near_far, 1); % possible combinations (rows)
 

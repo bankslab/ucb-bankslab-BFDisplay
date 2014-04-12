@@ -359,9 +359,74 @@ if trial_mode==0
     % Trial starts here
     stop_flag=0;
     while stop_flag == 0
+        % Compare keycode to E direction
+        fix_resp = find(c);
+        while e_dir_code ~= fix_resp
+            makeFix = 1;
+            BF_load_textures; % load fixation
+            BF_build_textures_optimizer;
+            BF_initialize_trial; % calls RenderSceneStatic
+            
+            makeFix = 0;
+            BF_load_textures; % load stimuli, just in case
+            makeFix = 1;
+            
+            a = 0;
+            while a == 0
+                BF_run_trial; % calls actual GL commands
+            end
+            
+            Screen('SelectStereoDrawBuffer',windowPtr,0);
+            Screen('FillRect',windowPtr,[0 0 0]);
+            Screen('SelectStereoDrawBuffer',windowPtr,1);
+            Screen('FillRect',windowPtr,[0 0 0]);
+            Screen('Flip',windowPtr); 
+            
+            fix_resp = find(c);
+        end
+        
+        makeFix = 0;
+
+        BF_build_textures_optimizer;
+        BF_initialize_trial; % calls RenderSceneStatic
+        
+        % this loop checks for keyboard input
+        tic;
+        while toc < stim_dur
+            BF_run_trial; % calls actual GL commands
+        end
+        
+        Screen('SelectStereoDrawBuffer',windowPtr,0);
+        Screen('FillRect',windowPtr,[0 0 0]);
+        Screen('SelectStereoDrawBuffer',windowPtr,1);
+        Screen('FillRect',windowPtr,[0 0 0]);
+        Screen('Flip',windowPtr);
+        
+        response = 0;
+        responded = 0;
+        while responded == 0
+            [b c d] = KbWait;
+            takeKeyboardInput;
+        end
+        process_response;
+    end
+end
+
+if trial_mode==1
+    
+    BF_load_textures;
+    BF_build_textures_optimizer;
+    BF_initialize_trial; % calls RenderSceneStatic
+    
+    message='turnlenson';
+    BF_disp_message
+    
+    % Trial starts here
+    stop_flag=0;
+    while stop_flag == 0
         makeFix = 1;
         BF_load_textures;
-        BF_build_textures_optimizer;        
+        BF_build_textures_optimizer;
         BF_initialize_trial; % calls RenderSceneStatic
         
         makeFix = 0;
@@ -381,19 +446,21 @@ if trial_mode==0
             BF_build_textures_optimizer;
             BF_initialize_trial; % calls RenderSceneStatic
             
+            
             makeFix = 0;
             BF_load_textures;
-            makeFix = 1;
             
+            makeFix = 1;
             a = 0;
             while a == 0
                 BF_run_trial; % calls actual GL commands
             end
             fix_resp = find(c);
         end
-       
+        
         makeFix = 0;
-
+        
+        
         Screen('SelectStereoDrawBuffer',windowPtr,0);
         Screen('FillRect',windowPtr,[0 0 0]);
         Screen('SelectStereoDrawBuffer',windowPtr,1);
@@ -408,103 +475,23 @@ if trial_mode==0
         while toc < stim_dur
             BF_run_trial; % calls actual GL commands
         end
-
-        Screen('SelectStereoDrawBuffer',windowPtr,0);
-        Screen('FillRect',windowPtr,[0 0 0]);
-        Screen('SelectStereoDrawBuffer',windowPtr,1);
-        Screen('FillRect',windowPtr,[0 0 0]);
-        Screen('Flip',windowPtr);        
-
-        response = 0;
-        responded = 0;
-        while responded == 0
-            [b c d] = KbWait;
-            takeKeyboardInput;
-        end 
-        process_response;
-    end
-end
-
-if trial_mode==1
-
-    BF_load_textures;
-    BF_build_textures_optimizer;
-    BF_initialize_trial; % calls RenderSceneStatic
-    
-    message='turnlenson';
-    BF_disp_message
-    
-    % Trial starts here
-    stop_flag=0;
-    while stop_flag == 0
-        makeFix = 1;
-        BF_load_textures;
-        BF_build_textures_optimizer;        
-        BF_initialize_trial; % calls RenderSceneStatic
         
-        makeFix = 0;
-        BF_load_textures;
-        
-        makeFix = 1;
-        a = 0;
-        while a == 0
-            BF_run_trial; % calls actual GL commands
-        end
-        
-         % Compare keycode to E direction
-        fix_resp = find(c);
-        while e_dir_code ~= fix_resp
-        makeFix = 1;
-        BF_load_textures;
-        BF_build_textures_optimizer;        
-        BF_initialize_trial; % calls RenderSceneStatic
-               
-
-        makeFix = 0;
-        BF_load_textures;
-        
-        makeFix = 1;
-        a = 0;
-        while a == 0
-            BF_run_trial; % calls actual GL commands
-        end
-         fix_resp = find(c);
-        end
-       
-        makeFix = 0;
-
-
         Screen('SelectStereoDrawBuffer',windowPtr,0);
         Screen('FillRect',windowPtr,[0 0 0]);
         Screen('SelectStereoDrawBuffer',windowPtr,1);
         Screen('FillRect',windowPtr,[0 0 0]);
         Screen('Flip',windowPtr);
         
-        BF_build_textures_optimizer;
-        BF_initialize_trial; % calls RenderSceneStatic
-        
-        % this loop checks for keyboard input
-        tic;
-        while toc < stim_dur
-            BF_run_trial; % calls actual GL commands
-        end
-
-        Screen('SelectStereoDrawBuffer',windowPtr,0);
-        Screen('FillRect',windowPtr,[0 0 0]);
-        Screen('SelectStereoDrawBuffer',windowPtr,1);
-        Screen('FillRect',windowPtr,[0 0 0]);
-        Screen('Flip',windowPtr);        
-
         response = 0;
         responded = 0;
         while responded == 0
             [b c d] = KbWait;
             takeKeyboardInput;
-        end 
+        end
         process_response;
     end
     
-    %{    
+    %{
     % Trying to solve inter-trial delay
     size = uint32(zeros(length(texname_static),1));
     glDeleteTextures(size, texname_static);
