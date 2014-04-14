@@ -16,6 +16,9 @@ radius = (imageWidth/2)*tan(toRadians('d',fovA/2))/tan(toRadians('d',fovX/2));
 
 %generate a sharp aperture with radius
 sharpAperture = fspecial('disk',radius);
+[h w t] = size(sharpAperture)
+sharpAperture = imresize(sharpAperture, [h/2 w]);
+
 %force it to have even size
 apertureSize = size(sharpAperture);
 if mod(apertureSize(1),2)==1
