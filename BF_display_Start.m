@@ -4,6 +4,7 @@ function [] = BF_display_Start(viewMode, observer_initials, exp_num)
 %David Hoffman
 %July 2, 2008 Eventually this will be the roon experiment file for BF
 %Lens system based display
+
 clear GL;
 tic;
 
@@ -424,28 +425,13 @@ if trial_mode==1
     % Trial starts here
     stop_flag=0;
     while stop_flag == 0
-        makeFix = 1;
-        BF_load_textures;
-        BF_build_textures_optimizer;
-        BF_initialize_trial; % calls RenderSceneStatic
-        
-        makeFix = 0;
-        BF_load_textures;
-        
-        makeFix = 1;
-        a = 0;
-        while a == 0
-            BF_run_trial; % calls actual GL commands
-        end
-        
         % Compare keycode to E direction
-        fix_resp = find(c);
+        fix_resp = 0;
         while e_dir_code ~= fix_resp
             makeFix = 1;
             BF_load_textures;
             BF_build_textures_optimizer;
             BF_initialize_trial; % calls RenderSceneStatic
-            
             
             makeFix = 0;
             BF_load_textures;
@@ -455,18 +441,15 @@ if trial_mode==1
             while a == 0
                 BF_run_trial; % calls actual GL commands
             end
+            Screen('SelectStereoDrawBuffer',windowPtr,0);
+            Screen('FillRect',windowPtr,[0 0 0]);
+            Screen('SelectStereoDrawBuffer',windowPtr,1);
+            Screen('FillRect',windowPtr,[0 0 0]);
+            Screen('Flip',windowPtr);
             fix_resp = find(c);
         end
         
         makeFix = 0;
-        
-        
-        Screen('SelectStereoDrawBuffer',windowPtr,0);
-        Screen('FillRect',windowPtr,[0 0 0]);
-        Screen('SelectStereoDrawBuffer',windowPtr,1);
-        Screen('FillRect',windowPtr,[0 0 0]);
-        Screen('Flip',windowPtr);
-        
         BF_build_textures_optimizer;
         BF_initialize_trial; % calls RenderSceneStatic
         
