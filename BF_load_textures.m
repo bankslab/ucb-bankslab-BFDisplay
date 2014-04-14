@@ -20,11 +20,12 @@ end
 
 if trial_mode == 0
     % Demo Parameters
-    stim_dur   = 2;        % Seconds
-    algorithm  = 4;        % 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
-    texture    = ;         % 1:, 2:, 3:
+    stim_dur   = 5;        % Seconds
+    algorithm  = 2;        % 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
+    texture    = 1;        % 1:, 2:, 3:
     angle      = 70;       % Degrees
     direction  = 0;        % Degrees
+    tex_version  = 1;        % Degrees
 
 elseif trial_mode == 1
     % Extract Trial Parameters
@@ -33,6 +34,7 @@ elseif trial_mode == 1
     texture    = trialOrder(trial_counter, 3);
     angle      = trialOrder(trial_counter, 4);
     direction  = trialOrder(trial_counter, 5);
+    tex_version    = trialOrder(trial_counter, 6);
 end
 
 if makeFix
@@ -41,12 +43,13 @@ if makeFix
 %     string_holder{1} = 'fixation';
     % make string holder for E fixation
     e_rand_dir = randi(4);
-    e_folder = 'e_stim';
-    string_holder{1} = 'e_stim';
+    e_folder = 'e_stim_slim';
+    string_holder{1} = 'e_stim_slim';
     string_holder{2} = sprintf('%d', e_rand_dir);
     string_holder{3} = num2str(param.vertex_dist);
     string_holder{4} = num2str(1); % rename files and delete this line
-    
+    file_name = strcat(strjoin(string_holder, '_'), '.mat');
+    file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, '41', 'e_stim_slim', file_name}, '/');
 else
     % Load the occlusion stimulus
     % Order here is agreed upon with Abdullah
@@ -55,12 +58,14 @@ else
     string_holder{2} = num2str(texture);
     string_holder{3} = num2str(angle);
     string_holder{4} = num2str(direction);
+    string_holder{5} = num2str(tex_version);
+    file_name = strcat(strjoin(string_holder, '_'), '.mat');
+    file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, '41', file_name}, '/');
 end
 
 
 % TODO: the paths below need to be changed for the new experiment
-file_name = strcat(strjoin(string_holder, '_'), '.mat');
-file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), string_holder{1}, file_name}, '/');
+%file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), string_holder{1}, file_name}, '/');
 imageSet = load(file_path);
 
 % %********* Abdullah's modification to involve more crosstalk starts
@@ -95,7 +100,7 @@ for plane = (1:4)
         % Example2: Display HDR or double values w/ GammaCorrection
         % hdr(600:-1:1, 1:800, :) = uint8(255*(double(file/255).^(GammaValue)));
         
-        layerImg = uint8((255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))).*generateAperture(10,2.5,1.0,eye));
+        layerImg = uint8((255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))).*generateAperture(20,2.5,1.0,eye));
 %         layerImg = uint8((255*((1*double(imageSet.layers{eye*4+plane})/255).^(gammaValue))));
         
         % Find size of loaded image

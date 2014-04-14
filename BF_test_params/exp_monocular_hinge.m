@@ -1,6 +1,6 @@
 % optimizer experiment template file
 experiment_type = 'monocular_hinge';
-trial_mode      = 1;
+trial_mode      = 0;
 dynamic_mode    = 0;
 static_mode     = 1;
 renderviews     = [0, 1]; %0 is left eye
@@ -24,7 +24,7 @@ if (exist(expFileName, 'file') == 2)
 else
     % Create new experiment matrix
     % Set parameters
-    param.vertex_dist   = 2.7;          % diopters
+    param.vertex_dist   = 27;          % diopters
     param.stim_duration = [0.3, 2, 5];  % seconds
     % Algorithm: 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
     param.algorithm     = [2, 4];    
