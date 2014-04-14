@@ -6,8 +6,8 @@
 % Write response to file
 % CHANGE THESE VARIABLES FOR EACH EXPERIMENT
 if trial_mode==1
-    fprintf(text_fp, '%d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\n', ...
-    block_counter, trial_counter, stim_dur, algorithm, texture, angle, direction, response);
+    fprintf(text_fp, '%d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\n', ...
+    block_counter, trial_counter, stim_dur, algorithm, texture, angle, tex_version, direction, response);
     save(expFileName, 'param', 'trialOrder', 'block_counter', 'trial_counter');
 end
 

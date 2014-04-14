@@ -14,7 +14,7 @@ text_fp = fopen(fileName, 'a');
 fprintf(text_fp, '\n*** monocular_hinge experiment ***\n');
 fprintf(text_fp, 'Subject Name:\t%s\n', observer_initials);
 fprintf(text_fp, '*** **************************** ***\n');
-fprintf(text_fp, 'block num\t trial num\t stim dur\t algorithm\t texture\t hinge angle\t hinge direction\t response\n');
+fprintf(text_fp, 'block num\t trial num\t stim dur\t algorithm\t texture\t hinge angle\t tex_version\t hinge direction\t response\n');
 
 % Check if an experiment file exists, and if so open it
 % This file contains relevant variables to continue the experiment
@@ -24,18 +24,20 @@ if (exist(expFileName, 'file') == 2)
 else
     % Create new experiment matrix
     % Set parameters
-    param.vertex_dist   = 27;          % diopters
+    param.vertex_dist   = 27;           % diopters
     param.stim_duration = [0.3, 2, 5];  % seconds
     % Algorithm: 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
-    param.algorithm     = [2, 4];    
-    param.texture       = [1, 2, 3];    % 1:, 2:, 3:
+    param.algorithm     = [1, 2, 3, 4];
+    % Texture: 1:noise, 2:noodles, 3:voronoi, 4:farfalle
+    param.texture       = [1, 2, 3, 4];
     param.angle         = [70, 90];     % degrees
+    param.tex_version   = [1, 2];       % two different random variations
     param.MCS_stimuli   = [0, 180];     % hinge direction
-    param.max_responses = 3;            % per stimulus
+    param.max_responses = 2;            % per stimulus
 
     % Combine all parameters into a giant matrix
     % Order is the same as header text above
-    trialList = allcomb(param.algorithm, param.texture, param.angle, repmat(param.MCS_stimuli, param.max_responses, 1));
+    trialList = allcomb(param.algorithm, param.texture, param.angle, param.tex_version, repmat(param.MCS_stimuli, param.max_responses, 1));
         
     % Repeat and shuffle for each stim duration
     trialOrder = [];

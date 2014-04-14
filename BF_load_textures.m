@@ -20,49 +20,45 @@ end
 
 if trial_mode == 0
     % Demo Parameters
-    stim_dur   = 5;        % Seconds
-    algorithm  = 2;        % 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
-    texture    = 1;        % 1:, 2:, 3:
-    angle      = 70;       % Degrees
-    direction  = 0;        % Degrees
-    tex_version  = 1;        % Degrees
+    stim_dur     = 5;      % Seconds
+    algorithm    = 2;      % 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
+    texture      = 1;      % 1:, 2:, 3:
+    angle        = 70;     % Degrees
+    tex_version  = 1;      % Degrees
+    direction    = 0;      % Degrees
 
 elseif trial_mode == 1
     % Extract Trial Parameters
-    stim_dur   = trialOrder(trial_counter, 1);
-    algorithm  = trialOrder(trial_counter, 2);
-    texture    = trialOrder(trial_counter, 3);
-    angle      = trialOrder(trial_counter, 4);
-    direction  = trialOrder(trial_counter, 5);
-    tex_version    = trialOrder(trial_counter, 6);
+    stim_dur    = trialOrder(trial_counter, 1);
+    algorithm   = trialOrder(trial_counter, 2);
+    texture     = trialOrder(trial_counter, 3);
+    angle       = trialOrder(trial_counter, 4);
+    tex_version = trialOrder(trial_counter, 5);
+    direction   = trialOrder(trial_counter, 6);
 end
 
 if makeFix
     % Load the fixation cross
-    string_holder = [];
-%     string_holder{1} = 'fixation';
-    % make string holder for E fixation
     e_rand_dir = randi(4);
-    e_folder = 'e_stim_slim';
+    folder_name = 'e_stim_slim';
+    string_holder = [];
     string_holder{1} = 'e_stim_slim';
     string_holder{2} = sprintf('%d', e_rand_dir);
     string_holder{3} = num2str(param.vertex_dist);
     string_holder{4} = num2str(1); % rename files and delete this line
-    file_name = strcat(strjoin(string_holder, '_'), '.mat');
-    file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, '41', 'e_stim_slim', file_name}, '/');
 else
     % Load the occlusion stimulus
     % Order here is agreed upon with Abdullah
+    folder_name = num2str(pupil_size);
     string_holder = [];
     string_holder{1} = num2str(algorithm);
     string_holder{2} = num2str(texture);
     string_holder{3} = num2str(angle);
     string_holder{4} = num2str(direction);
     string_holder{5} = num2str(tex_version);
-    file_name = strcat(strjoin(string_holder, '_'), '.mat');
-    file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, '41', file_name}, '/');
 end
-
+    file_name = strcat(folder_name, '/', strjoin(string_holder, '_'), '.mat');
+    file_path = strcat(strjoin({'BF_texture_files', 'optimizer', exp_num, ''},'/'), file_name);
 
 % TODO: the paths below need to be changed for the new experiment
 %file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), string_holder{1}, file_name}, '/');
