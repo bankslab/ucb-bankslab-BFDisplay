@@ -20,7 +20,7 @@ end
 
 if trial_mode == 0
     % Demo Parameters
-    stim_dur     = 5;      % Seconds
+    stim_dur     = 7;      % Seconds
     algorithm    = 2;      % 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
     texture      = 1;      % 1:, 2:, 3:
     angle        = 70;     % Degrees
@@ -40,6 +40,7 @@ end
 if makeFix
     % Load the fixation cross
     e_rand_dir = randi(4);
+    e_dir_code = keyCode_mat(2, e_rand_dir);
     folder_name = 'e_stim_slim';
     string_holder = [];
     string_holder{1} = 'e_stim_slim';
