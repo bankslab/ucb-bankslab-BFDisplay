@@ -63,6 +63,9 @@ end
 
 % TODO: the paths below need to be changed for the new experiment
 %file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), string_holder{1}, file_name}, '/');
+if exist('imageSet','var')
+    clear imageSet;
+end
 imageSet = load(file_path);
 
 % %********* Abdullah's modification to involve more crosstalk starts

@@ -442,12 +442,6 @@ if trial_mode==1
 
         makeFix = 0;
         
-        Screen('SelectStereoDrawBuffer',windowPtr,0);
-        Screen('FillRect',windowPtr,[0 0 0]);
-        Screen('SelectStereoDrawBuffer',windowPtr,1);
-        Screen('FillRect',windowPtr,[0 0 0]);
-        Screen('Flip',windowPtr);
-        
         BF_build_textures_optimizer;
         BF_initialize_trial; % calls RenderSceneStatic
         
