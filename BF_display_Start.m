@@ -453,7 +453,6 @@ if trial_mode==1
         BF_build_textures_optimizer;
         BF_initialize_trial; % calls RenderSceneStatic
         
-        % this loop checks for keyboard input
         tic;
         while toc < stim_dur
             BF_run_trial; % calls actual GL commands
@@ -474,7 +473,7 @@ if trial_mode==1
         process_response;
     end
     
-    %{
+    
     % Trying to solve inter-trial delay
     size = uint32(zeros(length(texname_static),1));
     glDeleteTextures(size, texname_static);
@@ -485,7 +484,7 @@ if trial_mode==1
     Screen('Close', texname_static);
     Screen('Close', genlist_projection1);
     Screen('Close', static_scene_disp_list1);
-    %}
+    
     
     save(expFileName, 'param', 'trialOrder', 'block_counter', 'trial_counter');
     fclose(text_fp);
