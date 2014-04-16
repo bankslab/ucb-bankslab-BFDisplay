@@ -15,13 +15,13 @@ if trial_counter == param.max_trials
     stop_flag = 1;
 end
 
-trial_counter = trial_counter + 1;
-
 % after each block, take a break
-if mod(trial_counter - 1, param.trials_per_block) == 0
-    block_counter = block_counter + 1;
+if mod(trial_counter, param.trials_per_block) == 0
     text = [num2str(block_counter) ' / ' num2str(param.num_blocks) ' block(s) completed'];
     disp(text)
     message = 'endofblock';
     BF_disp_message
+    block_counter = block_counter + 1;
 end
+
+trial_counter = trial_counter + 1;

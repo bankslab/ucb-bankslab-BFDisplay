@@ -465,7 +465,6 @@ if trial_mode==1
         end 
         process_response;
         
-        %{
         % Trying to solve inter-trial delay
         size = uint32(zeros(length(texname_static),1));
         glDeleteTextures(size, texname_static);
@@ -476,7 +475,6 @@ if trial_mode==1
         Screen('Close', texname_static);
         Screen('Close', genlist_projection1);
         Screen('Close', static_scene_disp_list1);
-        %}
     end
     
     save(expFileName, 'param', 'trialOrder', 'block_counter', 'trial_counter');
