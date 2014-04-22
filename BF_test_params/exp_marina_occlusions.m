@@ -46,7 +46,7 @@ else
                       
                       
 %     % SECOND experiment
-%     param.max_responses = 10;          % per stimulus
+%     param.max_responses = 5;          % per stimulus
 %     param.stim_duration = [1.5];   % seconds
 %     % Algorithm: 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
 %     param.MCS_stimuli   = [2];     % algorithm

@@ -110,6 +110,9 @@ imageSet = load(file_path);
 % end
 % imageSet.layers = layers;
 % %********* Abdullah's modification to involve more crosstalk ends
+
+
+%{
 for plane = (1:4)
     for eye = (0:1)
         img_index = plane + eye*4;
@@ -154,3 +157,4 @@ for plane = (1:4)
         temp_image_list{img_index} = hdr;
     end
 end
+%}
