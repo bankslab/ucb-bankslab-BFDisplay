@@ -1,11 +1,11 @@
 % This script will display a message to the user
-
+%{
 for whichEye=[0 1]
     Screen('SelectStereoDrawBuffer', windowPtr, whichEye);
     glClear();
 end
 Screen('Flip', windowPtr, [], 2, 1);
-
+%}
 displaymessage = 1;
 depthplane = 0;
 while (displaymessage==1)
@@ -17,7 +17,7 @@ while (displaymessage==1)
     
     for whichEye=1
         Screen('SelectStereoDrawBuffer', windowPtr, whichEye);
-        glClear;
+        %glClear;
         
         % Display white squares
         if depthplane==3

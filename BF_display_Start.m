@@ -376,11 +376,13 @@ if trial_mode==0
             BF_run_trial; % calls actual GL commands
         end
         
+        %{
         Screen('SelectStereoDrawBuffer',windowPtr,0);
         Screen('FillRect',windowPtr,[0 0 0]);
         Screen('SelectStereoDrawBuffer',windowPtr,1);
         Screen('FillRect',windowPtr,[0 0 0]);
         Screen('Flip',windowPtr);
+        %}
         
         makeFix = 0;
 
@@ -392,6 +394,7 @@ if trial_mode==0
         while toc < stim_dur
             BF_run_trial; % calls actual GL commands
         end
+        
         
         Screen('SelectStereoDrawBuffer',windowPtr,0);
         Screen('FillRect',windowPtr,[0 0 0]);
@@ -417,6 +420,8 @@ if trial_mode==1
     
     message='turnlenson';
     BF_disp_message
+    
+    texname_static = glGenTextures(8);
     
     % Trial starts here
     stop_flag=0;
@@ -458,23 +463,31 @@ if trial_mode==1
         Screen('FillRect',windowPtr,[0 0 0]);
         Screen('Flip',windowPtr);
         
-        response = 0;
-        responded = 0;
+%         response = 0;
+%         responded = 0;
+
+response = randi(2) - 1;
+responded = 1;
+
         while responded == 0
             [b c d] = KbWait;
             takeKeyboardInput;
         end
         process_response;
         
+        %{
         % Trying to solve inter-trial delay
-        glDeleteTextures(length(texname_static), texname_static);
         glDeleteTextures(length(genlist_projection1), genlist_projection1);
         glDeleteTextures(length(static_scene_disp_list1), static_scene_disp_list1);
+        glClear();
         Screen('Close', texname_static);
         Screen('Close', genlist_projection1);
         Screen('Close', static_scene_disp_list1);
+        %}
     end
     
+    glDeleteTextures(length(texname_static), texname_static);
+ 
     save(expFileName, 'param', 'trialOrder', 'block_counter', 'trial_counter');
     fclose(text_fp);
 end
