@@ -1,7 +1,7 @@
 
 image_list = temp_image_list;
 
-texname_static = glGenTextures(8);
+
 img_size = [800 600];
 
 for img_num = 1:length(image_list)

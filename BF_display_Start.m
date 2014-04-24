@@ -347,6 +347,7 @@ frameNum=0;
 strInputName='';
 first_run = 0;
 makeFix = 1;
+texname_static = glGenTextures(8);
 
 if trial_mode==0
     BF_load_textures;
@@ -368,8 +369,9 @@ if trial_mode==0
         BF_load_textures;
         
         makeFix = 1;
-        a = 0;
-        while a == 0
+
+        tic
+        while toc < param.fix_duration
             BF_run_trial; % calls actual GL commands
         end
         makeFix = 0;
@@ -417,28 +419,24 @@ if trial_mode==1
     stop_flag=0;
     while stop_flag == 0
         % Compare keycode to E direction
-        fix_resp = 0;
-        while e_dir_code ~= fix_resp
-            makeFix = 1;
-            BF_load_textures;
-            BF_build_textures_optimizer;
-            BF_initialize_trial; % calls RenderSceneStatic
-            
-            makeFix = 0;
-            BF_load_textures;
-            
-            makeFix = 1;
-            a = 0;
-            while a == 0
-                BF_run_trial; % calls actual GL commands
-            end
-            Screen('SelectStereoDrawBuffer',windowPtr,0);
-            Screen('FillRect',windowPtr,[0 0 0]);
-            Screen('SelectStereoDrawBuffer',windowPtr,1);
-            Screen('FillRect',windowPtr,[0 0 0]);
-            Screen('Flip',windowPtr);
-            fix_resp = find(c);
+        makeFix = 1;
+        BF_load_textures;
+        BF_build_textures_optimizer;
+        BF_initialize_trial; % calls RenderSceneStatic
+        
+        makeFix = 0;
+        BF_load_textures;
+        
+        makeFix = 1;
+        tic
+        while toc < param.fix_duration
+            BF_run_trial; % calls actual GL commands
         end
+        Screen('SelectStereoDrawBuffer',windowPtr,0);
+        Screen('FillRect',windowPtr,[0 0 0]);
+        Screen('SelectStereoDrawBuffer',windowPtr,1);
+        Screen('FillRect',windowPtr,[0 0 0]);
+        Screen('Flip',windowPtr);
 
         makeFix = 0;
         
@@ -457,8 +455,11 @@ if trial_mode==1
         Screen('FillRect',windowPtr,[0 0 0]);
         Screen('Flip',windowPtr);        
 
-        response = 0;
-        responded = 0;
+         response = 0;
+         responded = 0;
+%        response = randi(2)-1;
+%        responded = 1;
+        
         while responded == 0
             [b c d] = KbWait;
             takeKeyboardInput;
