@@ -463,11 +463,11 @@ if trial_mode==1
         Screen('FillRect',windowPtr,[0 0 0]);
         Screen('Flip',windowPtr);
         
-%         response = 0;
-%         responded = 0;
+        response = 0;
+        responded = 0;
 
-response = randi(2) - 1;
-responded = 1;
+% response = randi(2) - 1;
+% responded = 1;
 
         while responded == 0
             [b c d] = KbWait;
