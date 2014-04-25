@@ -347,7 +347,6 @@ frameNum=0;
 strInputName='';
 first_run = 0;
 makeFix = 1;
-texname_static = glGenTextures(8);
 
 if trial_mode==0
     BF_load_textures;
@@ -356,6 +355,8 @@ if trial_mode==0
     
     message='turnlenson';
     BF_disp_message
+    
+    texname_static = glGenTextures(8);
     
     % Trial starts here
     stop_flag=0;
@@ -386,7 +387,7 @@ if trial_mode==0
         BF_initialize_trial; % calls RenderSceneStatic
         
         % this loop checks for keyboard input
-        tic;
+        tic
         while toc < stim_dur
             BF_run_trial; % calls actual GL commands
         end
@@ -416,6 +417,8 @@ if trial_mode==1
     BF_disp_message
     
     % Trial starts here
+    texname_static = glGenTextures(8);
+
     stop_flag=0;
     while stop_flag == 0
         % Compare keycode to E direction
@@ -444,7 +447,7 @@ if trial_mode==1
         BF_initialize_trial; % calls RenderSceneStatic
         
         % this loop checks for keyboard input
-        tic;
+        tic
         while toc < stim_dur
             BF_run_trial; % calls actual GL commands
         end
@@ -466,18 +469,10 @@ if trial_mode==1
         end 
         process_response;
         
-%         % Trying to solve inter-trial delay
-%         size = uint32(zeros(length(texname_static),1));
-%         glDeleteTextures(size, texname_static);
-%         size = uint32(zeros(length(genlist_projection1),1));
-%         glDeleteTextures(size, genlist_projection1);
-%         size = uint32(zeros(length(static_scene_disp_list1),1));
-%         glDeleteTextures(size, static_scene_disp_list1);
-%         Screen('Close', texname_static);
-%         Screen('Close', genlist_projection1);
-%         Screen('Close', static_scene_disp_list1);
     end
     
+    glDeleteTextures(length(texname_static), texname_static);
+
     save(expFileName, 'param', 'trialOrder', 'block_counter', 'trial_counter');
     fclose(text_fp);
 end

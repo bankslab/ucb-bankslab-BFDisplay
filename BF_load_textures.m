@@ -21,7 +21,7 @@ end
 if trial_mode == 0
     % Demo Parameters
     stim_dur     = 7;      % Seconds
-    algorithm    = 2;      % 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
+    algorithm    = 4;      % 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
     texture      = 1;      % 1:, 2:, 3:
     angle        = 70;     % Degrees
     tex_version  = 1;      % Degrees
@@ -85,6 +85,7 @@ imageSet = load(file_path);
 % imageSet.layers = layers;
 % %********* Abdullah's modification to involve more crosstalk ends
 
+%{
 for plane = (1:4)
     for eye = (0:1)
         img_index = plane + eye*4;
@@ -129,3 +130,4 @@ for plane = (1:4)
         temp_image_list{img_index} = hdr;
     end
 end
+%}

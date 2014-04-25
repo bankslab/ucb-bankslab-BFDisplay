@@ -1,6 +1,6 @@
 % optimizer experiment template file
 experiment_type = 'monocular_hinge';
-trial_mode      = 0;
+trial_mode      = 1;
 dynamic_mode    = 0;
 static_mode     = 1;
 renderviews     = [0, 1]; %0 is left eye

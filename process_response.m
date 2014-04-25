@@ -17,8 +17,8 @@ end
 
 % after each block, take a break
 if mod(trial_counter, param.trials_per_block) == 0
-    text = [num2str(block_counter) ' / ' num2str(param.num_blocks) ' block(s) completed'];
-    disp(text)
+    disp_message_text = [num2str(block_counter) ' / ' num2str(param.num_blocks) ' block(s) completed'];
+    disp(disp_message_text)
     message = 'endofblock';
     BF_disp_message
     block_counter = block_counter + 1;

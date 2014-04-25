@@ -1,7 +1,5 @@
 
-image_list = temp_image_list;
-
-
+image_list = imageSet.layers;
 img_size = [800 600];
 
 for img_num = 1:length(image_list)
