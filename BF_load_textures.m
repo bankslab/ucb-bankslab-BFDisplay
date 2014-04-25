@@ -21,7 +21,7 @@ end
 if trial_mode == 0
     % Demo Parameters
     fix_dur    = param.fix_duration;
-    stim_dur   = 2;       % Seconds
+    stim_dur   = 10;       % Seconds
     algorithm  = 4;        % 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
     aperture_size = 4;
     occl_side  = 0;        % 0:Left,  1:Right
