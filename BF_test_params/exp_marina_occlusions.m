@@ -1,6 +1,6 @@
 % optimizer experiment template file
 experiment_type = 'marina_occlusions';
-trial_mode = 1;
+trial_mode = 0;
 dynamic_mode = 0;
 static_mode = 1;
 renderviews = [0, 1]; %0 is the left eye
@@ -30,40 +30,40 @@ else
     param.aperture_size = [4, 5, 6, 7];
     param.fix_duration  = 2;        % seconds
     
-%     % FIRST EXPERIMENT  
-%     param.max_responses = 5;          % per stimulus
-%     param.stim_duration = [0.3, 3];   % seconds
-%     % Algorithm: 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
-%     param.MCS_stimuli   = [2, 4];     % algorithm
-%     % Depth of stimuli in diopters
-%     % 1st Column: fixation plane
-%     % 2nd Column: near plane (occluder)
-%     % 3rd Column: far plane (occluded)
-%     % Single-plane vs Optimization
-%     param.fix_near_far = [20, 32, 20;...
-%                           32, 32, 20];
-%     % end of parameters for FIRST EXPERIMENT  
-                      
-                      
-    % SECOND experiment
+    % FIRST EXPERIMENT  
     param.max_responses = 5;          % per stimulus
-    param.stim_duration = [1.5];   % seconds
+    param.stim_duration = [0.3, 3];   % seconds
     % Algorithm: 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
-    param.MCS_stimuli   = [2];     % algorithm
+    param.MCS_stimuli   = [2, 4];     % algorithm
     % Depth of stimuli in diopters
     % 1st Column: fixation plane
     % 2nd Column: near plane (occluder)
     % 3rd Column: far plane (occluded)
     % Single-plane vs Optimization
-    param.fix_near_far = [15, 27, 15;...
-                          15, 15, 3;...
-                          20, 32, 20;...
-                          20, 20, 8;...
-                          27, 39, 27;...
-                          27, 27, 15;...
-                          32, 44, 32;...
+    param.fix_near_far = [20, 32, 20;...
                           32, 32, 20];
-    % end of parameters for SECOND experiment
+    % end of parameters for FIRST EXPERIMENT  
+                      
+                      
+%     % SECOND experiment
+%     param.max_responses = 5;          % per stimulus
+%     param.stim_duration = [1.5];   % seconds
+%     % Algorithm: 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
+%     param.MCS_stimuli   = [2];     % algorithm
+%     % Depth of stimuli in diopters
+%     % 1st Column: fixation plane
+%     % 2nd Column: near plane (occluder)
+%     % 3rd Column: far plane (occluded)
+%     % Single-plane vs Optimization
+%     param.fix_near_far = [15, 27, 15;...
+%                           15, 15, 3;...
+%                           20, 32, 20;...
+%                           20, 20, 8;...
+%                           27, 39, 27;...
+%                           27, 27, 15;...
+%                           32, 44, 32;...
+%                           32, 32, 20];
+%     % end of parameters for SECOND experiment
     
     
     param.conditions = 1:size(param.fix_near_far, 1); % possible combinations (rows)
