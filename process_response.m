@@ -6,17 +6,17 @@
 % Write response to file
 % CHANGE THESE VARIABLES FOR EACH EXPERIMENT
 if trial_mode==1
-    fprintf(text_fp, '%d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\n', ...
-    block_counter, trial_counter, stim_dur, occl_side, aperture_size, near_tex, far_tex, algorithm,...
-    fix_plane, near_plane, far_plane, response);
+    fprintf(text_fp, '%d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\n', ...
+    block_counter, trial_counter, stim_dur, focus, stereo, motion, roughness, paint, response);
     save(expFileName, 'param', 'trialOrder', 'block_counter', 'trial_counter');
 end
 
-if trial_counter == param.max_trials
+if (trial_counter == param.max_trials) || escPressed
     stop_flag = 1;
 end
 
 % after each block, take a break
+%{
 if mod(trial_counter, param.trials_per_block) == 0
     disp_message_text = [num2str(block_counter) ' / ' num2str(param.num_blocks) ' block(s) completed'];
     disp(disp_message_text)
@@ -24,5 +24,5 @@ if mod(trial_counter, param.trials_per_block) == 0
     BF_disp_message
     block_counter = block_counter + 1;
 end
-
+%}
 trial_counter = trial_counter + 1;

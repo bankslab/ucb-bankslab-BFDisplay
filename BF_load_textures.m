@@ -20,41 +20,24 @@ end
 
 if trial_mode == 0
     % Demo Parameters
-    fix_dur    = param.fix_duration;
-    stim_dur   = 10;       % Seconds
-    algorithm  = 4;        % 1:Pinhole, 2:Single, 3:Blending, 4:Optimization
-    aperture_size = 4;
-    occl_side  = 0;        % 0:Left,  1:Right
-    fix_plane  = 32;       % Diopters
-    near_plane = 32;       % Diopters
-    far_plane  = 20;       % Diopters
-    
-    % define random textures for near and far textures
-    near_tex = 4;
-    far_tex  = 2;
-%     near_tex = randi(4);
-%     far_tex  = randi(4);
-%     while far_tex == near_tex,
-%         far_tex = randi(4);
-%     end
-    
+    focus = 1;          % 0:no focus cue(pinhole),  1:rendered blur(single), 2:volumetric(optimized blending)
+    stereo = 0;         % 0:monocular (only right view), 1:binocular
+    motion = 1;         % 0:static, 1:dynamic
+    paint = 0;          % 0:reflections, 1:painted
+    roughness = 0;      % 0:perfectly smooth, 1: 0.01 roughness, 2: roughest
+    fix_dur  = param.fix_duration;       % Seconds
+    stim_dur = param.stim_duration;      % Seconds
+   
 elseif trial_mode == 1
     % Extract Trial Parameters
-    fix_dur    = param.fix_duration;
-    stim_dur   = trialOrder(trial_counter, 1);
-    algorithm  = trialOrder(trial_counter, 4);
-    aperture_size = trialOrder(trial_counter, 3);
-    occl_side  = trialOrder(trial_counter, 2);
-    fix_plane  = trialOrder(trial_counter, 5);
-    near_plane = trialOrder(trial_counter, 6);
-    far_plane  = trialOrder(trial_counter, 7);
     
-    % define random textures for near and far textures
-    near_tex = randi(4);
-    far_tex  = randi(4);
-    while far_tex == near_tex,
-        far_tex = randi(4);
-    end
+    focus = trialOrder(trial_counter, 1);          % 0:no focus cue(pinhole),  1:rendered blur(single), 2:volumetric(optimized blending)
+    stereo = trialOrder(trial_counter, 2);         % 0:monocular (only right view), 1:binocular
+    motion = trialOrder(trial_counter, 3);         % 0:static, 1:dynamic
+    paint = trialOrder(trial_counter, 4);          % 0:reflections, 1:painted
+    roughness = trialOrder(trial_counter, 5);      % 0:perfectly smooth, 1: 0.01 roughness, 2: roughest
+    fix_dur  = param.fix_duration;       % Seconds
+    stim_dur = param.stim_duration;      % Seconds
     
 end
 
@@ -68,7 +51,7 @@ if makeFix
     e_folder = 'e_stim_slim';
     string_holder{1} = 'e_stim_slim';
     string_holder{2} = sprintf('%d', e_rand_dir);
-    string_holder{3} = num2str(fix_plane);
+    string_holder{3} = num2str(32);
     string_holder{4} = num2str(1); % rename files and delete this line
    
     file_name = strcat(strjoin(string_holder, '_'), '.mat');
@@ -78,39 +61,19 @@ else
     % Load the occlusion stimulus
     % Order here is agreed upon with Abdullah
     string_holder = [];
-    string_holder{1} = num2str(algorithm);
-    string_holder{2} = num2str(aperture_size);
-    string_holder{3} = num2str(occl_side);
-    string_holder{4} = num2str(near_tex);
-    string_holder{5} = num2str(far_tex);
-    string_holder{6} = num2str(fix_plane);
-    string_holder{7} = num2str(near_plane);
-    string_holder{8} = num2str(far_plane);
+    paintStr = 'rp'; %r reflection p paint: when p is 1 string starts with p
+    string_holder{1} = paintStr(paint+1);
+    string_holder{2} = num2str(focus);
+    string_holder{3} = num2str(roughness);
+    string_holder{4} = num2str(62);
+    string_holder{5} = num2str(50);
     
     file_name = strcat(strjoin(string_holder, '_'), '.mat');
-    file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), 'all', file_name}, '/');
+    file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, num2str(IPD), file_name}, '/');
 
 end
 
 imageSet = load(file_path);
-
-% %********* Abdullah's modification to involve more crosstalk starts
-% inducedCrossTalk = 2;%10 means intensity distribution: 70 10 10 10, 10 70 10 10 etc
-% layers2 = imageSet.layers;
-%
-% for i = 1:4
-%     layers{i} = double(layers2{i})*((100.0-inducedCrossTalk*4.0)/100.0);
-%     layers{i+4} = double(layers2{i+4})*((100.0-inducedCrossTalk*4.0)/100.0);
-%     for j = 1:4
-%         layers{i} = layers{i} + double(layers2{j})*(inducedCrossTalk/100.0);
-%         layers{i+4} = layers{i+4} + double(layers2{j+4})*(inducedCrossTalk/100.0);
-%     end
-%     layers{i} = uint8(layers{i});
-%     layers{i+4} = uint8(layers{i+4});
-% end
-% imageSet.layers = layers;
-% %********* Abdullah's modification to involve more crosstalk ends
-
 
 %{
 for plane = (1:4)
