@@ -360,6 +360,7 @@ BF_disp_message
 
 % Trial starts here
 stop_flag=0;
+phaseMessage = {'Glossiness: ', 'Roughness: '};
 while stop_flag == 0
 
     makeFix = 0;
@@ -370,11 +371,11 @@ while stop_flag == 0
     % this loop checks for keyboard input
     tic;
     frameNo = 1;
-    response = NaN;
+    response(1:2) = NaN;
     lastResponseTime = toc;
-    spacePressed = 0;
+    responsePhase = 1;
     escPressed=0;
-    while ~(spacePressed || escPressed)
+    while responsePhase < 3
         BF_run_trial; % calls actual GL commands
     end
 
@@ -384,8 +385,10 @@ while stop_flag == 0
     Screen('FillRect',windowPtr,[0 0 0]);
     Screen('Flip',windowPtr);
 
+    trialOrder(trial_counter,6) = response(1);
+    trialOrder(trial_counter,7) = response(2);
+    
     process_response;
-    trialOrder(trial_counter,6) = response;
 end
     
 glDeleteTextures(length(texname_static), texname_static);

@@ -7,7 +7,7 @@
 % CHANGE THESE VARIABLES FOR EACH EXPERIMENT
 if trial_mode==1
     fprintf(text_fp, '%d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\n', ...
-    block_counter, trial_counter, stim_dur, focus, stereo, motion, roughness, paint, response);
+    block_counter, trial_counter, stim_dur, focus, stereo, motion, roughness, paint, response(1), response(2) );
     save(expFileName, 'param', 'trialOrder', 'block_counter', 'trial_counter');
 end
 

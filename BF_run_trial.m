@@ -40,10 +40,12 @@ for whichEye = renderviews
     end
     
     %draw response
-    if(depthplane == 4 & whichEye == 1 & ~isnan(response))
-        Screen('DrawText',windowPtr,num2str(response), 400, 50, [255 255 255] );
-    elseif (depthplane==4 & whichEye==1 & isnan(response))
-        Screen('DrawText',windowPtr,'No response',350,50,[255 255 255]);
+    
+    if(depthplane == 4 & whichEye == 1 & ~isnan(response(responsePhase)))
+        Screen('DrawText',windowPtr,[phaseMessage{responsePhase} num2str(response(responsePhase))], 400, 50, [255 255 255] );
+    elseif (depthplane==4 & whichEye==1 & isnan(response(responsePhase)))
+        %response=0;
+        Screen('DrawText',windowPtr,[phaseMessage{responsePhase} ' -'], 400, 50, [255 255 255] );
     end
     
 end
@@ -53,7 +55,7 @@ Screen('Flip', windowPtr, [], 2, 1);
 [a b c d]=KbCheck();
 if depthplane~=3 & a==1 
     responseTime = toc;
-    if(responseTime-lastResponseTime > 0.3)
+    if( responseTime-lastResponseTime > 0.3)
         inputstr=KbName(c);
 
         iKeyIndex=find(c);
@@ -62,43 +64,56 @@ if depthplane~=3 & a==1
             strInputName=strInputName{1};
         end
         if strcmp(strInputName,'1')
-            response = 1;
+            response(responsePhase) = 1;
         elseif strcmp(strInputName,'2')
-            response = 2;
+            response(responsePhase) = 2;
         elseif strcmp(strInputName,'3')
-            response = 3;
+            response(responsePhase) = 3;
         elseif strcmp(strInputName,'4')
-            response = 4;
+            response(responsePhase) = 4;
         elseif strcmp(strInputName,'5')
-            response = 5;
+            response(responsePhase) = 5;
         elseif strcmp(strInputName,'6')
-            response = 6;
+            response(responsePhase) = 6;
         elseif strcmp(strInputName,'7')
-            response = 7;
+            response(responsePhase) = 7;
         elseif strcmp(strInputName,'8')
-            response = 8;
+            response(responsePhase) = 8;
         elseif strcmp(strInputName,'9')
-            response = 9;
+            response(responsePhase) = 9;
         elseif strcmp(strInputName,'0')
-            response = 0;
-        elseif strcmp(strInputName,'space')
-            spacePressed=1;
+            response(responsePhase) = 0;
 %         elseif strcmp(strInputName,'ESCAPE')
 %             escPressed=1;
+        elseif strcmp(strInputName,'RightArrow')
+            if(isnan(response(responsePhase)))
+                response(responsePhase)=0;
+            end
+            response(responsePhase) = response(responsePhase)+1;
+        elseif strcmp(strInputName,'LeftArrow')
+            if(isnan(response(responsePhase)))
+                response(responsePhase)=0;
+            end
+            response(responsePhase) = response(responsePhase)-1;
+        elseif strcmp(strInputName,'UpArrow')
+            if(isnan(response(responsePhase)))
+                response(responsePhase)=0;
+            end
+            response(responsePhase) = response(responsePhase)+1;
+        elseif strcmp(strInputName,'DownArrow')
+            if(isnan(response(responsePhase)))
+                response(responsePhase)=0;
+            end
+            response(responsePhase) = response(responsePhase)-1;
         end
-%         if strcmp(strInputName,'RightArrow')
-%             response = response+1;
-%         elseif strcmp(strInputName,'LeftArrow')
-%             response = response-1;
-%         elseif strcmp(strInputName,'UpArrow')
-%             response = response+1;
-%         elseif strcmp(strInputName,'DownArrow')
-%             response = response-1;
-%         elseif strcmp(strInputName,'space')
-%             spacePressed = 1;
-%         end
-%         response = min(response,10);
-%         response = max(response,0);
+        if ~isnan(response(responsePhase))
+            response(responsePhase) = min(response(responsePhase),9);
+            response(responsePhase) = max(response(responsePhase),0);
+        end
+        % space check is the last because it effects others
+        if strcmp(strInputName,'space')
+            responsePhase=responsePhase+1;
+        end
         lastResponseTime = responseTime;
     end
 end
