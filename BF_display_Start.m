@@ -394,7 +394,14 @@ end
 glDeleteTextures(length(texname_static), texname_static);
  
 if trial_mode==1
-    save(expFileName, 'param', 'trialOrder', 'block_counter', 'trial_counter');
+    if ~exist('experimentRecord','var')
+        experimentRecord=[];
+    end
+    experimentRecord{end+1}.param=param;
+    experimentRecord{end}.trialOrder=trialOrder;
+    experimentRecord{end}.block_counter=block_counter;
+    experimentRecord{end}.trial_counter=trial_counter;
+    save(expFileName, 'param', 'trialOrder', 'block_counter', 'trial_counter', 'experimentRecord');
 end
 fclose(text_fp);
 
