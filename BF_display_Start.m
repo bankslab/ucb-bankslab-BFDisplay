@@ -375,7 +375,8 @@ while stop_flag == 0
     lastResponseTime = toc;
     responsePhase = 1;
     escPressed=0;
-    while responsePhase < 3
+    presentationStartedAt=GetSecs;
+    while responsePhase < 2 & ~escPressed
         BF_run_trial; % calls actual GL commands
     end
 
@@ -385,25 +386,13 @@ while stop_flag == 0
     Screen('FillRect',windowPtr,[0 0 0]);
     Screen('Flip',windowPtr);
 
-    trialOrder(trial_counter,6) = response(1);
-    trialOrder(trial_counter,7) = response(2);
+    trialList(trialOrder(trialCounter),9) = response(1);
+    %trialList(trialCounter,10) = response(2);
     
     process_response;
 end
     
 glDeleteTextures(length(texname_static), texname_static);
- 
-if trial_mode==1
-    if ~exist('experimentRecord','var')
-        experimentRecord=[];
-    end
-    experimentRecord{end+1}.param=param;
-    experimentRecord{end}.trialOrder=trialOrder;
-    experimentRecord{end}.block_counter=block_counter;
-    experimentRecord{end}.trial_counter=trial_counter;
-    save(expFileName, 'param', 'trialOrder', 'block_counter', 'trial_counter', 'experimentRecord');
-end
-fclose(text_fp);
 
 message='experimentcomplete';
 BF_disp_message

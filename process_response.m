@@ -5,24 +5,16 @@
 
 % Write response to file
 % CHANGE THESE VARIABLES FOR EACH EXPERIMENT
-if trial_mode==1
-    fprintf(text_fp, '%d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\t %d\n', ...
-    block_counter, trial_counter, stim_dur, focus, stereo, motion, roughness, paint, response(1), response(2) );
-    save(expFileName, 'param', 'trialOrder', 'block_counter', 'trial_counter');
+if trial_mode==1 & ~escPressed
+    trialCounter = trialCounter + 1;
+    blockCounter = blockCounter + 1;
+    while(~isempty(find(cancelledConditions == trialOrder(trialCounter))))
+        trialCounter = trialCounter + 1;
+        blockCounter = blockCounter + 1;
+    end 
+    save(expFileName, 'trialList', 'trialOrder', 'trialCounter','cancelledConditions', 'blockLength');
 end
 
-if (trial_counter == param.max_trials) || escPressed
+if (trialCounter == length(trialOrder)) | blockCounter > blockLength | escPressed
     stop_flag = 1;
 end
-
-% after each block, take a break
-%{
-if mod(trial_counter, param.trials_per_block) == 0
-    disp_message_text = [num2str(block_counter) ' / ' num2str(param.num_blocks) ' block(s) completed'];
-    disp(disp_message_text)
-    message = 'endofblock';
-    BF_disp_message
-    block_counter = block_counter + 1;
-end
-%}
-trial_counter = trial_counter + 1;
