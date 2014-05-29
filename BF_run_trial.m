@@ -57,9 +57,9 @@ else
         Screen('EndOpenGL', windowPtr);
         %draw response
         Screen('FillRect',windowPtr,[0 0 0]);
-        if(depthplane == 4 & whichEye == 1 & ~isnan(response(responsePhase)))
+        if(depthplane == 4 & whichEye == dominantEye & ~isnan(response(responsePhase)))
             Screen('DrawText',windowPtr,[phaseMessage{responsePhase} num2str(response(responsePhase))], 300, 300, [255 255 255] );
-        elseif (depthplane==4 & whichEye==1 & isnan(response(responsePhase)))
+        elseif (depthplane==4 & whichEye==dominantEye & isnan(response(responsePhase)))
             %response=0;
             Screen('DrawText',windowPtr,[phaseMessage{responsePhase} ' -'], 300, 300, [255 255 255] );
         end
