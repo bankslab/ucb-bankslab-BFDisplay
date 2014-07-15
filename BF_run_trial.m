@@ -5,9 +5,13 @@ end
 if makeFix == 1
     current_layers = 1;
 elseif motion
-    current_layers = round(abs(mod(floor((frameNo-1)/12),28)-14)+1);
+    if conflict_cases == 0 %15 frames of animation
+        current_layers = round(abs(mod(floor((frameNo-1)/12),28)-14)+1);
+    else % 23 frames of animation
+        current_layers = round(abs(mod(floor((frameNo-1)/8),44)-22)+1);
+    end
 else
-    current_layers = 8;
+    current_layers = (numFrames+1)/2; %center frame
 end
 depthplane = depthplane + 1;
 if depthplane > 4

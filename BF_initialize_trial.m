@@ -10,8 +10,13 @@ if ~exist('genlist_start')
     genlist_start=glGenLists(17);  %Returns integer of first set of free display lists
 end
 genlist_projection1=[0 1 2 3 4 5 6 7]+genlist_start;  %Set of indices
-static_scene_disp_list1=[0:119]+genlist_start+8;
-wrap_texture_on_square=120+8+genlist_start;
+if conflict_cases == 0
+    numFrames = 15;
+else
+    numFrames = 23;
+end
+static_scene_disp_list1=[0:numFrames*8-1]+genlist_start+8;
+wrap_texture_on_square=numFrames*8+8+genlist_start;
 
 anim=1;
 for depthplane= 4: -1: 1
@@ -26,7 +31,7 @@ for depthplane= 4: -1: 1
         glEndList();
     end
 end
-for anim = 2:15
+for anim = 2:numFrames
     for depthplane= 4: -1: 1
         depthtex_handle = depthplane;
         for whichEye=0:1

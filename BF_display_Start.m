@@ -349,7 +349,7 @@ strInputName='';
 first_run = 0;
 makeFix = 1;
 
-texname_static = glGenTextures(8*15);
+texname_static = glGenTextures(8*23);
     
 BF_load_textures;
 BF_build_textures_optimizer;
