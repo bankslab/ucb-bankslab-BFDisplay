@@ -23,7 +23,7 @@ if (GetSecs-presentationStartedAt)<presentationTime
     for whichEye = renderviews
         Screen('SelectStereoDrawBuffer', windowPtr, whichEye);
         Screen('BeginOpenGL', windowPtr);
-        if whichEye == dominantEye | stereo == 1
+        if whichEye == dominantEye || stereo > 0
             glCallList(genlist_projection1(depthplane+whichEye*4));    %mandatory projection setup
             if static_mode  %optional mode for staic imagery
                 glCallList(static_scene_disp_list1((current_layers-1)*8+depthplane+whichEye*4));
@@ -52,7 +52,7 @@ else
     for whichEye = renderviews
         Screen('SelectStereoDrawBuffer', windowPtr, whichEye);
         Screen('BeginOpenGL', windowPtr);
-        if whichEye == 1 | (whichEye == 0 & stereo == 1)
+        if whichEye == 1 || (whichEye == 0 && stereo > 0)
             glCallList(genlist_projection1(depthplane+whichEye*4));    %mandatory projection setup
             if static_mode  %optional mode for staic imagery
                 glCallList(static_scene_disp_list1((current_layers-1)*8+depthplane+whichEye*4));

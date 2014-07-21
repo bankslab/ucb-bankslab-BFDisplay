@@ -47,12 +47,14 @@ else
     if trial_mode == 0
         % Demo Parameters
         focus = 2;          % 0:no focus cue(pinhole),  1:rendered blur(single), 2:volumetric(optimized blending)
-        stereo = 0;         % 0:monocular (only right view), 1:binocular
-        motion = 1;         % 0:static, 1:dynamic
-        paint = 0;          % 0:reflections, 1:painted
+        stereo = 2;         % 0:monocular (only right view), 1:binocular
+        motion = 0;         % 0:static, 1:dynamic
+        if( stereo == 1 || motion == 1)
+            paint = 1;
+        else
+            paint = 0;
+        end         % 0:reflections, 1:painted
         roughness = 0;      % 0:perfectly smooth, 1: 0.01 roughness, 2: roughest
-        surfaceDepth = 1.8;   % 1.8 only
-        reflectionDepth = 1.3;% 1.3 and maybe 0.6
         texture = 1;
 
     elseif trial_mode == 1
@@ -63,7 +65,7 @@ else
         motion = trialList(trialOrder(trialCounter), 3);         % 0:static, 1:paint, 2:reflected
         roughness = trialList(trialOrder(trialCounter), 4);      % 0:perfectly smooth, 1: 0.01 roughness, 2: roughest
         texture = trialList(trialOrder(trialCounter), 5);        % 1 2 3 4 texture variety
-        if( stereo == 1 | motion == 1)
+        if( stereo == 1 || motion == 1)
             paint = 1;
         else
             paint = 0;
@@ -92,3 +94,11 @@ else
 end
 
 imageSet = load(file_path);
+if conflict_cases == 1
+    multipliers = [1.25 1.2 1.5 1.25];
+    for fi = 1:23
+        for li =  1:8
+            imageSet.layers{fi}{li} = uint8(double(imageSet.layers{fi}{li})*multipliers(texture));
+        end
+    end
+end
