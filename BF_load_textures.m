@@ -46,8 +46,8 @@ if conflict_cases == 0
 else
     if trial_mode == 0
         % Demo Parameters
-        focus = 2;          % 0:no focus cue(pinhole),  1:rendered blur(single), 2:volumetric(optimized blending)
-        stereo = 2;         % 0:monocular (only right view), 1:binocular
+        focus = 1;          % 0:no focus cue(pinhole),  1:rendered blur(single), 2:volumetric(optimized blending)
+        stereo = 1;         % 0:monocular (only right view), 1:binocular
         motion = 0;         % 0:static, 1:dynamic
         if( stereo == 1 || motion == 1)
             paint = 1;
@@ -55,7 +55,7 @@ else
             paint = 0;
         end         % 0:reflections, 1:painted
         roughness = 0;      % 0:perfectly smooth, 1: 0.01 roughness, 2: roughest
-        texture = 1;
+        texture = 2;
 
     elseif trial_mode == 1
         % Extract Trial Parameters
