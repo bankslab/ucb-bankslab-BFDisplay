@@ -46,9 +46,9 @@ if conflict_cases == 0
 else
     if trial_mode == 0
         % Demo Parameters
-        focus = 1;          % 0:no focus cue(pinhole),  1:rendered blur(single), 2:volumetric(optimized blending)
-        stereo = 1;         % 0:monocular (only right view), 1:binocular
-        motion = 0;         % 0:static, 1:dynamic
+        focus = 2;          % 0:no focus cue(pinhole),  1:rendered blur(single), 2:volumetric(optimized blending)
+        stereo = 0;         % 0:monocular (only right view), 1:binocular
+        motion = 1;         % 0:static, 1:dynamic
         if( stereo == 1 || motion == 1)
             paint = 1;
         else
@@ -60,7 +60,7 @@ else
     elseif trial_mode == 1
         % Extract Trial Parameters
 
-        focus = trialList(trialOrder(trialCounter), 1);          % 0:no focus cue(pinhole),  1:rendered blur(single), 2:volumetric(optimized blending)
+        focus = trialList(trialOrder(trialCounter), 1);          % 0:no focus cue(pinhole), 2:volumetric(optimized blending)
         stereo = trialList(trialOrder(trialCounter), 2);         % 0:monocular (only right view), 1:paint, 2:reflected
         motion = trialList(trialOrder(trialCounter), 3);         % 0:static, 1:paint, 2:reflected
         roughness = trialList(trialOrder(trialCounter), 4);      % 0:perfectly smooth, 1: 0.01 roughness, 2: roughest
@@ -76,9 +76,8 @@ end
 % Load the occlusion stimulus
 % Order here is agreed upon with Abdullah
 string_holder = [];
-paintStr = 'rp'; %r reflection p paint: when p is 1 string starts with p
-string_holder{1} = paintStr(paint+1);
-string_holder{2} = num2str(focus);
+string_holder{1} = num2str(focus/2); %convert 0,2 to 0,1
+string_holder{2} = num2str(1-paint); %paint means 
 string_holder{3} = num2str(roughness);
 string_holder{4} = num2str(62);
 string_holder{5} = num2str(50);
