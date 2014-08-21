@@ -47,7 +47,7 @@ else
     if trial_mode == 0
         % Demo Parameters
         focus = 2;          % 0:no focus cue(pinhole),  1:rendered blur(single), 2:volumetric(optimized blending)
-        stereo = 0;         % 0:monocular (only right view), 1:binocular
+        stereo = 1;         % 0:monocular (only right view), 1:binocular
         motion = 1;         % 0:static, 1:dynamic
         if( stereo == 1 || motion == 1)
             paint = 1;
@@ -92,12 +92,8 @@ else
     file_path = strjoin({'BF_texture_files', 'optimizer', exp_num, 'conflict', num2str(texture), file_name}, '/')
 end
 
-imageSet = load(file_path);
-if conflict_cases == 1
-    multipliers = [1.25 1.2 1.5 1.25];
-    for fi = 1:23
-        for li =  1:8
-            imageSet.layers{fi}{li} = uint8(double(imageSet.layers{fi}{li})*multipliers(texture));
-        end
-    end
+if animation_scenes
+    file_path = strjoin({'BF_texture_files', 'optimizer', 'video/optimized_animation.mat'}, '/')
 end
+
+imageSet = load(file_path);

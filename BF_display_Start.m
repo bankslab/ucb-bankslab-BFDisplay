@@ -349,8 +349,9 @@ strInputName='';
 first_run = 0;
 makeFix = 1;
 
-texname_static = glGenTextures(8*23);
-    
+%texname_static = glGenTextures(8*23);
+texname_static = glGenTextures(8*45);
+     
 BF_load_textures;
 BF_build_textures_optimizer;
 BF_initialize_trial; % calls RenderSceneStatic

@@ -10,6 +10,9 @@ elseif motion
     else % 23 frames of animation
         current_layers = round(abs(mod(floor((frameNo-1)/8),44)-22)+1);
     end
+    if animation_scenes == 1
+        current_layers = round(abs(mod(floor((frameNo-1)/4),88)-44)+1);
+    end
 else
     current_layers = (numFrames+1)/2; %center frame
 end

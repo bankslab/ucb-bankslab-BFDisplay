@@ -8,7 +8,7 @@
 if trial_mode==1 & ~escPressed
     trialCounter = trialCounter + 1;
     blockCounter = blockCounter + 1;
-    while(~isempty(find(cancelledConditions == trialOrder(trialCounter))))
+    while(trialCounter < length(trialOrder) && ~isempty(find(cancelledConditions == trialOrder(trialCounter))))
         trialCounter = trialCounter + 1;
         blockCounter = blockCounter + 1;
     end 

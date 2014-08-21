@@ -15,6 +15,9 @@ if conflict_cases == 0
 else
     numFrames = 23;
 end
+if animation_scenes == 1
+    numFrames = 45;
+end
 static_scene_disp_list1=[0:numFrames*8-1]+genlist_start+8;
 wrap_texture_on_square=numFrames*8+8+genlist_start;
 
