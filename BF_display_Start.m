@@ -342,6 +342,19 @@ list_rendering=1;
 recompute_projection_list=1;
 recompute_static_scene_list=1;
 
+
+%% Set experiment parameters here
+
+disparity      = [.25];
+adjustment     = [.0625 .125 .25 1 2 .5 4];
+sf = [1.5 2];
+tf = [0];
+[run response] = makeStimulusConditions('render', 'fixedSF', fixedSF, 'fixedTF', fixedTF, 'disparity', disparity,...
+    'sf', sf, 'tf', tf, 'adjustment', adjustment);
+
+
+
+%%
 % Animation loop: Run until escape key is presed
 tic;
 frameNum=0;
@@ -349,148 +362,99 @@ strInputName='';
 first_run = 0;
 makeFix = 1;
 
-if trial_mode==0
-    BF_load_textures;
+
+BF_load_textures;
+BF_build_textures_optimizer;
+BF_initialize_trial; % calls RenderSceneStatic
+
+message='turnlenson';
+BF_disp_message
+
+texname_static = glGenTextures(8);
+
+% Trial starts here
+stop_flag=0;
+
+trial_order = randperm(run.nTrials);
+
+
+for ind = 1:numel(trial_order)
+    
+    trialNo = trial_order(ind);
+    trial.randSeed           = sum(100*clock);
+    rand('state',  trial.randSeed);
+    trial.randphase1         = (2*pi)*rand;
+    trial.randphase2         = 2*pi*rand;
+    trial.sf                 = run.sf(trialNo);
+    trial.tf                 = run.tf(trialNo);
+    trial.signalSign         = run.signalSign(trialNo);
+    trial.direction          = sign(randn);
+    trial.disparity          = run.disparity(trialNo);
+    trial.adjustment         = run.adjustment(trialNo);
+    trial.fixedTF            = run.fixedTF(trialNo);
+    trial.fixedSF            = run.fixedSF(trialNo);    
+    
+    makeFix = 1;
+    BF_load_textures; % load fixation
     BF_build_textures_optimizer;
     BF_initialize_trial; % calls RenderSceneStatic
-    
-    message='turnlenson';
-    BF_disp_message
-    
-    % Trial starts here
-    stop_flag=0;
-    while stop_flag == 0
-        
-        makeFix = 1;
-        BF_load_textures; % load fixation
-        BF_build_textures_optimizer;
-        BF_initialize_trial; % calls RenderSceneStatic
-        
-        makeFix = 0;
-        BF_load_textures; % load stimuli, just in case
-        makeFix = 1;
-        
-        % this loop checks for keyboard input
-        tic;
-        while toc < fix_dur
-            BF_run_trial; % calls actual GL commands
-        end
-        
-        %{
-        Screen('SelectStereoDrawBuffer',windowPtr,0);
-        Screen('FillRect',windowPtr,[0 0 0]);
-        Screen('SelectStereoDrawBuffer',windowPtr,1);
-        Screen('FillRect',windowPtr,[0 0 0]);
-        Screen('Flip',windowPtr);
-        %}
-        
-        makeFix = 0;
 
-        BF_build_textures_optimizer;
-        BF_initialize_trial; % calls RenderSceneStatic
-        
-        % this loop checks for keyboard input
-        tic;
-        while toc < stim_dur
-            BF_run_trial; % calls actual GL commands
-        end
-        
-        
-        Screen('SelectStereoDrawBuffer',windowPtr,0);
-        Screen('FillRect',windowPtr,[0 0 0]);
-        Screen('SelectStereoDrawBuffer',windowPtr,1);
-        Screen('FillRect',windowPtr,[0 0 0]);
-        Screen('Flip',windowPtr);
-        
-        response = 0;
-        responded = 0;
-        while responded == 0
-            [b c d] = KbWait;
-            takeKeyboardInput;
-        end
-        process_response;
+    makeFix = 0;
+    BF_load_textures; % load stimuli, just in case
+    makeFix = 1;
+
+    % this loop checks for keyboard input
+    tic;
+    while toc < fix_dur
+        BF_run_trial; % calls actual GL commands
     end
-end
 
-if trial_mode==1
-    
-    BF_load_textures;
+    Screen('SelectStereoDrawBuffer',windowPtr,0);
+    Screen('FillRect',windowPtr,[0 0 0]);
+    Screen('SelectStereoDrawBuffer',windowPtr,1);
+    Screen('FillRect',windowPtr,[0 0 0]);
+    Screen('Flip',windowPtr);
+
+    makeFix = 0;
     BF_build_textures_optimizer;
     BF_initialize_trial; % calls RenderSceneStatic
-    
-    message='turnlenson';
-    BF_disp_message
-    
-    texname_static = glGenTextures(8);
-    
-    % Trial starts here
-    stop_flag=0;
-    while stop_flag == 0
-        
-        makeFix = 1;
-        BF_load_textures; % load fixation
-        BF_build_textures_optimizer;
-        BF_initialize_trial; % calls RenderSceneStatic
-        
-        makeFix = 0;
-        BF_load_textures; % load stimuli, just in case
-        makeFix = 1;
-        
-        % this loop checks for keyboard input
-        tic;
-        while toc < fix_dur
-            BF_run_trial; % calls actual GL commands
-        end
-        
-        Screen('SelectStereoDrawBuffer',windowPtr,0);
-        Screen('FillRect',windowPtr,[0 0 0]);
-        Screen('SelectStereoDrawBuffer',windowPtr,1);
-        Screen('FillRect',windowPtr,[0 0 0]);
-        Screen('Flip',windowPtr);
-        
-        makeFix = 0;
-        BF_build_textures_optimizer;
-        BF_initialize_trial; % calls RenderSceneStatic
-        
-        tic;
-        while toc < stim_dur
-            BF_run_trial; % calls actual GL commands
-        end
-        
-        Screen('SelectStereoDrawBuffer',windowPtr,0);
-        Screen('FillRect',windowPtr,[0 0 0]);
-        Screen('SelectStereoDrawBuffer',windowPtr,1);
-        Screen('FillRect',windowPtr,[0 0 0]);
-        Screen('Flip',windowPtr);
-        
-        response = 0;
-        responded = 0;
+
+    tic;
+    while toc < stim_dur
+        BF_run_trial; % calls actual GL commands
+    end
+
+    Screen('SelectStereoDrawBuffer',windowPtr,0);
+    Screen('FillRect',windowPtr,[0 0 0]);
+    Screen('SelectStereoDrawBuffer',windowPtr,1);
+    Screen('FillRect',windowPtr,[0 0 0]);
+    Screen('Flip',windowPtr);
+
+    response = 0;
+    responded = 0;
 
 % response = randi(2) - 1;
 % responded = 1;
 
-        while responded == 0
-            [b c d] = KbWait;
-            takeKeyboardInput;
-        end
-        process_response;
-        
-        %{
-        % Trying to solve inter-trial delay
-        glDeleteTextures(length(genlist_projection1), genlist_projection1);
-        glDeleteTextures(length(static_scene_disp_list1), static_scene_disp_list1);
-        glClear();
-        Screen('Close', texname_static);
-        Screen('Close', genlist_projection1);
-        Screen('Close', static_scene_disp_list1);
-        %}
-    end
-    
-    glDeleteTextures(length(texname_static), texname_static);
- 
-    save(expFileName, 'param', 'trialOrder', 'block_counter', 'trial_counter');
-    fclose(text_fp);
+
+    process_response;
+
+    %{
+    % Trying to solve inter-trial delay
+    glDeleteTextures(length(genlist_projection1), genlist_projection1);
+    glDeleteTextures(length(static_scene_disp_list1), static_scene_disp_list1);
+    glClear();
+    Screen('Close', texname_static);
+    Screen('Close', genlist_projection1);
+    Screen('Close', static_scene_disp_list1);
+    %}
 end
+
+glDeleteTextures(length(texname_static), texname_static);
+
+save(expFileName, 'param', 'trialOrder', 'block_counter', 'trial_counter');
+fclose(text_fp);
+
 
 message='experimentcomplete';
 BF_disp_message

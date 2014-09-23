@@ -18,6 +18,7 @@ if first_run == 0
     first_run = 1;
 end
 %demo vs. experiment mode
+
 % if trial_mode == 0
 %     % Demo Parameters
 %     fix_dur    = param.fix_duration;
